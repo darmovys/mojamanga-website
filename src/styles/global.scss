@@ -1,0 +1,247 @@
+/* CSS RESET (from https://www.joshwcomeau.com/css/custom-css-reset/) */
+
+/* 1. Use a more-intuitive box-sizing model */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 2. Remove default margin */
+*:not(dialog) {
+  margin: 0;
+}
+
+/* 3. Enable keyword animations */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    interpolate-size: allow-keywords;
+  }
+}
+
+body {
+  /* 4. Add accessible line-height */
+  line-height: 1.5;
+  /* 5. Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 6. Improve media defaults */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* 7. Inherit fonts for form controls */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* 8. Avoid text overflows */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* 9. Improve line wrapping */
+p {
+  text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+/*
+    10. Create a root stacking context
+  */
+#root,
+#__next {
+  isolation: isolate;
+}
+
+/* GLOBAL STYLES */
+
+@font-face {
+  font-family: 'FixelText';
+  font-style: normal;
+  src: url('/fonts/FixelVariable/FixelVariable.woff2')
+    format('woff2-variations');
+  font-feature-settings:
+    'salt' on,
+    'ss01' on;
+  font-weight: 100 900;
+  font-stretch: 50 200;
+  font-display: swap;
+}
+
+/* Вимикаю альтернативний стиль літери "а". Суто суб'єктивне рішення */
+@font-face {
+  font-family: 'FixelText';
+  src: url('/fonts/FixelVariable/FixelVariable.woff2')
+    format('woff2-variations');
+  font-weight: 100 900;
+  font-stretch: 50 200;
+  font-display: fallback;
+  font-feature-settings:
+    'salt' off,
+    'ss01' off;
+  unicode-range: U+0061, U+0430;
+}
+
+/* Курсивний шрифт */
+@font-face {
+  font-family: 'FixelText';
+  font-style: italic;
+  src: url('/fonts/FixelVariable/FixelVariableItalic.woff2')
+    format('woff2-variations');
+  font-weight: 100 900;
+  font-stretch: 50 200;
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: 'Verdana Fallback';
+  src: local(Verdana);
+  size-adjust: 96%;
+  ascent-override: 102%;
+  descent-override: 28%;
+  line-gap-override: 16%;
+}
+
+html {
+  --blue-50: oklch(96.85% 0.015 260.73);
+  --blue-100: oklch(92.79% 0.033 261.03);
+  --blue-200: oklch(87.46% 0.058 260.45);
+  --blue-300: oklch(79.67% 0.099 257.14);
+  --blue-400: oklch(69.44% 0.149 259.26);
+  --blue-500: oklch(60.2% 0.196 262.8);
+  --blue-600: oklch(54.59% 0.213 265.48); /* brand blue */
+  --blue-700: oklch(46.95% 0.225 265.88);
+  --blue-800: oklch(40.87% 0.187 267.51);
+  --blue-900: oklch(36.62% 0.144 267.82);
+  --blue-950: oklch(27.28% 0.091 271.34);
+
+  --pink-50: oklch(97.03% 0.017 343.61);
+  --pink-100: oklch(94.71% 0.03 342.63);
+  --pink-200: oklch(89.7% 0.067 342.85);
+  --pink-300: oklch(82.04% 0.123 346.07);
+  --pink-400: oklch(72.69% 0.197 349.97);
+  --pink-500: oklch(66.47% 0.233 354.88);
+  --pink-600: oklch(60.35% 0.234 2.11); /* brand pink */
+  --pink-700: oklch(54.07% 0.212 5.5);
+  --pink-800: oklch(47.12% 0.182 5.16);
+  --pink-900: oklch(41.64% 0.156 3.52);
+  --pink-950: oklch(29.1% 0.114 4.85);
+
+  --brand-blue: var(--blue-600);
+  --brand-pink: var(--pink-600);
+
+  --bigscreen-bg: oklab(84.551% 0.00443 0.00843);
+  --background: #fff;
+  --brown-0: oklch(0% 0 0);
+  --brown-16: oklch(16.497% 0.00167 16.71);
+  --brown-22: oklch(22.756% 0.00644 78.148);
+  --brown-23: oklch(23.536% 0.00404 84.55);
+  --brown-24: oklch(24.997% 0.00717 67.405);
+  --brown-33: oklch(33.781% 0.01104 84.576);
+  --brown-35: oklch(35.396% 0.00794 75.229);
+  --brown-74: oklch(74.71% 0.00906 67.479);
+  --brown-82: oklch(82.604% 0.00882 67.467);
+  --brown-89: oklch(89.595% 0.00913 78.143);
+  --brown-91: oklch(91.756% 0.00793 73.522);
+  --brown-94: oklch(94.105% 0.00335 67.063);
+  --brown-95: oklch(95% 0.00428 15.846);
+  --brown-97: oklch(97.614% 0.00011 271.152);
+  --brown-99: oklch(99.107% 0.00011 271.152);
+  --brown-100: oklch(100% 0.00011 271.152);
+
+  // light theme
+  --sys-primary: var(--brown-23);
+  --sys-outline: var(--brown-82);
+  --sys-outline-variant: var(--brown-89);
+  --sys-surface: var(--brown-94);
+  --sys-surface-low: var(--brown-91);
+  --sys-surface-lowest: var(--brown-89);
+  --sys-surface-high: var(--brown-97);
+  --sys-surface-highest: var(--brown-100);
+  --sys-surface-inverse: var(--brown-24);
+  --sys-on-primary: var(--brown-99);
+  --sys-on-surface: var(--brown-22);
+  --sys-on-surface-highest: var(--brown-100);
+  --sys-on-surface-high: var(--brown-96);
+  --sys-on-surface-inverse: var(--brown-92);
+
+  /* Sizing */
+  --size-4px: 0.25rem;
+  --size-8px: 0.5rem;
+  --size-12px: 0.75rem;
+  --size-16px: 1rem;
+  --size-24px: 1.5rem;
+  --size-32px: 2rem;
+  --size-48px: 3rem;
+  --size-64px: 4rem;
+  --size-96px: 6rem;
+  --size-128px: 8rem;
+  --size-192px: 12rem;
+  --size-256px: 16rem;
+  --size-284px: 24rem;
+  --size-512px: 32rem;
+  --size-640px: 40rem;
+  --size-768px: 48rem;
+}
+
+.dark {
+  --bigscreen-bg: oklab(17.764% 0 -0.00002);
+  --background: #030303;
+  --sys-primary: var(--brown-89);
+  --sys-outline: var(--brown-35);
+  --sys-outline-variant: var(--brown-24);
+  --sys-surface: var(--brown-16);
+  --sys-surface-low: var(--brown-16);
+  --sys-surface-lowest: var(--brown-0);
+  --sys-surface-high: var(--brown-22);
+  --sys-surface-highest: var(--brown-24);
+  --sys-surface-inverse: var(--brown-94);
+  --sys-on-primary: var(--brown-16);
+  --sys-on-surface: var(--brown-94);
+  --sys-on-surface-highest: var(--brown-100);
+  --sys-on-surface-high: var(--brown-97);
+  --sys-on-surface-inverse: var(--brown-22);
+}
+
+body {
+  font-family:
+    'FixelText',
+    'Verdana Fallback',
+    -apple-system,
+    BlinkMacSystemFont,
+    avenir next,
+    avenir,
+    helvetica neue,
+    Adwaita Sans,
+    Cantarell,
+    Ubuntu,
+    roboto,
+    noto,
+    helvetica,
+    arial,
+    sans-serif;
+  background-color: var(--bigscreen-bg);
+}

@@ -1,0 +1,28 @@
+{
+  "projectName": "mojamanga-website",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "pnpm",
+  "includeExamples": false,
+  "tailwind": false,
+  "addOnOptions": {
+    "prisma": {
+      "database": "postgres"
+    }
+  },
+  "envVarValues": {},
+  "git": true,
+  "routerOnly": false,
+  "version": 1,
+  "framework": "react-cra",
+  "chosenAddOns": [
+    "eslint",
+    "nitro",
+    "neon",
+    "prisma",
+    "form",
+    "oRPC",
+    "better-auth",
+    "tanstack-query"
+  ]
+}

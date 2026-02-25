@@ -1,0 +1,534 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ================= USER & AUTH =================
+
+model User {
+  id              String     @id @default(cuid(2))
+  name            String
+  email           String
+  emailVerified   Boolean    @default(false)
+  image           String?
+  username        String     @unique
+  displayUsername String
+  status          UserStatus @default(NORMAL)
+
+  sessions Session[]
+  accounts Account[]
+
+  teamMemberships  TeamMember[]
+  uploadedChapters Chapter[]
+  comments         Comment[]
+  likes            Like[]
+  dislikes         Dislike[]
+  ratings          Rating[]
+  bookmarks        Bookmark[]
+  news             News[] // Admin only
+  notifications    Notification[]
+  workProposals    WorkProposal[]
+  complaints       Complaint[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([email])
+  @@map("users")
+}
+
+enum UserStatus {
+  NORMAL
+  BANNED
+}
+
+model Session {
+  id        String   @id @default(cuid(2))
+  expiresAt DateTime
+  token     String
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([token])
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid(2))
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid(2))
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+// ================= TEAMS =================
+
+model Team {
+  id   String @id @default(cuid(2))
+  name String
+
+  members            TeamMember[]
+  publishingVersions PublishingVersion[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id         String   @id @default(cuid(2))
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  teamId     String
+  team       Team     @relation(fields: [teamId], references: [id])
+  role       TeamRole
+  canPublish Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, teamId]) // Юзер не може бути двічі в одній команді
+  @@map("team_members")
+}
+
+enum TeamRole {
+  CREATOR
+  TRANSLATOR
+  CLEANER
+  TYPER
+}
+
+// ================= CONTENT: WORKS =================
+
+model Work {
+  id                String            @id @default(cuid(2))
+  ogName            String // Оригінальна назва
+  ukrName           String
+  enName            String?
+  description       String?           @db.Text
+  coverImage        String // URL картинки'
+  backgroundImage   String? // Якщо не вказано, на фронтенді показуватиметься обрізана збільшена версія coverImage
+  type              WorkType
+  moderationStatus  ModerationStatus  @default(IN_MODERATION)
+  workStatus        WorkStatus
+  translationStatus TranslationStatus
+  releaseYear       Int
+  ageRestriction    Int
+  isNSFW            Boolean           @default(false)
+
+  tags    Tag[]
+  genres  Genre[]
+  authors Author[]
+  artists Artist[]
+
+  comments           Comment[]
+  publishingVersions PublishingVersion[]
+  ratings            Rating[]
+  bookmarks          Bookmark[]
+  proposals          WorkProposal[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("works")
+}
+
+enum WorkType {
+  MANGA
+  MANHWA
+  MANHUA
+  MALOPUS
+  COMIC
+  WEBCOMIC
+}
+
+enum WorkStatus {
+  ONGOING
+  ENDED
+  ANNOUNCEMENT
+  PAUSED
+  DISCONTINUED
+}
+
+enum TranslationStatus {
+  ONGOING
+  ENDED
+  FREEZED
+  DROPPED
+}
+
+enum ModerationStatus {
+  IN_MODERATION
+  COMPLETED
+}
+
+// ================= METADATA (TAGS, AUTHORS...) =================
+
+model Tag {
+  id   String @id @default(cuid(2))
+  name String @unique
+
+  works Work[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tags")
+}
+
+model Genre {
+  id   String @id @default(cuid(2))
+  name String @unique
+
+  works Work[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("genres")
+}
+
+model Author {
+  id   String @id @default(cuid(2))
+  name String @unique
+
+  works Work[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("authors")
+}
+
+model Artist {
+  id   String @id @default(cuid(2))
+  name String @unique
+
+  works Work[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("artists")
+}
+
+// ================= PUBLISHING & CHAPTERS =================
+
+model PublishingVersion {
+  id     String @id @default(cuid(2))
+  teamId String
+  team   Team   @relation(fields: [teamId], references: [id])
+  workId String
+  work   Work   @relation(fields: [workId], references: [id])
+
+  chapters Chapter[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([teamId, workId]) // Одна команда - одна версія перекладу для твору
+  @@map("publishing_versions")
+}
+
+model Chapter {
+  id         String  @id @default(cuid(2))
+  name       String?
+  volumeNum  Float
+  chapterNum Float
+
+  publishingVersionId String
+  publishingVersion   PublishingVersion @relation(fields: [publishingVersionId], references: [id])
+
+  uploaderId String
+  uploader   User   @relation(fields: [uploaderId], references: [id])
+
+  pages     Page[]
+  bookmarks Bookmark[]
+  likes     Like[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([publishingVersionId, volumeNum, chapterNum]) // Унікальність в межах версії команди
+  @@map("chapters")
+}
+
+model Page {
+  id        String  @id @default(cuid(2))
+  chapterId String
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  pageNum   Int
+  imageUrl  String
+
+  comments Comment[]
+
+  @@map("pages")
+}
+
+// ================= EDITS SYSTEM  =================
+
+model WorkProposal {
+  id String @id @default(cuid(2))
+
+  // Хто і що пропонує
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  workId String
+  work   Work   @relation(fields: [workId], references: [id])
+
+  status ProposalStatus @default(PENDING)
+
+  // --- Поля для зміни (Nullable) ---
+  // Якщо поле null - значить його змінювати не пропонують
+  suggestedUkrName         String?
+  suggestedEnName          String?
+  suggestedDescription     String?
+  suggestedCoverImage      String?
+  suggestedBackgroundImage String?
+
+  // --- Зміни зв'язків (JSON) ---
+  // Ми зберігаємо масиви ID: { addTags: ["id1"], removeTags: ["id2"] }
+  suggestedTagsJson    Json?
+  suggestedGenresJson  Json?
+  suggestedAuthorsJson Json?
+  suggestedArtistsJson Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("work_proposals")
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// ================= SOCIAL & INTERACTION =================
+
+model Comment {
+  id           String  @id @default(cuid(2))
+  content      String
+  isDeleted    Boolean @default(false)
+  isHidden     Boolean @default(false)
+  hidingReason String?
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  pageId String?
+  page   Page?   @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  workId String?
+  work   Work?   @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  // Closure Table Relations
+  ancestors   CommentClosure[] @relation("Ancestors")
+  descendants CommentClosure[] @relation("Descendants")
+
+  likes      Like[]
+  dislikes   Dislike[]
+  complaints Complaint[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("comments")
+}
+
+model CommentClosure {
+  ancestorId   String
+  descendantId String
+  depth        Int
+
+  ancestor   Comment @relation("Ancestors", fields: [ancestorId], references: [id], onDelete: Cascade)
+  descendant Comment @relation("Descendants", fields: [descendantId], references: [id], onDelete: Cascade)
+
+  @@id([ancestorId, descendantId])
+  // Індекси (опціонально, але бажано для Closure Table, якщо будуть складні вибірки)
+  @@index([descendantId])
+  @@index([ancestorId])
+  @@map("comment_closures")
+}
+
+// Розділені лайки для чистоти схеми
+model Like {
+  id     String @id @default(cuid(2))
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  chapterId String?
+  chapter   Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, commentId]) // Юзер може лайкнути комент лише раз
+  @@map("likes")
+}
+
+model Dislike {
+  id     String @id @default(cuid(2))
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, commentId])
+  @@map("dislikes")
+}
+
+model Rating {
+  id     String @id @default(cuid(2))
+  score  Int // 1-10 або 1-5
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  workId String
+  work   Work   @relation(fields: [workId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, workId])
+  @@map("ratings")
+}
+
+model Bookmark {
+  id   String @id @default(cuid(2))
+  type String // "reading", "planned", etc.
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  workId String
+  work   Work   @relation(fields: [workId], references: [id])
+
+  // Прогрес читання (остання глава)
+  lastChapterId String?
+  lastChapter   Chapter? @relation(fields: [lastChapterId], references: [id])
+
+  shouldNotify Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, workId])
+  @@map("bookmarks")
+}
+
+model Notification {
+  id          String           @id @default(cuid(2))
+  type        NotificationType
+  data        Json // { workId: "...", title: "..." }
+  isRead      Boolean          @default(false)
+  isImportant Boolean          @default(false)
+  /**
+   * Якщо сповіщення важливе, воно не видалятиметься автоматично через деякий час.
+   * Користувач може зберігати такі сповіщення
+   */
+
+  receiverId String
+  receiver   User   @relation(fields: [receiverId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("notifications")
+}
+
+enum NotificationType {
+  NEW_CHAPTER
+  COMMENT_REPLY
+  WORK_APPROVED
+  WORK_REJECTED
+  PROPOSAL_ACCEPTED
+  PROPOSAL_REJECTED
+  USER_BANNED
+}
+
+// ================= MISC =================
+
+model News {
+  id        String   @id @default(cuid(2))
+  title     String
+  content   String   @db.Text
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@map("news")
+}
+
+model Complaint {
+  id String @id @default(cuid(2))
+
+  reporterId String
+  reporter   User   @relation(fields: [reporterId], references: [id])
+
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  reason  ReportReason
+  details String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Захист від спаму: один юзер може поскаржитися на один коментар лише раз
+  @@unique([reporterId, commentId])
+  @@map("complaints")
+}
+
+enum ReportReason {
+  USER_OFFENCE // Образи
+  SPOILERS // Спойлери
+  AD // Реклама
+  SLURS // Нецензурна лексика / Мова ворожнечі
+  PROHIBITED_CONTENT // Заборонений контент 18+ і т.д.
+  CONFLICTS // Провокація конфліктів
+  OFFTOPIC // Не по темі
+  OTHER
+}

@@ -1,0 +1,39 @@
+@use 'sass:math';
+@use 'sass:map';
+
+$breakpoints: (
+  'tablet': 550px,
+  'laptop': 1100px,
+  'desktop': 1500px,
+);
+
+@function to-rem($px) {
+  @if math.is-unitless($px) {
+    @return math.div($px, 16) + rem;
+  }
+  @return math.div($px, 16px) * 1rem;
+}
+
+@mixin up($size) {
+  $value: map.get($breakpoints, $size);
+  @if $value {
+    @media (min-width: to-rem($value)) {
+      @content;
+    }
+  } @else {
+    @error "Брейкпоїнт #{$size} не знайдено в карті $breakpoints";
+  }
+}
+
+@mixin between($min-size, $max-size) {
+  $min: map.get($breakpoints, $min-size);
+  $max: map.get($breakpoints, $max-size);
+
+  @if $min and $max {
+    @media (min-width: to-rem($min)) and (max-width: to-rem($max - 0.02px)) {
+      @content;
+    }
+  } @else {
+    @error "Один з брейкпоїнтів (#{$min-size}, #{$max-size}) не знайдено";
+  }
+}

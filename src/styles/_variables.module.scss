@@ -1,0 +1,8 @@
+@use 'sass:map';
+@use 'breakpoints' as *;
+
+:export {
+  tabletMin: map.get($breakpoints, 'tablet');
+  laptopMin: map.get($breakpoints, 'laptop');
+  desktopMin: map.get($breakpoints, 'desktop');
+}
