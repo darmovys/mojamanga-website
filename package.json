@@ -8,7 +8,6 @@
   "scripts": {
     "dev": "vite dev --port 3000",
     "build": "vite build",
-    "start": "vite start --port 3001",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
@@ -22,6 +21,7 @@
     "db:seed": "dotenv -e .env.local -- prisma db seed"
   },
   "dependencies": {
+    "@base-ui/react": "^1.2.0",
     "@orpc/client": "^1.13.0",
     "@orpc/json-schema": "^1.13.0",
     "@orpc/openapi": "^1.13.0",
@@ -37,7 +37,7 @@
     "@tanstack/react-router": "^1.132.0",
     "@tanstack/react-router-devtools": "^1.132.0",
     "@tanstack/react-router-ssr-query": "^1.131.7",
-    "@tanstack/react-start": "^1.132.0",
+    "@tanstack/react-start": "^1.163.2",
     "@tanstack/router-plugin": "^1.132.0",
     "better-auth": "^1.4.18",
     "clsx": "^2.1.1",

@@ -1,0 +1,82 @@
+.Header {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background-color: var(--sys-surface);
+  // height: var(--size-64px);
+  padding: var(--size-12px);
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  justify-items: center;
+  align-items: center;
+  padding-inline: var(--size-8px);
+  gap: var(--size-4px);
+}
+
+.NavItem {
+  color: var(--sys-primary);
+  text-decoration: none;
+  margin-inline: var(--size-4px);
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100vmax;
+  position: relative;
+  padding: var(--size-8px);
+  border: none;
+  cursor: pointer;
+  background-color: inherit;
+
+  &::before {
+    position: absolute;
+    inset: 0;
+    content: '';
+    opacity: 0;
+    -webkit-mask-composite: xor;
+    background: linear-gradient(var(--brand-blue) 0%, var(--brand-pink) 100%);
+    border-radius: 50px;
+    padding: 2px;
+    transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+    inset: -2px;
+    -webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+    -webkit-mask-position:
+      0 0,
+      0 0;
+    -webkit-mask-size: auto, auto;
+    -webkit-mask-repeat: repeat, repeat;
+    -webkit-mask-clip: content-box, border-box;
+    -webkit-mask-origin: content-box, border-box;
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    -webkit-mask-source-type: auto, auto;
+    mask-mode: match-source, match-source;
+  }
+
+  &:focus-within,
+  &:hover {
+    background-color: var(--sys-on-button);
+
+    &:before {
+      opacity: 1;
+    }
+  }
+}
+
+// .Icon {
+//   flex-shrink: 0;
+// }
+
+.ItemTitle {
+  font-size: var(--size-12px);
+}
+
+.ActiveItem.NavItem {
+  // background-color: var(--sys-on-button);
+
+  &::before {
+    opacity: 1;
+  }
+}

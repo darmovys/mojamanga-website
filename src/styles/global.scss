@@ -71,8 +71,7 @@ h6 {
 /*
     10. Create a root stacking context
   */
-#root,
-#__next {
+#root {
   isolation: isolate;
 }
 
@@ -187,8 +186,11 @@ html {
   --sys-on-surface-highest: var(--brown-100);
   --sys-on-surface-high: var(--brown-96);
   --sys-on-surface-inverse: var(--brown-92);
+  --sys-on-button: var(--brown-89);
 
   /* Sizing */
+
+  --size-2px: 0.125rem;
   --size-4px: 0.25rem;
   --size-8px: 0.5rem;
   --size-12px: 0.75rem;
@@ -224,6 +226,7 @@ html {
   --sys-on-surface-highest: var(--brown-100);
   --sys-on-surface-high: var(--brown-97);
   --sys-on-surface-inverse: var(--brown-22);
+  --sys-on-button: var(--brown-16);
 }
 
 body {

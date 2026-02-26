@@ -2,6 +2,7 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
+  useMatches,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -13,6 +14,7 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/lib/theme-provider'
 import globalCSS from '@/styles/global.scss?url'
+import Header from '@/components/Header'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -39,17 +41,24 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const showNavbar = useMatches({
+    select: (matches) =>
+      !matches.some((m) => m.staticData?.showNavbar === false),
+  })
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body style={{ isolation: 'isolate' }}>
         <TanStackQueryProvider>
-          <ThemeProvider>{children}</ThemeProvider>
-          <TanStackDevtools
+          <ThemeProvider>
+            {showNavbar && <Header />}
+            {children}
+          </ThemeProvider>
+          {/* <TanStackDevtools
             config={{
-              position: 'bottom-right',
+              position: 'middle-left',
             }}
             plugins={[
               {
@@ -58,7 +67,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               },
               TanStackQueryDevtools,
             ]}
-          />
+          /> */}
         </TanStackQueryProvider>
 
         <Scripts />
