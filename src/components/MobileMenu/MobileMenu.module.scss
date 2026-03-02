@@ -1,0 +1,224 @@
+.Overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--default-overlay-color);
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateX(10%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+}
+
+.Content {
+  --height: 70vh;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  height: var(--height);
+  width: 100%;
+  border-radius: 20px 20px 0 0;
+  background-color: var(--sys-surface-high);
+  will-change: opacity, transform;
+}
+
+.CloseSection {
+  border-radius: 20px 20px 0 0;
+  padding: var(--24px);
+  background-color: var(--sys-on-surface-highest);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  border-bottom: 1px solid var(--sys-outline);
+}
+
+.TopSection {
+  padding: var(--12px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--20px);
+}
+
+.Logo {
+  display: flex;
+  flex-direction: column;
+  text-transform: uppercase;
+  color: var(--sys-primary);
+  font-size: var(--20px);
+
+  span:first-child {
+    font-weight: 650;
+  }
+}
+
+.CloseButton {
+  position: relative; // for gradient effect
+  border-radius: 100vmax;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-content: center;
+  outline: 2px solid var(--sys-primary);
+  border: none;
+  background-color: transparent;
+  color: var(--sys-on-surface);
+
+  &:hover {
+    background-color: var(--state-primary-opacity-12);
+  }
+}
+
+.ThemeButton {
+  width: 100%;
+  color: var(--sys-on-surface);
+  flex: 1;
+  padding: var(--8px);
+  border-radius: var(--20px);
+  display: flex;
+  justify-content: center;
+  gap: var(--8px);
+  border: none;
+  background-color: var(--sys-on-surface-high);
+  font-weight: 500;
+
+  &:hover {
+    background-color: var(--state-primary-opacity-12);
+  }
+}
+
+.LoginButton {
+  position: relative; // for gradient effect
+  display: flex;
+  justify-content: center;
+  gap: var(--8px);
+  width: 100%;
+  padding: var(--8px);
+  border-radius: var(--20px);
+  border: none;
+  color: var(--sys-on-primary);
+  background-color: var(--sys-primary);
+  font-weight: 500;
+}
+
+.Separator {
+  background-color: var(--sys-outline);
+  height: 1px;
+}
+
+.Accordion {
+  padding: var(--12px) var(--8px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--4px);
+}
+
+.AccordionTrigger {
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--16px) var(--20px);
+  background-color: var(--sys-on-surface-highest);
+  width: 100%;
+  border-radius: var(--12px);
+  color: var(--sys-on-surface);
+
+  &[data-panel-open] {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+
+    .ChevronDown {
+      transform: rotate(180deg);
+    }
+  }
+  cursor: pointer;
+}
+
+.ChevronDown {
+  will-change: transform;
+  transition: 250ms ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.AccordionPanel {
+  background-color: var(--sys-on-surface-highest);
+  padding: var(--8px);
+
+  &[data-open] {
+    border-bottom-left-radius: var(--12px);
+    border-bottom-right-radius: var(--12px);
+
+    animation: fadeIn 300ms ease both;
+  }
+}
+
+.AccordionLink {
+  display: flex;
+  align-items: center;
+  gap: var(--10px);
+  text-decoration: none;
+  padding: var(--10px) var(--14px);
+  border-radius: var(--8px);
+  color: var(--sys-on-surface);
+
+  &:not(nth-last-of-type) {
+    margin-bottom: var(--4px);
+  }
+
+  &:hover {
+    background-color: var(--state-primary-opacity-8);
+  }
+
+  &.Active {
+    background-color: var(--state-primary-opacity-8);
+  }
+
+  &.Relative {
+    position: relative;
+  }
+}
+
+.ScrollArea {
+  height: calc(var(--height) - 120px);
+}
+
+.Viewport {
+  height: 100%;
+}
+
+.ChevronRightButton {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 25%;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.BackButton {
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  padding: var(--8px) var(--12px);
+  border-radius: var(--8px);
+  color: var(--sys-on-surface);
+  margin-bottom: var(--4px);
+  cursor: pointer;
+}

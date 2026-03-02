@@ -152,81 +152,95 @@ html {
   --brand-blue: var(--blue-600);
   --brand-pink: var(--pink-600);
 
+  --default-overlay-color: oklch(0% 0 0 / 0.5);
   --bigscreen-bg: oklab(84.551% 0.00443 0.00843);
   --background: #fff;
-  --brown-0: oklch(0% 0 0);
-  --brown-16: oklch(16.497% 0.00167 16.71);
-  --brown-22: oklch(22.756% 0.00644 78.148);
-  --brown-23: oklch(23.536% 0.00404 84.55);
-  --brown-24: oklch(24.997% 0.00717 67.405);
-  --brown-33: oklch(33.781% 0.01104 84.576);
-  --brown-35: oklch(35.396% 0.00794 75.229);
-  --brown-74: oklch(74.71% 0.00906 67.479);
-  --brown-82: oklch(82.604% 0.00882 67.467);
-  --brown-89: oklch(89.595% 0.00913 78.143);
-  --brown-91: oklch(91.756% 0.00793 73.522);
-  --brown-94: oklch(94.105% 0.00335 67.063);
-  --brown-95: oklch(95% 0.00428 15.846);
-  --brown-97: oklch(97.614% 0.00011 271.152);
-  --brown-99: oklch(99.107% 0.00011 271.152);
-  --brown-100: oklch(100% 0.00011 271.152);
+  --tone-0: oklch(0% 0 0);
+  --tone-1: oklch(16.497% 0.00167 16.71);
+  --tone-2: oklch(22.645% 0.00003 271.152);
+  --tone-3: oklch(23.536% 0.00404 84.55);
+  --tone-4: oklch(24.997% 0.00717 67.405);
+  --tone-5: oklch(33.674% 0.00531 91.552);
+  --tone-6: oklch(29.82% 0.00143 15.934);
+  --tone-7: oklch(74.71% 0.00906 67.479);
+  --tone-8: oklch(82.604% 0.00882 67.467);
+  --tone-9: oklch(89.595% 0.00913 78.143);
+  --tone-10: oklch(91.756% 0.00793 73.522);
+  --tone-11: oklch(94.105% 0.00335 67.063);
+  --tone-12: oklch(95% 0.00428 15.846);
+  --tone-13: oklch(97.614% 0.00011 271.152);
+  --tone-14: oklch(99.107% 0.00011 271.152);
+  --tone-15: oklch(100% 0.00011 271.152);
+
+  // transparent variants
+  --tone-2-tr-05: oklch(22.645% 0.00003 271.152 / 0.05);
 
   // light theme
-  --sys-primary: var(--brown-23);
-  --sys-outline: var(--brown-82);
-  --sys-outline-variant: var(--brown-89);
-  --sys-surface: var(--brown-94);
-  --sys-surface-low: var(--brown-91);
-  --sys-surface-lowest: var(--brown-89);
-  --sys-surface-high: var(--brown-97);
-  --sys-surface-highest: var(--brown-100);
-  --sys-surface-inverse: var(--brown-24);
-  --sys-on-primary: var(--brown-99);
-  --sys-on-surface: var(--brown-22);
-  --sys-on-surface-highest: var(--brown-100);
-  --sys-on-surface-high: var(--brown-96);
-  --sys-on-surface-inverse: var(--brown-92);
-  --sys-on-button: var(--brown-89);
+  --sys-primary: var(--tone-3);
+  --sys-outline: var(--tone-8);
+  --sys-outline-variant: var(--tone-9);
+  --sys-surface: var(--tone-11);
+  --sys-surface-lowest: var(--tone-9);
+  --sys-surface-low: var(--tone-10);
+  --sys-surface-high: var(--tone-11);
+  --sys-surface-highest: var(--tone-15);
+  --sys-surface-inverse: var(--tone-4);
+  --sys-on-primary: var(--tone-14);
+  --sys-on-surface: var(--tone-2);
+  --sys-on-surface-opacity-1: var(--tone-2-tr-05);
+  --sys-on-surface-highest: var(--tone-15);
+  --sys-on-surface-high: var(--tone-13);
+  --sys-on-surface-inverse: var(--tone-12);
+  --sys-on-button: var(--tone-9);
+  --sys-outline: var(--tone-8);
+
+  --state-primary-opacity-8: oklch(71.462% 0.213 265.48 / 0.078);
+  --state-primary-opacity-12: oklch(71.462% 0.213 265.48 / 0.122);
+  --state-primary-opacity-16: oklch(71.462% 0.213 265.48 / 0.161);
 
   /* Sizing */
 
-  --size-2px: 0.125rem;
-  --size-4px: 0.25rem;
-  --size-8px: 0.5rem;
-  --size-12px: 0.75rem;
-  --size-16px: 1rem;
-  --size-24px: 1.5rem;
-  --size-32px: 2rem;
-  --size-48px: 3rem;
-  --size-64px: 4rem;
-  --size-96px: 6rem;
-  --size-128px: 8rem;
-  --size-192px: 12rem;
-  --size-256px: 16rem;
-  --size-284px: 24rem;
-  --size-512px: 32rem;
-  --size-640px: 40rem;
-  --size-768px: 48rem;
+  --2px: 0.125rem;
+  --4px: 0.25rem;
+  --8px: 0.5rem;
+  --10px: 0.625rem;
+  --12px: 0.75rem;
+  --14px: 0.875rem;
+  --16px: 1rem;
+  --20px: 1.25rem;
+  --24px: 1.5rem;
+  --32px: 2rem;
+  --48px: 3rem;
+  --64px: 4rem;
+  --96px: 6rem;
+  --128px: 8rem;
+  --192px: 12rem;
+  --256px: 16rem;
+  --284px: 24rem;
+  --512px: 32rem;
+  --640px: 40rem;
+  --768px: 48rem;
 }
 
 .dark {
   --bigscreen-bg: oklab(17.764% 0 -0.00002);
   --background: #030303;
-  --sys-primary: var(--brown-89);
-  --sys-outline: var(--brown-35);
-  --sys-outline-variant: var(--brown-24);
-  --sys-surface: var(--brown-16);
-  --sys-surface-low: var(--brown-16);
-  --sys-surface-lowest: var(--brown-0);
-  --sys-surface-high: var(--brown-22);
-  --sys-surface-highest: var(--brown-24);
-  --sys-surface-inverse: var(--brown-94);
-  --sys-on-primary: var(--brown-16);
-  --sys-on-surface: var(--brown-94);
-  --sys-on-surface-highest: var(--brown-100);
-  --sys-on-surface-high: var(--brown-97);
-  --sys-on-surface-inverse: var(--brown-22);
-  --sys-on-button: var(--brown-16);
+  --sys-primary: var(--tone-9);
+  --sys-outline: var(--tone-6);
+  --sys-outline-variant: var(--tone-4);
+  --sys-surface: var(--tone-1);
+  --sys-surface-low: var(--tone-1);
+  --sys-surface-lowest: var(--tone-0);
+  --sys-surface-high: var(--tone-1);
+  --sys-surface-highest: var(--tone-4);
+  --sys-surface-inverse: var(--tone-11);
+  --sys-on-primary: var(--tone-1);
+  --sys-on-surface: var(--tone-11);
+  --sys-on-surface-highest: var(--tone-4);
+  --sys-on-surface-high: var(--tone-4);
+  --sys-on-surface-inverse: var(--tone-2);
+  --sys-on-button: var(--tone-1);
+  --sys-outline: var(--tone-5);
 }
 
 body {
@@ -247,4 +261,39 @@ body {
     arial,
     sans-serif;
   background-color: var(--bigscreen-bg);
+}
+
+.Gradient {
+  &::before {
+    position: absolute;
+    inset: 0;
+    content: '';
+    opacity: 0;
+    -webkit-mask-composite: xor;
+    // background: linear-gradient(var(--brand-blue) 0%, var(--brand-pink) 100%);
+    background: linear-gradient(#f49b63 0%, #68a7ca 100%);
+    border-radius: 50px;
+    padding: 2px;
+    transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+    inset: -2px;
+    -webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+    -webkit-mask-position:
+      0 0,
+      0 0;
+    -webkit-mask-size: auto, auto;
+    -webkit-mask-repeat: repeat, repeat;
+    -webkit-mask-clip: content-box, border-box;
+    -webkit-mask-origin: content-box, border-box;
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    -webkit-mask-source-type: auto, auto;
+    mask-mode: match-source, match-source;
+  }
+
+  &:focus-visible,
+  &:hover {
+    &:before {
+      opacity: 1;
+    }
+  }
 }

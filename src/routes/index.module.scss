@@ -1,5 +1,10 @@
+.Wrapper {
+  min-height: 100vh; /* Резервний варіант для старих браузерів */
+  min-height: 120dvh;
+}
+
 .header {
   background-color: blue;
   color: white;
-  font-size: var(--size-24px);
+  font-size: var(--24px);
 }

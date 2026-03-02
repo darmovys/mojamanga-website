@@ -21,11 +21,13 @@ type ThemeProviderProps = {
 type ThemeProviderState = {
   theme: Theme
   setTheme: (theme: Theme) => void
+  toggleTheme: () => void
 }
 
 const initialState: ThemeProviderState = {
   theme: 'system',
   setTheme: () => null,
+  toggleTheme: () => null,
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
@@ -86,12 +88,23 @@ export function ThemeProvider({
     }
   }, [theme, storageKey])
 
+  const toggleTheme = useCallback(() => {
+    if (theme === 'light') {
+      setTheme('dark')
+    } else if (theme === 'dark') {
+      setTheme('system')
+    } else {
+      setTheme('light')
+    }
+  }, [theme])
+
   const value = useMemo(
     () => ({
       theme,
       setTheme,
+      toggleTheme,
     }),
-    [theme],
+    [theme, toggleTheme],
   )
 
   return (

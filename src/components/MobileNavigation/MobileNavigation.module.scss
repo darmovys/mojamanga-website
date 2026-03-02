@@ -1,0 +1,72 @@
+@use '../../styles/breakpoints' as *;
+
+.Wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background-color: var(--sys-surface);
+  padding: var(--12px) var(--8px);
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  box-shadow: 0 3px 6px oklch(59.132% 0.01431 63.658/ 0.2);
+
+  @include up('laptop') {
+    display: none;
+  }
+}
+
+.NavItem {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  width: 100%;
+}
+
+.NavLink {
+  color: var(--sys-primary);
+  text-decoration: none;
+  margin-inline: var(--4px);
+  outline: none;
+  border-radius: 100vmax;
+  padding: var(--8px);
+  border: none;
+  cursor: pointer;
+  background-color: inherit;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+
+  &:hover {
+    &::before {
+      opacity: 0;
+    }
+  }
+}
+
+.ItemTitle {
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+  font-size: var(--12px);
+}
+
+.NavLinkIcon {
+  width: fit-content;
+  margin-inline: auto;
+  flex-shrink: 0;
+}
+
+.ActiveLink.NavLink {
+  background-color: var(--state-primary-opacity-8);
+
+  &::before {
+    opacity: 1;
+  }
+}

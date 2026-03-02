@@ -5,7 +5,7 @@ export const Route = createFileRoute('/')({ component: App })
 
 function App() {
   return (
-    <div>
+    <div className={styles.Wrapper}>
       <h1 className={styles.header}>
         Купуй книжки видавництва Vivat зі знижкою 20%
       </h1>
