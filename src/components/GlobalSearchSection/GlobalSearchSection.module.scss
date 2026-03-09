@@ -1,0 +1,22 @@
+@use '../../styles/breakpoints' as *;
+
+.Wrapper {
+  background-color: var(--sys-surface);
+  padding: var(--8px) var(--10px);
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition: transform 300ms ease-in-out;
+  will-change: transform;
+  z-index: 9;
+
+  @include up('tablet') {
+    top: 69px; // Компенсує висоту header-а
+    padding: var(--4px) var(--16px) var(--8px);
+  }
+
+  @include up('laptop') {
+    display: none;
+  }
+}

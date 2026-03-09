@@ -1,0 +1,36 @@
+.Wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--4px);
+}
+
+.LogoImageWrapper {
+  display: flex;
+  transform: translateY(-1px);
+}
+
+.LogoTextWrapper {
+  display: flex;
+  flex-direction: column;
+  text-transform: uppercase;
+  font-size: var(--20px);
+  color: var(--sys-primary);
+  line-height: 1;
+  font-weight: 700;
+  font-family:
+    'Alegreya Sans',
+    'Verdana Fallback',
+    -apple-system,
+    BlinkMacSystemFont,
+    avenir next,
+    avenir,
+    helvetica neue,
+    Adwaita Sans,
+    Cantarell,
+    Ubuntu,
+    roboto,
+    noto,
+    helvetica,
+    arial,
+    sans-serif;
+}

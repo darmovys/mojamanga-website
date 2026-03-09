@@ -77,6 +77,12 @@ h6 {
 
 /* GLOBAL STYLES */
 
+html,
+body,
+#root /* Для більшості React застосунків */ {
+  height: 100%;
+}
+
 @font-face {
   font-family: 'FixelText';
   font-style: normal;
@@ -102,6 +108,16 @@ h6 {
     'salt' off,
     'ss01' off;
   unicode-range: U+0061, U+0430;
+}
+
+/* Текст логотипу */
+@font-face {
+  font-family: 'Alegreya Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/AlegreyaSans.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 
 /* Курсивний шрифт */
@@ -143,20 +159,20 @@ html {
   --pink-300: oklch(82.04% 0.123 346.07);
   --pink-400: oklch(72.69% 0.197 349.97);
   --pink-500: oklch(66.47% 0.233 354.88);
-  --pink-600: oklch(60.35% 0.234 2.11); /* brand pink */
+  --pink-600: oklch(60.35% 0.234 2.11);
   --pink-700: oklch(54.07% 0.212 5.5);
-  --pink-800: oklch(47.12% 0.182 5.16);
+  --pink-800: oklch(47.12% 0.182 5.16); /* brand pink */
   --pink-900: oklch(41.64% 0.156 3.52);
   --pink-950: oklch(29.1% 0.114 4.85);
 
-  --brand-blue: var(--blue-600);
-  --brand-pink: var(--pink-600);
+  --brand-blue: var(--blue-500);
+  --brand-pink: var(--pink-700);
 
   --default-overlay-color: oklch(0% 0 0 / 0.5);
   --bigscreen-bg: oklab(84.551% 0.00443 0.00843);
   --background: #fff;
   --tone-0: oklch(0% 0 0);
-  --tone-1: oklch(16.497% 0.00167 16.71);
+  --tone-1: oklch(18.497% 0.00167 16.71);
   --tone-2: oklch(22.645% 0.00003 271.152);
   --tone-3: oklch(23.536% 0.00404 84.55);
   --tone-4: oklch(24.997% 0.00717 67.405);
@@ -189,14 +205,16 @@ html {
   --sys-on-surface: var(--tone-2);
   --sys-on-surface-opacity-1: var(--tone-2-tr-05);
   --sys-on-surface-highest: var(--tone-15);
+  --sys-on-surface-highest-variant: oklch(49.558% 0.00895 17.114);
   --sys-on-surface-high: var(--tone-13);
   --sys-on-surface-inverse: var(--tone-12);
   --sys-on-button: var(--tone-9);
-  --sys-outline: var(--tone-8);
 
   --state-primary-opacity-8: oklch(71.462% 0.213 265.48 / 0.078);
   --state-primary-opacity-12: oklch(71.462% 0.213 265.48 / 0.122);
   --state-primary-opacity-16: oklch(71.462% 0.213 265.48 / 0.161);
+
+  --input-hover-border: oklch(91.583% 0.0001 271.152);
 
   /* Sizing */
 
@@ -210,6 +228,8 @@ html {
   --20px: 1.25rem;
   --24px: 1.5rem;
   --32px: 2rem;
+  --40px: 2.5rem;
+  --45px: 2.8125rem;
   --48px: 3rem;
   --64px: 4rem;
   --96px: 6rem;
@@ -223,7 +243,7 @@ html {
 }
 
 .dark {
-  --bigscreen-bg: oklab(17.764% 0 -0.00002);
+  --bigscreen-bg: #000000;
   --background: #030303;
   --sys-primary: var(--tone-9);
   --sys-outline: var(--tone-6);
@@ -237,10 +257,13 @@ html {
   --sys-on-primary: var(--tone-1);
   --sys-on-surface: var(--tone-11);
   --sys-on-surface-highest: var(--tone-4);
+  --sys-on-surface-highest-variant: var(--tone-7);
   --sys-on-surface-high: var(--tone-4);
   --sys-on-surface-inverse: var(--tone-2);
   --sys-on-button: var(--tone-1);
   --sys-outline: var(--tone-5);
+
+  --input-hover-border: oklch(32.492% 0.00994 61.039);
 }
 
 body {
@@ -261,9 +284,12 @@ body {
     arial,
     sans-serif;
   background-color: var(--bigscreen-bg);
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .Gradient {
+  position: relative;
   &::before {
     position: absolute;
     inset: 0;
@@ -271,11 +297,12 @@ body {
     opacity: 0;
     -webkit-mask-composite: xor;
     // background: linear-gradient(var(--brand-blue) 0%, var(--brand-pink) 100%);
-    background: linear-gradient(#f49b63 0%, #68a7ca 100%);
-    border-radius: 50px;
+    // background: linear-gradient(var(--brand-blue) 0%, var(--brand-pink) 100%);
+    background: var(--blue-400);
+    border-radius: 100vmax;
     padding: 2px;
     transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
-    inset: -2px;
+    inset: -1.5px;
     -webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
     -webkit-mask-position:
       0 0,

@@ -2,7 +2,6 @@ import styles from './MobileNavigation.module.scss'
 import { Link, linkOptions } from '@tanstack/react-router'
 import { House, Bookmark, Layers, Bell, Menu } from 'lucide-react'
 import MobileMenu from '../MobileMenu'
-import clsx from 'clsx'
 
 const navLinks = linkOptions([
   {
@@ -47,7 +46,7 @@ export default function MobileNavigation() {
           <div className={styles.NavItem} key={item.title}>
             <Link
               activeProps={{ className: styles.ActiveLink }}
-              className={clsx({ [styles.NavLink]: true, Gradient: true })}
+              className={styles.NavLink}
               to={item.to}
             >
               <item.icon className={styles.NavLinkIcon} size={18} />
@@ -59,10 +58,7 @@ export default function MobileNavigation() {
       <div className={styles.NavItem}>
         <MobileMenu
           trigger={(openDialog) => (
-            <button
-              onClick={openDialog}
-              className={clsx({ [styles.NavLink]: true, Gradient: true })}
-            >
+            <button onClick={openDialog} className={styles.NavLink}>
               <Menu className={styles.NavLinkIcon} size={18} />
               <span className={styles.ItemTitle}>Меню</span>
             </button>

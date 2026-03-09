@@ -14,6 +14,8 @@ import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/lib/theme-provider'
 import globalCSS from '@/styles/global.scss?url'
 import MobileNavigation from '@/components/MobileNavigation'
+import Header from '@/components/Header'
+import GlobalSearchSection from '@/components/GlobalSearchSection'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -30,11 +32,23 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Читати мангу українською · Моя Манга',
       },
     ],
 
-    links: [{ rel: 'stylesheet', href: globalCSS }],
+    links: [
+      { rel: 'stylesheet', href: globalCSS },
+      // { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+      // {
+      //   rel: 'preconnect',
+      //   href: 'https://fonts.gstatic.com',
+      //   // crossOrigin: true,
+      // },
+      // {
+      //   rel: 'stylesheet',
+      //   href: 'https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700&display=swap',
+      // },
+    ],
   }),
   shellComponent: RootDocument,
 })
@@ -43,6 +57,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const showNavbar = useMatches({
     select: (matches) =>
       !matches.some((m) => m.staticData?.showMobileNavbar === false),
+  })
+  const showStandardHeader = useMatches({
+    select: (matches) =>
+      !matches.some((m) => m.staticData?.showStandardHeader === false),
+  })
+  const showGlobalSearchSection = useMatches({
+    select: (matches) =>
+      !matches.some((m) => m.staticData?.showGlobalSearchSection === false),
   })
   return (
     <html lang="en" suppressHydrationWarning>
@@ -54,6 +76,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <ThemeProvider>
             <div id="root">
               {showNavbar && <MobileNavigation />}
+              {showStandardHeader && <Header />}
+              {showGlobalSearchSection && <GlobalSearchSection />}
               {children}
             </div>
           </ThemeProvider>

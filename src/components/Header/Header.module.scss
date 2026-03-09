@@ -1,0 +1,100 @@
+@use '../../styles/breakpoints' as *;
+
+.Wrapper {
+  display: none;
+  @include up('tablet') {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    position: sticky;
+    top: 0;
+    background-color: var(--sys-surface);
+    padding: var(--12px) var(--24px);
+    gap: var(--16px);
+    z-index: 10;
+  }
+}
+
+.Button {
+  --border-radius: 100vmax;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.PrimaryButton {
+  composes: Button;
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+  padding: var(--8px) var(--20px) var(--8px) var(--16px);
+  gap: var(--8px);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.IconButton {
+  composes: Button;
+  width: 45px;
+  height: 45px;
+  padding: var(--8px);
+  color: var(--sys-primary);
+}
+
+.SecondaryButton {
+  composes: IconButton;
+  outline: 2px solid var(--sys-primary);
+  outline-offset: -2px;
+  background-color: transparent;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--state-primary-opacity-8);
+    outline: none;
+  }
+}
+
+.TertiaryButton {
+  composes: IconButton;
+  background-color: var(--sys-surface-highest);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--state-primary-opacity-12);
+    outline: none;
+  }
+}
+
+.UserButton {
+  composes: IconButton;
+  padding: 0;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--state-primary-opacity-12);
+    outline: none;
+  }
+
+  img {
+    border-radius: var(--border-radius);
+  }
+}
+
+.FlexContainer {
+  display: flex;
+  gap: var(--16px);
+
+  &:last-of-type {
+    justify-self: end;
+  }
+}
+
+.HeaderSearchField {
+  @include between('tablet', 'laptop') {
+    display: none;
+  }
+
+  flex-basis: 80%;
+}

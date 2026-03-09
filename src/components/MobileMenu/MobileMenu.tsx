@@ -22,13 +22,21 @@ import {
   Newspaper,
   ChevronRight,
   ArrowLeft,
+  Search,
+  Settings,
+  Bookmark,
+  Bell,
+  MessageSquare,
 } from 'lucide-react'
 import clsx from 'clsx'
 import { useTheme } from '@/lib/theme-provider'
-import { Accordion, ScrollArea, Separator } from '@base-ui/react'
+import { Accordion, Button, ScrollArea, Separator } from '@base-ui/react'
 import { Link, linkOptions } from '@tanstack/react-router'
 import { WorkType } from '@/generated/prisma/enums'
 import useNestedMenuAnimation from './use-nested-menu-animation'
+import Logo from '../Logo'
+import VisuallyHidden from '../VisuallyHidden'
+import { Image } from '@unpic/react'
 
 const WORK_TYPE_TITLES: Record<WorkType, string> = {
   [WorkType.MANGA]: 'Манга',
@@ -57,6 +65,14 @@ const catalogLinks = linkOptions([
     },
   },
   {
+    title: 'Користувачі',
+    icon: User,
+    to: '/about',
+    activeOptions: {
+      exact: false,
+    },
+  },
+  {
     title: 'Автори',
     icon: Pencil,
     to: '/about',
@@ -67,14 +83,6 @@ const catalogLinks = linkOptions([
   {
     title: 'Художники',
     icon: Palette,
-    to: '/about',
-    activeOptions: {
-      exact: false,
-    },
-  },
-  {
-    title: 'Користувачі',
-    icon: User,
     to: '/about',
     activeOptions: {
       exact: false,
@@ -130,6 +138,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
     setIsMotionAllowed,
     handleAccordionOpenChange,
   } = useNestedMenuAnimation()
+  const [isAuthed, steIsAuthed] = useState(false)
 
   return (
     <Dialog.Root open={showMobileMenu} onOpenChange={setShowMobileMenu}>
@@ -171,62 +180,122 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                   }}
                   transition={{
                     duration: 0.2,
-                    // ease: 'easeInOut',
                   }}
                 />
               }
             >
               <div className={styles.CloseSection}>
-                <div className={styles.Logo}>
-                  <span>Моя</span> <span>Манга</span>
-                </div>
-                <Dialog.Close
+                <Logo />
+                <Button
+                  render={<Dialog.Close />}
                   className={clsx({
                     [styles.CloseButton]: true,
                     Gradient: true,
                   })}
                 >
+                  <VisuallyHidden>Закрити Вікно</VisuallyHidden>
                   <X size={24} />
-                </Dialog.Close>
+                </Button>
               </div>
               <ScrollArea.Root className={styles.ScrollArea}>
                 <ScrollArea.Viewport className={styles.Viewport}>
                   <ScrollArea.Content>
                     <div className={styles.TopSection}>
-                      <button
-                        onClick={toggleTheme}
-                        className={styles.ThemeButton}
-                      >
-                        {theme === 'system' && (
-                          <>
-                            <Clock />
-                            <span className={styles.Text}>
-                              Режим «Системний»
-                            </span>
-                          </>
+                      <div className={styles.FlexRow}>
+                        <Button
+                          onClick={toggleTheme}
+                          className={styles.SecondaryButton}
+                        >
+                          {theme === 'system' && (
+                            <>
+                              <Clock size={20} />
+                              <VisuallyHidden>Системний </VisuallyHidden>
+                            </>
+                          )}
+                          {theme === 'light' && (
+                            <>
+                              <Sun size={20} />
+                              <VisuallyHidden>Світлий </VisuallyHidden>
+                            </>
+                          )}
+                          {theme === 'dark' && (
+                            <>
+                              <Moon size={20} />
+                              <VisuallyHidden>Темний </VisuallyHidden>
+                            </>
+                          )}
+                          <span className={styles.Text}>Режим</span>
+                        </Button>
+                        {isAuthed ? (
+                          <Button className={styles.SecondaryButton}>
+                            <Settings size={20} />
+                            <span className={styles.Text}>Налаштування</span>
+                          </Button>
+                        ) : (
+                          <Button className={styles.SecondaryButton}>
+                            <Search size={20} />
+                            <span className={styles.Text}>Пошук</span>
+                          </Button>
                         )}
-                        {theme === 'light' && (
-                          <>
-                            <Sun />
-                            <span className={styles.Text}>Режим «Сяйво»</span>
-                          </>
-                        )}
-                        {theme === 'dark' && (
-                          <>
-                            <Moon />
-                            <span className={styles.Text}>Режим «Пітьма»</span>
-                          </>
-                        )}
-                      </button>
-                      <button
-                        className={clsx({
-                          [styles.LoginButton]: true,
-                          Gradient: true,
-                        })}
-                      >
-                        <LogIn size={24} />
-                        <span>Увійти | Зареєструватися</span>
-                      </button>
+                      </div>
+                      {isAuthed && (
+                        <Button
+                          style={{ marginTop: 'calc(var(--4px) * -1)' }}
+                          className={styles.SecondaryButton}
+                        >
+                          <Search size={20} />
+                          <span className={styles.Text}>Пошук</span>
+                        </Button>
+                      )}
+                      {!isAuthed ? (
+                        <Button
+                          nativeButton={false}
+                          render={<Link to="/signup" />}
+                          className={clsx({
+                            [styles.LoginButton]: true,
+                            Gradient: true,
+                          })}
+                        >
+                          <LogIn size={20} />
+                          <span>Вхід | Реєстрація</span>
+                        </Button>
+                      ) : (
+                        <div className={styles.UserCard}>
+                          <Link
+                            to="/about"
+                            className={styles.UserAvatarWrapper}
+                          >
+                            <Image
+                              className={styles.UserAvatar}
+                              src="https://api.dicebear.com/9.x/glass/svg?seed=Blue"
+                              layout="fullWidth"
+                              alt="User Avatar"
+                            />
+                            <div className={styles.UserName}>Darmovys</div>
+                          </Link>
+                          <div className={styles.UserCardLinks}>
+                            <Link to="/" className={styles.UserCardLink}>
+                              <VisuallyHidden>Коментарі</VisuallyHidden>
+                              <MessageSquare size={20} />
+                            </Link>
+
+                            <Link
+                              to="/bookmarks"
+                              className={styles.UserCardLink}
+                            >
+                              <VisuallyHidden>Закладки</VisuallyHidden>
+                              <Bookmark size={20} />
+                            </Link>
+                            <Link
+                              to="/notifications"
+                              className={styles.UserCardLink}
+                            >
+                              <VisuallyHidden>Сповіщення</VisuallyHidden>
+                              <Bell size={20} />
+                            </Link>
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <Separator
                       orientation="horizontal"
@@ -295,7 +364,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                             size={16}
                                           />
                                         </Link>
-                                        <button
+                                        <Button
                                           onClick={() => setShowInnerList(true)}
                                           className={styles.ChevronRightButton}
                                         />
@@ -331,12 +400,12 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                     : undefined
                                 }
                               >
-                                <button
+                                <Button
                                   className={styles.BackButton}
                                   onClick={() => setShowInnerList(false)}
                                 >
                                   <ArrowLeft size={18} />
-                                </button>
+                                </Button>
                                 {innerLinks.map((item) => (
                                   <Link
                                     key={item.title}

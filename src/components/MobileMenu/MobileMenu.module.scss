@@ -16,7 +16,7 @@
 }
 
 .Content {
-  --height: 70vh;
+  --height: 80vh;
   position: fixed;
   bottom: 0;
   right: 0;
@@ -39,10 +39,15 @@
 }
 
 .TopSection {
-  padding: var(--12px);
+  padding: var(--12px) var(--8px);
   display: flex;
   flex-direction: column;
-  gap: var(--20px);
+  gap: var(--14px);
+}
+
+.FlexRow {
+  display: flex;
+  gap: var(--8px);
 }
 
 .Logo {
@@ -51,60 +56,64 @@
   text-transform: uppercase;
   color: var(--sys-primary);
   font-size: var(--20px);
+  line-height: 1.2;
 
   span:first-child {
     font-weight: 650;
   }
 }
 
-.CloseButton {
-  position: relative; // for gradient effect
+.Button {
   border-radius: 100vmax;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
   padding: 0;
+  color: var(--sys-on-surface);
+}
+
+.CloseButton {
+  composes: Button;
   width: 40px;
   height: 40px;
-  display: grid;
-  place-content: center;
   outline: 2px solid var(--sys-primary);
-  border: none;
   background-color: transparent;
-  color: var(--sys-on-surface);
 
-  &:hover {
+  &:active {
     background-color: var(--state-primary-opacity-12);
+  }
+
+  &:hover,
+  &:focus-visible,
+  &:active {
+    outline: none;
   }
 }
 
-.ThemeButton {
-  width: 100%;
-  color: var(--sys-on-surface);
+.ButtonWithText {
+  composes: Button;
+  gap: var(--8px);
+  font-weight: 500;
+}
+
+.SecondaryButton {
+  composes: ButtonWithText;
   flex: 1;
   padding: var(--8px);
-  border-radius: var(--20px);
-  display: flex;
-  justify-content: center;
-  gap: var(--8px);
-  border: none;
   background-color: var(--sys-on-surface-high);
-  font-weight: 500;
 
-  &:hover {
+  &:active {
     background-color: var(--state-primary-opacity-12);
   }
 }
 
 .LoginButton {
-  position: relative; // for gradient effect
-  display: flex;
-  justify-content: center;
-  gap: var(--8px);
-  width: 100%;
-  padding: var(--8px);
-  border-radius: var(--20px);
-  border: none;
+  composes: ButtonWithText;
+  padding: var(--10px) var(--8px);
   color: var(--sys-on-primary);
   background-color: var(--sys-primary);
-  font-weight: 500;
+  text-decoration: none;
 }
 
 .Separator {
@@ -221,4 +230,47 @@
   color: var(--sys-on-surface);
   margin-bottom: var(--4px);
   cursor: pointer;
+}
+
+.UserCard {
+  background-color: var(--sys-on-surface-highest);
+  border-radius: var(--10px);
+  display: flex;
+  align-items: center;
+}
+
+.UserAvatarWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--12px);
+  text-decoration: none;
+  color: var(--sys-on-surface);
+  font-weight: 550;
+  padding: var(--12px) var(--16px);
+  flex: 1;
+}
+
+.UserAvatar {
+  width: var(--45px);
+  height: var(--45px);
+  border-radius: var(--10px);
+}
+
+.UserCardLinks {
+  margin-left: auto;
+  display: flex;
+  align-self: stretch;
+}
+
+.UserCardLink {
+  color: var(--sys-on-surface);
+  width: var(--48px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    background-color: var(--state-primary-opacity-12);
+  }
 }

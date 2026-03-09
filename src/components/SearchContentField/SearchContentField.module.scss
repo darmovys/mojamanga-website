@@ -1,0 +1,46 @@
+.Wrapper {
+  position: relative;
+  color: var(--sys-on-surface-highest-variant);
+
+  &:focus-within {
+    .SearchIcon {
+      color: var(--sys-on-surface);
+    }
+  }
+}
+
+.SearchField {
+  background-color: var(--sys-on-surface-highest);
+  color: inherit;
+  border-radius: 100vmax;
+  border: 2px solid var(--sys-on-surface-highest);
+  font-weight: 500;
+  padding: 0 var(--8px) 0 var(--40px);
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  width: 100%;
+  height: 44px;
+  min-width: 0;
+  outline: none;
+
+  &::placeholder {
+    color: var(--sys-on-surface-highest-variant);
+  }
+
+  &:hover {
+    border-color: var(--input-hover-border);
+  }
+
+  &:focus-visible {
+    border-color: var(--blue-300);
+    color: var(--sys-on-surface);
+  }
+}
+
+.SearchIcon {
+  position: absolute;
+  top: 0;
+  left: 14px;
+  transform: translateY(calc(50% + 1.5px));
+}
