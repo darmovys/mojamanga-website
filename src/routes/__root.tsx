@@ -12,10 +12,10 @@ import TanStackQueryProvider from '../integrations/tanstack-query/root-provider'
 
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/lib/theme-provider'
-import globalCSS from '@/styles/global.scss?url'
 import MobileNavigation from '@/components/MobileNavigation'
 import Header from '@/components/Header'
 import GlobalSearchSection from '@/components/GlobalSearchSection'
+import globalCSS from '@/styles/global.scss?url'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -37,7 +37,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
 
     links: [
-      { rel: 'stylesheet', href: globalCSS },
+      { rel: 'stylesheet', href: globalCSS, suppressHydrationWarning: true },
       // { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
       // {
       //   rel: 'preconnect',

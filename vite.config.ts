@@ -15,6 +15,9 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
   ],
+  server: {
+    allowedHosts: ['.a.free.pinggy.link'],
+  },
 })
 
 export default config

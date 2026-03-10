@@ -101,7 +101,7 @@
   composes: ButtonWithText;
   flex: 1;
   padding: var(--8px);
-  background-color: var(--sys-on-surface-high);
+  background-color: var(--sys-on-surface-highest);
 
   &:active {
     background-color: var(--state-primary-opacity-12);
@@ -189,7 +189,7 @@
     margin-bottom: var(--4px);
   }
 
-  &:hover {
+  &:focus-visible {
     background-color: var(--state-primary-opacity-8);
   }
 
@@ -270,7 +270,7 @@
   align-items: center;
   justify-content: center;
 
-  &:active {
+  &:focus-visible {
     background-color: var(--state-primary-opacity-12);
   }
 }

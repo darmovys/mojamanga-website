@@ -1,0 +1,155 @@
+@use '../../../styles/global.scss' as *;
+@use '../../../styles/breakpoints' as *;
+
+.Wrapper {
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-width: var(--512px);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: var(--12px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  @include up('tablet') {
+    padding: var(--32px);
+  }
+}
+
+.Logo {
+  align-self: center;
+  margin: var(--24px) 0;
+  transform: scale(1.5);
+}
+
+.Content {
+  --spacing: var(--40px);
+  --border-radius: var(--20px);
+  flex-grow: 1;
+  flex-basis: var(--512px);
+  background-color: var(--sys-surface);
+  border-radius: var(--border-radius);
+  padding: var(--spacing);
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
+
+  @include up('tablet') {
+    flex-grow: 0;
+  }
+}
+
+.Header {
+  margin-bottom: var(--16px);
+}
+
+.HeaderTitle {
+  color: var(--sys-primary);
+  font-size: var(--24px);
+}
+
+.FieldRoot {
+  margin-bottom: var(--16px);
+}
+
+.FieldLabel {
+  color: var(--sys-primary);
+  display: block;
+  margin-bottom: var(--4px);
+}
+
+.FieldInputWrapper {
+  position: relative;
+}
+
+.FieldInput {
+  background-color: var(--sys-on-surface-highest);
+  border: 2px solid var(--sys-on-surface-highest);
+  outline: none;
+  min-width: 0;
+  width: 100%;
+  border-radius: var(--4px);
+  padding: var(--4px) var(--12px);
+
+  &:focus-visible {
+    border-color: var(--blue-300);
+    color: var(--sys-on-surface);
+  }
+}
+
+.PasswordFieldInput {
+  composes: FieldInput;
+  padding-right: 35px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.Loader {
+  color: var(--sys-primary);
+  animation: spin 1200ms infinite linear;
+}
+
+.Error {
+  margin-top: var(--4px);
+  display: flex;
+  align-items: center;
+  gap: var(--2px);
+  color: var(--danger);
+  font-size: var(--12px);
+
+  svg {
+    transform: translateY(-1px);
+  }
+}
+
+.Relative {
+  position: relative;
+}
+
+.ShowPassword {
+  --size: var(--24px);
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  height: var(--size);
+  width: var(--size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-16);
+    }
+  }
+}
+
+.BottomSection {
+  background-color: var(--sys-surface-lowest);
+  margin-inline: calc(var(--spacing) * -1);
+  margin-top: auto;
+  color: var(--sys-on-surface-variant);
+  font-weight: 500;
+  border-bottom-right-radius: var(--border-radius);
+  border-bottom-left-radius: var(--border-radius);
+}
+
+.BottomText {
+  text-align: center;
+}

@@ -23,6 +23,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  &:focus-visible {
+    outline: none;
+  }
 }
 
 .PrimaryButton {
@@ -49,10 +53,14 @@
   outline-offset: -2px;
   background-color: transparent;
 
-  &:hover,
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-8);
+    }
+  }
+
   &:focus-visible {
     background-color: var(--state-primary-opacity-8);
-    outline: none;
   }
 }
 
@@ -60,10 +68,14 @@
   composes: IconButton;
   background-color: var(--sys-surface-highest);
 
-  &:hover,
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-12);
+    }
+  }
+
   &:focus-visible {
     background-color: var(--state-primary-opacity-12);
-    outline: none;
   }
 }
 

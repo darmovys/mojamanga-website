@@ -1,0 +1,17 @@
+.ClickTargetHelper {
+  visibility: hidden;
+
+  @media (pointer: coarse) {
+    @supports selector(:has(*)) {
+      --click-target-minimum: 48px;
+      --inset-by: min(0px, calc((100% - var(--click-target-minimum)) / 2));
+
+      visibility: revert;
+      position: absolute;
+      top: var(--inset-by);
+      left: var(--inset-by);
+      right: var(--inset-by);
+      bottom: var(--inset-by);
+    }
+  }
+}

@@ -138,7 +138,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
     setIsMotionAllowed,
     handleAccordionOpenChange,
   } = useNestedMenuAnimation()
-  const [isAuthed, steIsAuthed] = useState(false)
+  const [isAuthed, setIsAuthed] = useState(true)
 
   return (
     <Dialog.Root open={showMobileMenu} onOpenChange={setShowMobileMenu}>
