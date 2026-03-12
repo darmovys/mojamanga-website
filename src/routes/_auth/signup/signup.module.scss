@@ -18,6 +18,11 @@
   }
 }
 
+.MainHeader {
+  padding: var(--20px) var(--24px) var(--40px);
+  color: var(--sys-on-primary);
+}
+
 .Logo {
   align-self: center;
   margin: var(--24px) 0;
@@ -27,41 +32,45 @@
 .Content {
   --spacing: var(--40px);
   --border-radius: var(--20px);
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   flex-basis: var(--512px);
   background-color: var(--sys-surface);
   border-radius: var(--border-radius);
   padding: var(--spacing);
-  padding-bottom: 0;
-  display: flex;
-  flex-direction: column;
 
-  @include up('tablet') {
-    flex-grow: 0;
-  }
+  // @include up('tablet') {
+  //   flex-grow: 0;
+  // }
 }
 
-.Header {
+.RegistrationHeader {
   margin-bottom: var(--16px);
 }
 
-.HeaderTitle {
+.RegistrationTitle {
   color: var(--sys-primary);
   font-size: var(--24px);
 }
 
-.FieldRoot {
-  margin-bottom: var(--16px);
+.FormContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--16px);
+  height: 100%;
 }
 
 .FieldLabel {
   color: var(--sys-primary);
   display: block;
   margin-bottom: var(--4px);
+  font-weight: 500;
 }
 
 .FieldInputWrapper {
   position: relative;
+  color: var(--sys-on-surface-highest-variant);
 }
 
 .FieldInput {
@@ -72,8 +81,9 @@
   width: 100%;
   border-radius: var(--4px);
   padding: var(--4px) var(--12px);
+  color: inherit;
 
-  &:focus-visible {
+  &[data-focused] {
     border-color: var(--blue-300);
     color: var(--sys-on-surface);
   }
@@ -84,27 +94,16 @@
   padding-right: 35px;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.Loader {
-  color: var(--sys-primary);
-  animation: spin 1200ms infinite linear;
-}
-
 .Error {
   margin-top: var(--4px);
   display: flex;
   align-items: center;
-  gap: var(--2px);
+  gap: var(--4px);
   color: var(--danger);
   font-size: var(--12px);
 
   svg {
-    transform: translateY(-1px);
+    align-self: flex-start;
   }
 }
 
@@ -128,28 +127,158 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition-property: color, background-color;
+  transition-duration: 400ms;
+  transition-timing-function: cubic-bezier(0.3, 0.7, 0.4, 1);
 
   &:focus-visible {
     outline: 2px solid var(--blue-400);
   }
 
+  svg {
+    color: var(--sys-on-surface-highest-variant);
+  }
+
   @media (hover: hover) {
     &:hover {
+      transition: background-color 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
       background-color: var(--state-primary-opacity-16);
+    }
+
+    &:hover,
+    &:focus-visible {
+      svg {
+        transition: color 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+        color: var(--sys-primary);
+      }
     }
   }
 }
 
-.BottomSection {
-  background-color: var(--sys-surface-lowest);
-  margin-inline: calc(var(--spacing) * -1);
-  margin-top: auto;
-  color: var(--sys-on-surface-variant);
-  font-weight: 500;
-  border-bottom-right-radius: var(--border-radius);
-  border-bottom-left-radius: var(--border-radius);
+// .BottomSection {
+//   background-color: var(--sys-surface-lowest);
+//   margin-inline: calc(var(--spacing) * -1);
+//   margin-top: auto;
+//   color: var(--sys-on-surface-variant);
+//   font-weight: 500;
+//   border-bottom-right-radius: var(--border-radius);
+//   border-bottom-left-radius: var(--border-radius);
+// }
+
+// .BottomText {
+//   text-align: center;
+// }
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
 }
 
-.BottomText {
-  text-align: center;
+.ConditionsWrapper {
+  opacity: 0;
+  margin-top: var(--4px);
+
+  animation: fadeIn 300ms ease both;
+}
+
+.ConditionsHeader {
+  font-size: var(--14px);
+  color: var(--sys-primary);
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.ConditionList {
+  color: var(--sys-primary);
+  font-size: var(--14px);
+  padding-inline-start: 0;
+  list-style-type: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--4px);
+}
+
+.Condition {
+  flex: 1 0 140px;
+  display: flex;
+  gap: var(--4px);
+
+  svg {
+    flex-shrink: 0;
+    transform: translateY(2px);
+  }
+
+  &.Done {
+    svg {
+      color: var(--blue-400);
+    }
+
+    span {
+      text-decoration: line-through;
+      color: var(--sys-on-surface-variant);
+    }
+  }
+}
+
+.TurnstileWrapper {
+  margin-top: auto;
+}
+
+.SubmitButton {
+  border: none;
+  border-radius: 100vmax;
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+  padding: var(--8px) var(--16px);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  &.Disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.Side {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.Loader {
+  color: var(--sys-on-primary);
+  animation: spin 1000ms infinite linear;
+}
+
+.LoginText {
+  margin-top: var(--10px);
+  display: flex;
+  justify-content: center;
+  gap: var(--8px);
+  color: var(--sys-primary);
+  font-size: var(--14px);
+}
+
+.LoginLink {
+  color: var(--blue-400);
+  outline-offset: 2px;
+  position: relative; // for click target helper
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
 }

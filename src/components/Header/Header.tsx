@@ -25,7 +25,7 @@ export default function Header() {
   return (
     <header className={styles.Wrapper}>
       <div className={styles.FlexContainer}>
-        <Link style={{ textDecoration: 'none' }} to="/">
+        <Link className={styles.LogoLink} to="/">
           <Logo />
         </Link>
         <Button

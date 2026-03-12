@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
+    "@marsidev/react-turnstile": "^1.4.2",
     "@orpc/client": "^1.13.6",
     "@orpc/json-schema": "^1.13.6",
     "@orpc/openapi": "^1.13.6",

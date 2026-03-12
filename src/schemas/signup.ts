@@ -1,16 +1,49 @@
 import * as z from 'zod'
 
+export const requiredTrimmedString = z
+  .string()
+  .trim()
+  .check(
+    z.refine((val) => val.length > 0, {
+      error: "Це поле є обов'язковим",
+      abort: true,
+    }),
+  )
+
+export const ALLOWED_SYMBOLS = /[-_&/,^@.#:%\\='$!?*`;+"|~[\](){}<>]/
+
 export const signupSchema = z.object({
-  username: z
-    .string()
-    .min(3, 'Псевдонім занадто короткий')
-    .max(15, 'Псевдонім занадто довгий'),
-  email: z.email('Електронна пошта введена некоректно'),
+  username: requiredTrimmedString.max(30, {
+    error: 'Псевдонім занадто довгий',
+  }),
+  email: requiredTrimmedString.pipe(
+    z.email({ error: 'Неправильна електронна адреса' }),
+  ),
   password: z
     .string()
-    .min(6, 'Пароль має містити не менше 3 символів')
-    .max(50, 'Пароль має містити не більше 50 символів'),
-  // cfToken: z.string().min(1, 'Будь ласка, підтвердіть, що ви не робот'),
+    .min(12, { error: 'Пароль має містити не менше 12 символів' })
+    .max(50, { error: 'Пароль має містити не більше 50 символів' })
+    .refine((val) => !/\p{L}/u.test(val.replace(/[A-Za-z]/g, '')), {
+      error: 'Пароль має містити лише англійські літери',
+      abort: true,
+    })
+    .refine((val) => /[A-Z]/.test(val), {
+      error: 'Пароль має містити хоча б одну велику літеру',
+      abort: true,
+    })
+    .refine((val) => /[a-z]/.test(val), {
+      error: 'Пароль має містити хоча б одну малу літеру',
+      abort: true,
+    })
+    .refine((val) => /[0-9]/.test(val), {
+      error: 'Пароль має містити хоча б одну цифру',
+      abort: true,
+    })
+    .refine((val) => ALLOWED_SYMBOLS.test(val), {
+      error: 'Пароль має містити хоча б один символ',
+      abort: true,
+    }),
+  cfToken: z.string(),
 })
 
-export type signupSchemaProps = z.infer<typeof signupSchema>
+export type SignupValues = z.infer<typeof signupSchema>

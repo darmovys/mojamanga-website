@@ -168,6 +168,7 @@ html {
   --brand-blue: var(--blue-500);
   --brand-pink: var(--pink-700);
   --danger: oklch(60.307% 0.22945 27.676);
+  --success: oklch(75.167% 0.22421 145.343);
 
   --default-overlay-color: oklch(0% 0 0 / 0.5);
   --bigscreen-bg: oklab(84.551% 0.00443 0.00843);
@@ -323,9 +324,4 @@ body {
       }
     }
   }
-}
-
-.color {
-  color: oklch(19.161% 0.00425 84.565);
-  color: oklch(19.972% 0.02784 286.856);
 }
