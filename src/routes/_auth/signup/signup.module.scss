@@ -2,43 +2,106 @@
 @use '../../../styles/breakpoints' as *;
 
 .Wrapper {
-  min-height: 100vh;
-  min-height: 100dvh;
-  max-width: var(--512px);
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding: var(--12px);
+  --spacing: var(--40px);
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
+  inline-size: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  background-color: var(--sys-surface);
 
-  @include up('tablet') {
-    padding: var(--32px);
+  @media (min-width: 32rem) {
+    background-color: revert;
   }
 }
 
 .MainHeader {
-  padding: var(--20px) var(--24px) var(--40px);
+  padding: var(--12px) var(--spacing);
   color: var(--sys-on-primary);
+  background-color: var(--sys-surface);
+  margin-block-end: var(--8px);
+  display: flex;
+  justify-content: space-between;
+
+  @media (min-width: 32rem) {
+    background-color: revert;
+    padding: var(--12px) var(--24px);
+    margin-block-end: revert;
+  }
+
+  @include up('tablet') {
+    padding: var(--20px) var(--24px) var(--40px);
+  }
+}
+
+.MainSectionWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  @media (min-width: 32rem) {
+    padding-inline: var(--24px);
+  }
+}
+
+.MainSection {
+  display: flex;
+  flex: 1;
+
+  @media (min-width: 32rem) {
+    flex: revert;
+  }
 }
 
 .Logo {
-  align-self: center;
-  margin: var(--24px) 0;
-  transform: scale(1.5);
+  transform: translateX(-4px);
+}
+
+.ThemeButton {
+  --border-radius: 100vmax;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  padding: var(--8px);
+  color: var(--sys-primary);
+  background-color: transparent;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-12);
+    }
+  }
+
+  &:focus-visible {
+    background-color: var(--state-primary-opacity-12);
+  }
 }
 
 .Content {
-  --spacing: var(--40px);
   --border-radius: var(--20px);
+  max-inline-size: var(--512px);
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   flex-basis: var(--512px);
   background-color: var(--sys-surface);
-  border-radius: var(--border-radius);
-  padding: var(--spacing);
+  padding: 0 var(--spacing) var(--spacing) var(--spacing);
+
+  @media (min-width: 32rem) {
+    border-radius: var(--border-radius);
+    padding: var(--spacing);
+  }
 
   // @include up('tablet') {
   //   flex-grow: 0;
@@ -46,25 +109,29 @@
 }
 
 .RegistrationHeader {
-  margin-bottom: var(--16px);
+  margin-block-end: var(--16px);
 }
 
 .RegistrationTitle {
   color: var(--sys-primary);
-  font-size: var(--24px);
+  font-size: var(--20px);
+
+  @media (min-width: 32rem) {
+    font-size: var(--28px);
+  }
 }
 
 .FormContent {
   display: flex;
   flex-direction: column;
   gap: var(--16px);
-  height: 100%;
+  block-size: 100%;
 }
 
 .FieldLabel {
   color: var(--sys-primary);
   display: block;
-  margin-bottom: var(--4px);
+  margin-block-end: var(--4px);
   font-weight: 500;
 }
 
@@ -77,8 +144,8 @@
   background-color: var(--sys-on-surface-highest);
   border: 2px solid var(--sys-on-surface-highest);
   outline: none;
-  min-width: 0;
-  width: 100%;
+  min-inline-size: 0;
+  inline-size: 100%;
   border-radius: var(--4px);
   padding: var(--4px) var(--12px);
   color: inherit;
@@ -91,11 +158,11 @@
 
 .PasswordFieldInput {
   composes: FieldInput;
-  padding-right: 35px;
+  padding-inline-end: 35px;
 }
 
 .Error {
-  margin-top: var(--4px);
+  margin-block-start: var(--4px);
   display: flex;
   align-items: center;
   gap: var(--4px);
@@ -114,18 +181,18 @@
 .ShowPassword {
   --size: var(--24px);
   position: absolute;
-  top: 50%;
-  right: 10px;
+  inset-block-start: 50%;
+  inset-inline-end: 10px;
   transform: translateY(-50%);
-  height: var(--size);
-  width: var(--size);
+  block-size: var(--size);
+  inline-size: var(--size);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   background-color: transparent;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--4px);
   cursor: pointer;
   transition-property: color, background-color;
   transition-duration: 400ms;
@@ -155,20 +222,6 @@
   }
 }
 
-// .BottomSection {
-//   background-color: var(--sys-surface-lowest);
-//   margin-inline: calc(var(--spacing) * -1);
-//   margin-top: auto;
-//   color: var(--sys-on-surface-variant);
-//   font-weight: 500;
-//   border-bottom-right-radius: var(--border-radius);
-//   border-bottom-left-radius: var(--border-radius);
-// }
-
-// .BottomText {
-//   text-align: center;
-// }
-
 @keyframes fadeIn {
   to {
     opacity: 1;
@@ -177,7 +230,7 @@
 
 .ConditionsWrapper {
   opacity: 0;
-  margin-top: var(--4px);
+  margin-block-start: var(--4px);
 
   animation: fadeIn 300ms ease both;
 }
@@ -185,7 +238,7 @@
 .ConditionsHeader {
   font-size: var(--14px);
   color: var(--sys-primary);
-  margin-top: 0.25rem;
+  margin-block-start: var(--4px);
   font-weight: 500;
 }
 
@@ -200,9 +253,10 @@
 }
 
 .Condition {
-  flex: 1 0 140px;
+  flex: 1 0 160px;
   display: flex;
   gap: var(--4px);
+  overflow-wrap: break-word;
 
   svg {
     flex-shrink: 0;
@@ -222,7 +276,7 @@
 }
 
 .TurnstileWrapper {
-  margin-top: auto;
+  margin-block-start: auto;
 }
 
 .SubmitButton {
@@ -260,7 +314,7 @@
 }
 
 .LoginText {
-  margin-top: var(--10px);
+  margin-block-start: var(--10px);
   display: flex;
   justify-content: center;
   gap: var(--8px);
