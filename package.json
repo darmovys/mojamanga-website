@@ -26,6 +26,7 @@
     "@floating-ui/react": "^0.27.19",
     "@marsidev/react-turnstile": "^1.4.2",
     "@orpc/client": "^1.13.7",
+    "@orpc/contract": "^1.13.7",
     "@orpc/json-schema": "^1.13.7",
     "@orpc/openapi": "^1.13.7",
     "@orpc/server": "^1.13.7",

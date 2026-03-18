@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@tanstack/start-client-core': 1.158.0
-
 importers:
 
   .:
@@ -24,6 +21,9 @@ importers:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@orpc/client':
+        specifier: ^1.13.7
+        version: 1.13.7
+      '@orpc/contract':
         specifier: ^1.13.7
         version: 1.13.7
       '@orpc/json-schema':
