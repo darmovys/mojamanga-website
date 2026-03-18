@@ -24,6 +24,9 @@ const config = defineConfig({
   server: {
     allowedHosts: ['.a.free.pinggy.link'],
   },
+  optimizeDeps: {
+    include: ['@tanstack/react-form-start'], // solves use-sync-external-store error with tanstack form
+  },
 })
 
 export default config

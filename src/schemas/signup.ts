@@ -19,7 +19,11 @@ export const signupSchema = z.object({
     })
     .refine((val) => !val.includes('@'), {
       message: 'Псевдонім не може містити символ @',
-    }),
+    })
+    .refine(
+      (val) => !['дармовис', 'admin', 'root'].includes(val.toLowerCase()),
+      'Цей псевдонім заборонено використовувати',
+    ),
   email: requiredTrimmedString.pipe(
     z.email({ error: 'Неправильна електронна адреса' }),
   ),
@@ -47,7 +51,7 @@ export const signupSchema = z.object({
       error: 'Пароль має містити хоча б один символ',
       abort: true,
     }),
-  cfToken: z.string(),
+  cfToken: requiredTrimmedString,
 })
 
 export type SignupValues = z.infer<typeof signupSchema>

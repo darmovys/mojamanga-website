@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { revalidateLogic, useForm, useStore } from '@tanstack/react-form-start'
 import { ALLOWED_SYMBOLS, signupSchema } from '@/schemas/signup'
 import { useRef, useState, useTransition } from 'react'
@@ -23,10 +23,12 @@ import { showTimedToast } from '@/lib/toast'
 import styles from './SignupComponent.module.scss'
 import { PasswordConditionsPopover } from './PasswordConditionsPopover'
 import { PasswordConditionsContent } from './PasswordConditions'
+import { authClient } from '@/lib/auth-client'
 
 type StrengthScore = 1 | 2 | 3 | 4 | 5
 
 function SignupComponent() {
+  const navigate = useNavigate()
   const [isPending, startTransition] = useTransition()
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [isPasswordPopoverOpen, setIsPasswordPopoverOpen] = useState(false)
@@ -53,15 +55,57 @@ function SignupComponent() {
     }),
     onSubmit: ({ value }) => {
       startTransition(async () => {
-        showTimedToast(
-          {
-            type: 'success',
-            title: 'Ви успішно зареєструвалися',
-          },
-          2000,
-        )
+        const { data: response } = await authClient.isUsernameAvailable({
+          username: value.username,
+        })
 
-        console.log({ value })
+        if (!response?.available) {
+          showTimedToast(
+            {
+              type: 'error',
+              title: 'Сталася помилка',
+              description: 'Користувач з цим псевдонімом вже існує',
+            },
+            4000,
+          )
+          return
+        }
+
+        console.log('Токен Turnstile', typeof value.cfToken)
+
+        await authClient.signUp.email({
+          email: value.email,
+          password: value.password,
+          username: value.username,
+          displayUsername: value.username,
+          name: value.username,
+          fetchOptions: {
+            headers: {
+              'x-captcha-response': value.cfToken,
+            },
+            onSuccess: () => {
+              navigate({ to: '/' })
+              showTimedToast(
+                {
+                  type: 'success',
+                  title: 'Ви успішно зареєструвалися',
+                  description: 'Тепер ви можете увійти в свій акаунт',
+                },
+                4000,
+              )
+            },
+            onError: ({ error }) => {
+              showTimedToast(
+                {
+                  type: 'error',
+                  title: 'Сталася помилка',
+                  description: error.message,
+                },
+                4000,
+              )
+            },
+          },
+        })
       })
     },
   })
@@ -81,18 +125,6 @@ function SignupComponent() {
     hasNumber: /[0-9]/.test(passwordValue),
     hasSymbol: ALLOWED_SYMBOLS.test(passwordValue),
   }
-
-  // async function sendData() {
-  //   await authClient.signIn.email({
-  //     email: 'user@example.com',
-  //     password: 'secure-password',
-  //     fetchOptions: {
-  //       headers: {
-  //         'x-captcha-response': turnstileToken,
-  //       },
-  //     },
-  //   })
-  // }
 
   const strengthScore = Object.values(passwordConditions).filter(Boolean)
     .length as StrengthScore
