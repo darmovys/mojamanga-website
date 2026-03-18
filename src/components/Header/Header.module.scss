@@ -6,7 +6,7 @@
     display: grid;
     grid-template-columns: auto 1fr auto;
     position: sticky;
-    top: 0;
+    inset-block-start: 0;
     background-color: var(--sys-surface);
     padding: var(--12px) var(--24px);
     gap: var(--16px);
@@ -34,7 +34,8 @@
   align-items: center;
   justify-content: center;
 
-  &:focus-visible {
+  &:focus-visible,
+  &:hover {
     outline: none;
   }
 }
@@ -51,8 +52,8 @@
 
 .IconButton {
   composes: Button;
-  width: 45px;
-  height: 45px;
+  inline-size: 45px;
+  block-size: 45px;
   padding: var(--8px);
   color: var(--sys-primary);
 }

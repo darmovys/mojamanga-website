@@ -1,17 +1,27 @@
-import { betterAuth } from 'better-auth'
-import { tanstackStartCookies } from 'better-auth/tanstack-start'
-import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { prisma } from '@/db'
+import { betterAuth } from 'better-auth'
+import { prismaAdapter } from 'better-auth/adapters/prisma'
+import { tanstackStartCookies } from 'better-auth/tanstack-start'
 import { username, captcha, openAPI } from 'better-auth/plugins'
+import { i18n } from '@better-auth/i18n'
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
-  emailAndPassword: {
-    enabled: true,
-  },
   plugins: [
+    i18n({
+      translations: {
+        uk: {
+          USER_NOT_FOUND: 'Користувача не знайдено',
+          INVALID_EMAIL_OR_PASSWORD: 'Невірний пароль або електронна пошта',
+          INVALID_PASSWORD: 'Невірний пароль',
+          CREDENTIAL_ACCOUNT_NOT_FOUND: 'Не вдалося знайти обліковий запис',
+          EMAIL_NOT_VERIFIED: 'Електронна пошта не верифікована',
+          SESSION_EXPIRED: 'Сесія вичерпана',
+        },
+      },
+    }),
     openAPI(),
     username(),
     captcha({
@@ -20,4 +30,7 @@ export const auth = betterAuth({
     }),
     tanstackStartCookies(),
   ],
+  emailAndPassword: {
+    enabled: true,
+  },
 })

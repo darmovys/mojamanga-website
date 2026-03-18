@@ -13,9 +13,13 @@ export const requiredTrimmedString = z
 export const ALLOWED_SYMBOLS = /[-_&/,^@.#:%\\='$!?*`;+"|~[\](){}<>]/
 
 export const signupSchema = z.object({
-  username: requiredTrimmedString.max(30, {
-    error: 'Псевдонім занадто довгий',
-  }),
+  username: requiredTrimmedString
+    .max(30, {
+      error: 'Псевдонім занадто довгий',
+    })
+    .refine((val) => !val.includes('@'), {
+      message: 'Псевдонім не може містити символ @',
+    }),
   email: requiredTrimmedString.pipe(
     z.email({ error: 'Неправильна електронна адреса' }),
   ),

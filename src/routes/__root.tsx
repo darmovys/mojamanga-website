@@ -1,14 +1,11 @@
 import {
   HeadContent,
+  Outlet,
   Scripts,
   createRootRouteWithContext,
   useMatches,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-
-import TanStackQueryProvider from '../integrations/tanstack-query/root-provider'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/lib/theme-provider'
@@ -16,42 +13,41 @@ import MobileNavigation from '@/components/MobileNavigation'
 import Header from '@/components/Header'
 import GlobalSearchSection from '@/components/GlobalSearchSection'
 import globalCSS from '@/styles/global.scss?url'
+import AppToasts from '@/components/AppToasts'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
-interface MyRouterContext {
-  queryClient: QueryClient
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
+  {
+    head: () => ({
+      meta: [
+        {
+          charSet: 'utf-8',
+          lang: 'uk',
+        },
+        {
+          name: 'viewport',
+          content: 'width=device-width, initial-scale=1',
+        },
+        {
+          title: 'Читати мангу українською · Моя Манга',
+        },
+      ],
+
+      links: [
+        { rel: 'stylesheet', href: globalCSS, suppressHydrationWarning: true },
+      ],
+    }),
+    component: RootComponent,
+  },
+)
+
+function RootComponent() {
+  return (
+    <RootDocument>
+      <Outlet />
+    </RootDocument>
+  )
 }
-
-export const Route = createRootRouteWithContext<MyRouterContext>()({
-  head: () => ({
-    meta: [
-      {
-        charSet: 'utf-8',
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
-      },
-      {
-        title: 'Читати мангу українською · Моя Манга',
-      },
-    ],
-
-    links: [
-      { rel: 'stylesheet', href: globalCSS, suppressHydrationWarning: true },
-      // { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-      // {
-      //   rel: 'preconnect',
-      //   href: 'https://fonts.gstatic.com',
-      //   // crossOrigin: true,
-      // },
-      // {
-      //   rel: 'stylesheet',
-      //   href: 'https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700&display=swap',
-      // },
-    ],
-  }),
-  shellComponent: RootDocument,
-})
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const showNavbar = useMatches({
@@ -67,33 +63,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       !matches.some((m) => m.staticData?.showGlobalSearchSection === false),
   })
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="uk" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body>
-        <TanStackQueryProvider>
-          <ThemeProvider>
-            <div id="root">
-              {showNavbar && <MobileNavigation />}
-              {showStandardHeader && <Header />}
-              {showGlobalSearchSection && <GlobalSearchSection />}
-              {children}
-            </div>
-          </ThemeProvider>
-          {/* <TanStackDevtools
-            config={{
-              position: 'middle-left',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-              TanStackQueryDevtools,
-            ]}
-          /> */}
-        </TanStackQueryProvider>
+        <ThemeProvider>
+          <AppToasts />
+          <div id="root">
+            {showNavbar && <MobileNavigation />}
+            {showStandardHeader && <Header />}
+            {showGlobalSearchSection && <GlobalSearchSection />}
+            {children}
+          </div>
+        </ThemeProvider>
+        <TanStackRouterDevtools position="bottom-right" />
+        <ReactQueryDevtools buttonPosition="bottom-left" />
 
         <Scripts />
       </body>

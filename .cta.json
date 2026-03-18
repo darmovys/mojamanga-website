@@ -18,6 +18,7 @@
   "chosenAddOns": [
     "eslint",
     "nitro",
+    "start",
     "neon",
     "prisma",
     "form",

@@ -83,6 +83,11 @@ body,
   height: 100%;
 }
 
+body {
+  scrollbar-gutter: stable;
+  overflow-y: auto;
+}
+
 @font-face {
   font-family: 'FixelText';
   font-style: normal;
@@ -168,7 +173,8 @@ html {
   --brand-blue: var(--blue-500);
   --brand-pink: var(--pink-700);
   --danger: oklch(60.307% 0.22945 27.676);
-  --success: oklch(75.167% 0.22421 145.343);
+  --success: oklch(63.226% 0.20525 143.97);
+  --warning: oklch(86.563% 0.17261 92.311);
 
   --default-overlay-color: oklch(0% 0 0 / 0.5);
   --bigscreen-bg: oklab(84.551% 0.00443 0.00843);
@@ -189,6 +195,8 @@ html {
   --tone-13: oklch(97.614% 0.00011 271.152);
   --tone-14: oklch(99.107% 0.00011 271.152);
   --tone-15: oklch(100% 0.00011 271.152);
+
+  --tone-2: hsl(0, 0%, 11%);
 
   // transparent variants
   --tone-2-tr-05: oklch(22.645% 0.00003 271.152 / 0.05);
@@ -259,7 +267,7 @@ html {
   --sys-surface-inverse: var(--tone-11);
   --sys-on-primary: var(--tone-1);
   --sys-on-surface: var(--tone-8);
-  --sys-on-surface-variant: #747371;
+  --sys-on-surface-variant: oklch(70.733% 0.01404 82.354);
   --sys-on-surface-highest: var(--tone-5);
   --sys-on-surface-highest-variant: var(--tone-7);
   --sys-on-surface-high: var(--tone-0);
@@ -268,6 +276,28 @@ html {
   --sys-outline: var(--tone-5);
 
   --input-hover-border: oklch(32.492% 0.00994 61.039);
+}
+
+:root {
+  --shadow-color: from var(--bigscreen-bg) l c h;
+  --shadow-elevation-low:
+    0px 0.1px 0.1px oklch(var(--shadow-color) / 0.33),
+    0.1px 0.2px 0.3px -1.2px oklch(var(--shadow-color) / 0.33),
+    0.2px 0.5px 0.6px -2.5px oklch(var(--shadow-color) / 0.33);
+  --shadow-elevation-medium:
+    0px 0.1px 0.1px oklch(var(--shadow-color) / 0.34),
+    0.1px 0.4px 0.5px -0.8px oklch(var(--shadow-color) / 0.34),
+    0.4px 1.1px 1.3px -1.7px oklch(var(--shadow-color) / 0.34),
+    0.9px 2.6px 3.1px -2.5px oklch(var(--shadow-color) / 0.34);
+  --shadow-elevation-high:
+    0px 0.1px 0.1px oklch(var(--shadow-color) / 0.32),
+    0.2px 0.8px 0.9px -0.4px oklch(var(--shadow-color) / 0.32),
+    0.5px 1.4px 1.7px -0.7px oklch(var(--shadow-color) / 0.32),
+    0.7px 2.3px 2.7px -1.1px oklch(var(--shadow-color) / 0.32),
+    1.2px 3.7px 4.4px -1.4px oklch(var(--shadow-color) / 0.32),
+    1.9px 5.7px 6.8px -1.8px oklch(var(--shadow-color) / 0.32),
+    2.8px 8.7px 10.3px -2.1px oklch(var(--shadow-color) / 0.32),
+    4.1px 12.8px 15.1px -2.5px oklch(var(--shadow-color) / 0.32);
 }
 
 body {

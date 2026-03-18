@@ -15,10 +15,10 @@ import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiSplatRouteImport } from './routes/api.$'
+import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
-import { Route as ApiRpcSplatRouteImport } from './routes/api.rpc.$'
+import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc.$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const NotificationsRoute = NotificationsRouteImport.update({
