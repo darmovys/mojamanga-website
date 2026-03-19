@@ -1,7 +1,5 @@
-import { Link, useNavigate } from '@tanstack/react-router'
-import { revalidateLogic, useForm, useStore } from '@tanstack/react-form-start'
-import { ALLOWED_SYMBOLS, signupSchema } from '@/schemas/signup'
-import { useRef, useState, useTransition } from 'react'
+import { Link } from '@tanstack/react-router'
+import { signupSchema } from '@/schemas/signup'
 import { Button, Field } from '@base-ui/react'
 import {
   CircleDashed,
@@ -16,116 +14,34 @@ import {
 import VisuallyHidden from '@/components/VisuallyHidden'
 import ClickTargetHelper from '@/components/ClickTargetHelper'
 import { Turnstile } from '@marsidev/react-turnstile'
-import { useTheme } from '@/lib/theme-provider'
 import clsx from 'clsx'
 import Logo from '@/components/Logo'
-import { showTimedToast } from '@/lib/toast'
-
-import styles from './SignupComponent.module.scss'
 import { PasswordConditionsPopover } from './PasswordConditionsPopover'
 import { PasswordConditionsContent } from './PasswordConditions'
 import { authClient } from '@/lib/auth-client'
+import { useTheme } from '@/lib/theme-provider'
+import { useSignup } from './use-signup'
 
-type StrengthScore = 1 | 2 | 3 | 4 | 5
+import styles from './SignupComponent.module.scss'
 
 function SignupComponent() {
-  const navigate = useNavigate()
-  const [isPending, startTransition] = useTransition()
-  const [isPasswordShown, setIsPasswordShown] = useState(false)
-  const [isPasswordPopoverOpen, setIsPasswordPopoverOpen] = useState(false)
-  const [turnstileError, setTurnstileError] = useState<undefined | string>(
-    undefined,
-  )
-  const [isTurnstileLoaded, setIsTurnstileLoaded] = useState(false)
+  const {
+    form,
+    isPending,
+    isTurnstileLoaded,
+    setIsTurnstileLoaded,
+    turnstileError,
+    setTurnstileError,
+    isPasswordShown,
+    setIsPasswordShown,
+    isPasswordPopoverOpen,
+    setIsPasswordPopoverOpen,
+    passwordWrapperRef,
+    passwordConditions,
+    strengthScore,
+  } = useSignup()
+
   const { theme, toggleTheme } = useTheme()
-  const passwordWrapperRef = useRef<HTMLDivElement | null>(null)
-
-  const form = useForm({
-    defaultValues: {
-      username: '',
-      email: '',
-      password: '',
-      cfToken: '',
-    },
-    validators: {
-      onDynamic: signupSchema,
-    },
-    validationLogic: revalidateLogic({
-      mode: 'submit',
-      modeAfterSubmission: 'change',
-    }),
-    onSubmit: ({ value }) => {
-      startTransition(async () => {
-        const { data: response } = await authClient.isUsernameAvailable({
-          username: value.username,
-        })
-
-        if (!response?.available) {
-          showTimedToast(
-            {
-              type: 'error',
-              title: 'Сталася помилка',
-              description: 'Псевдонім вже використовується',
-            },
-            4000,
-          )
-          return
-        }
-
-        await authClient.signUp.email({
-          email: value.email,
-          password: value.password,
-          username: value.username,
-          displayUsername: value.username,
-          name: value.username,
-          fetchOptions: {
-            headers: {
-              'x-captcha-response': value.cfToken,
-            },
-            onSuccess: () => {
-              navigate({ to: '/' })
-              showTimedToast(
-                {
-                  type: 'success',
-                  title: 'Ви успішно зареєструвалися',
-                  description: 'Тепер ви можете увійти в свій акаунт',
-                },
-                4000,
-              )
-            },
-            onError: ({ error }) => {
-              showTimedToast(
-                {
-                  type: 'error',
-                  title: 'Сталася помилка',
-                  description: error.message,
-                },
-                4000,
-              )
-            },
-          },
-        })
-      })
-    },
-  })
-
-  const passwordValue = useStore(
-    form.store,
-    (state) => state.values.password ?? '',
-  )
-
-  const passwordConditions = {
-    minLength: passwordValue.length >= 12 && passwordValue.length <= 50,
-    onlyLatin:
-      passwordValue.length > 0 &&
-      !/\p{L}/u.test(passwordValue.replace(/[A-Za-z]/g, '')),
-    hasCase: /[A-Z]/.test(passwordValue) && /[a-z]/.test(passwordValue),
-    hasNumber: /[0-9]/.test(passwordValue),
-    hasSymbol: ALLOWED_SYMBOLS.test(passwordValue),
-  }
-
-  const strengthScore = Object.values(passwordConditions).filter(Boolean)
-    .length as StrengthScore
 
   return (
     <div className={styles.Wrapper}>

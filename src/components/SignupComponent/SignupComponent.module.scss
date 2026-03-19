@@ -36,7 +36,6 @@
 .MainSectionWrapper {
   display: flex;
   flex-direction: column;
-  // justify-content: center;
   flex: 1;
 
   @media (min-width: 32rem) {
@@ -102,10 +101,6 @@
     border-radius: var(--border-radius);
     padding: var(--spacing);
   }
-
-  // @include up('tablet') {
-  //   flex-grow: 0;
-  // }
 }
 
 .RegistrationHeader {
@@ -176,21 +171,6 @@
   }
 }
 
-@keyframes appearPulse {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .PasswordFieldInput {
   composes: FieldInput;
   padding-inline-end: 35px;
@@ -257,6 +237,14 @@
   }
 }
 
+.TurnstileWrapper {
+  block-size: 72px; // to preserve space for turnstile captcha
+
+  &:has(> .Error) {
+    margin-block-end: var(--16px);
+  }
+}
+
 .SubmitButton {
   border: none;
   border-radius: 100vmax;
@@ -313,5 +301,20 @@
 .ConditionsMobile {
   @include up('tablet') {
     display: none;
+  }
+}
+
+@keyframes appearPulse {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
