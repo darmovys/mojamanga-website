@@ -12,8 +12,13 @@ export const requiredTrimmedString = z
 
 export const ALLOWED_SYMBOLS = /[-_&/,^@.#:%\\='$!?*`;+"|~[\](){}<>]/
 
+const ADMIN_NAME = [/^д[аa][рp]м[оo]в[иі][сc]$/i, /^d[аa]rm[оo]v[іy]s$/i]
+
 export const signupSchema = z.object({
   username: requiredTrimmedString
+    .min(3, {
+      error: 'Псевдонім занадто короткий',
+    })
     .max(30, {
       error: 'Псевдонім занадто довгий',
     })
@@ -21,8 +26,8 @@ export const signupSchema = z.object({
       message: 'Псевдонім не може містити символ @',
     })
     .refine(
-      (val) => !['дармовис', 'admin', 'root'].includes(val.toLowerCase()),
-      'Цей псевдонім заборонено використовувати',
+      (val) => !ADMIN_NAME.some((pattern) => pattern.test(val.toLowerCase())),
+      'Псевдонім зарезервований',
     ),
   email: requiredTrimmedString.pipe(
     z.email({ error: 'Неправильна електронна адреса' }),
@@ -51,7 +56,7 @@ export const signupSchema = z.object({
       error: 'Пароль має містити хоча б один символ',
       abort: true,
     }),
-  cfToken: requiredTrimmedString,
+  cfToken: z.string(),
 })
 
 export type SignupValues = z.infer<typeof signupSchema>

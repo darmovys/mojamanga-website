@@ -156,6 +156,41 @@
   }
 }
 
+.UsernameFieldInput {
+  composes: FieldInput;
+  padding-inline-end: var(--20px);
+}
+
+.UsernameFieldCircleWrapper {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 8px;
+  transform: translateY(-50%);
+}
+
+.LoadingAnimation {
+  animation: appearPulse 800ms linear infinite alternate;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: spin 550ms linear infinite;
+  }
+}
+
+@keyframes appearPulse {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .PasswordFieldInput {
   composes: FieldInput;
   padding-inline-end: 35px;
@@ -246,15 +281,9 @@
   justify-content: flex-end;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .Loader {
   color: var(--sys-on-primary);
-  animation: spin 1000ms infinite linear;
+  animation: spin 1000ms linear infinite;
 }
 
 .LoginText {

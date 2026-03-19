@@ -25,6 +25,8 @@ export const auth = betterAuth({
           CREDENTIAL_ACCOUNT_NOT_FOUND: 'Не вдалося знайти обліковий запис',
           EMAIL_NOT_VERIFIED: 'Електронна пошта не верифікована',
           SESSION_EXPIRED: 'Сесія вичерпана',
+          USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL:
+            'Користувач з такою поштою вже існує',
         },
       },
     }),
@@ -52,7 +54,10 @@ export const auth = betterAuth({
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path === '/sign-up/email') {
-        // Виключаємо поле username з валідації, бо воно валідується окремо в функції usernameValidator
+        /* 
+          Виключаємо поле username з валідації, бо воно валідується окремо в функції usernameValidator.
+          Поле cfToken виключається також, бо воно валідується в полі headers.
+        */
         const result = signupSchema
           .omit({ username: true, cfToken: true })
           .safeParse(ctx.body)
@@ -64,5 +69,4 @@ export const auth = betterAuth({
       }
     }),
   },
-  disabledPaths: ['/is-username-available'],
 })

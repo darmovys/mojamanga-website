@@ -4,6 +4,7 @@ import { ALLOWED_SYMBOLS, signupSchema } from '@/schemas/signup'
 import { useRef, useState, useTransition } from 'react'
 import { Button, Field } from '@base-ui/react'
 import {
+  CircleDashed,
   Eye,
   EyeClosed,
   LoaderCircle,
@@ -64,14 +65,12 @@ function SignupComponent() {
             {
               type: 'error',
               title: 'Сталася помилка',
-              description: 'Користувач з цим псевдонімом вже існує',
+              description: 'Псевдонім вже використовується',
             },
             4000,
           )
           return
         }
-
-        console.log('Токен Turnstile', typeof value.cfToken)
 
         await authClient.signUp.email({
           email: value.email,
@@ -114,7 +113,6 @@ function SignupComponent() {
     form.store,
     (state) => state.values.password ?? '',
   )
-  const isSubmitted = useStore(form.store, (state) => state.isSubmitted)
 
   const passwordConditions = {
     minLength: passwordValue.length >= 12 && passwordValue.length <= 50,
@@ -175,10 +173,28 @@ function SignupComponent() {
               <form.Field
                 name="username"
                 validators={{
-                  onDynamic: signupSchema.shape.username,
+                  onChangeAsyncDebounceMs: 500,
+                  onChange: ({ value }) => {
+                    const result = signupSchema.shape.username.safeParse(value)
+                    if (!result.success) return result.error.issues[0]
+
+                    return undefined
+                  },
+                  onChangeAsync: async ({ value }) => {
+                    const { data: response } =
+                      await authClient.isUsernameAvailable({
+                        username: value,
+                      })
+                    if (!response?.available) {
+                      return 'Псевдонім вже використовується'
+                    }
+
+                    return undefined
+                  },
                 }}
                 children={(field) => {
                   const isInvalid = !field.state.meta.isValid
+                  const isValidating = field.state.meta.isValidating
                   return (
                     <Field.Root
                       name={field.name}
@@ -193,19 +209,27 @@ function SignupComponent() {
                         <Field.Control
                           id={field.name}
                           name={field.name}
-                          className={styles.FieldInput}
+                          className={styles.UsernameFieldInput}
                           value={field.state.value}
                           onValueChange={field.handleChange}
                           onBlur={field.handleBlur}
-                          data-submitted={isSubmitted}
                           autoComplete="off"
                           type="text"
                         />
+                        {isValidating && (
+                          <div className={styles.UsernameFieldCircleWrapper}>
+                            <CircleDashed
+                              size={16}
+                              className={styles.LoadingAnimation}
+                            />
+                          </div>
+                        )}
                       </div>
                       <Field.Error className={styles.Error} match={isInvalid}>
                         <TriangleAlert size={14} />
-                        {/* {field.state.meta.errors.map((e) => e?.message).join(', ')} */}
-                        {field.state.meta.errors[0]?.message}
+                        {typeof field.state.meta.errors[0] === 'string'
+                          ? field.state.meta.errors[0]
+                          : field.state.meta.errors[0]?.message}
                       </Field.Error>
                     </Field.Root>
                   )
