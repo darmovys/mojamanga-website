@@ -9,8 +9,8 @@ import {
   useState,
 } from 'react'
 
-type Theme = 'dark' | 'light' | 'system'
-const MEDIA = '(prefers-color-scheme: dark)'
+type Theme = 'dark' | 'light'
+const STORAGE_KEY_DEFAULT = 'theme'
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -25,7 +25,7 @@ type ThemeProviderState = {
 }
 
 const initialState: ThemeProviderState = {
-  theme: 'system',
+  theme: 'dark',
   setTheme: () => null,
   toggleTheme: () => null,
 }
@@ -34,87 +34,47 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
-  storageKey = 'theme',
+  defaultTheme = 'dark',
+  storageKey = STORAGE_KEY_DEFAULT,
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () =>
-      (typeof window !== 'undefined'
-        ? (localStorage.getItem(storageKey) as Theme)
-        : null) || defaultTheme,
-  )
-
-  const handleMediaQuery = useCallback(
-    (e: MediaQueryListEvent | MediaQueryList) => {
-      if (theme !== 'system') return
-      const root = window.document.documentElement
-      const targetTheme = e.matches ? 'dark' : 'light'
-      if (!root.classList.contains(targetTheme)) {
-        root.classList.remove('light', 'dark')
-        root.classList.add(targetTheme)
-      }
-    },
-    [theme],
-  )
-
-  // Listen for system preference changes
-  useEffect(() => {
-    const media = window.matchMedia(MEDIA)
-
-    media.addEventListener('change', handleMediaQuery)
-    handleMediaQuery(media)
-
-    return () => media.removeEventListener('change', handleMediaQuery)
-  }, [handleMediaQuery])
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return defaultTheme
+    return (localStorage.getItem(storageKey) as Theme | null) ?? defaultTheme
+  })
 
   useEffect(() => {
     const root = window.document.documentElement
-
-    let targetTheme: string
-
-    if (theme === 'system') {
-      localStorage.removeItem(storageKey)
-      targetTheme = window.matchMedia(MEDIA).matches ? 'dark' : 'light'
-    } else {
-      localStorage.setItem(storageKey, theme)
-      targetTheme = theme
-    }
-
-    // Only update if the target theme is not already applied
-    if (!root.classList.contains(targetTheme)) {
+    if (!root.classList.contains(theme)) {
       root.classList.remove('light', 'dark')
-      root.classList.add(targetTheme)
-    }
-  }, [theme, storageKey])
-
-  const toggleTheme = useCallback(() => {
-    if (theme === 'light') {
-      setTheme('dark')
-    } else if (theme === 'dark') {
-      setTheme('system')
-    } else {
-      setTheme('light')
+      root.classList.add(theme)
     }
   }, [theme])
 
+  const setTheme = useCallback(
+    (newTheme: Theme) => {
+      localStorage.setItem(storageKey, newTheme)
+      setThemeState(newTheme)
+    },
+    [storageKey],
+  )
+
+  const toggleTheme = useCallback(() => {
+    setTheme(theme === 'dark' ? 'light' : 'dark')
+  }, [theme, setTheme])
+
   const value = useMemo(
-    () => ({
-      theme,
-      setTheme,
-      toggleTheme,
-    }),
-    [theme, toggleTheme],
+    () => ({ theme, setTheme, toggleTheme }),
+    [theme, setTheme, toggleTheme],
   )
 
   return (
     <ThemeProviderContext {...props} value={value}>
       <ScriptOnce>
-        {/* Apply theme early to avoid FOUC */}
-        {`document.documentElement.classList.toggle(
-            'dark',
-            localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-            )`}
+        {/* Apply theme early to avoid FOUC — defaults to dark for new users */}
+        {`document.documentElement.classList.add(
+            localStorage.getItem('${storageKey}') ?? 'dark'
+          )`}
       </ScriptOnce>
       {children}
     </ThemeProviderContext>
