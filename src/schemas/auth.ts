@@ -59,4 +59,9 @@ export const signupSchema = z.object({
   cfToken: z.string(),
 })
 
-export type SignupValues = z.infer<typeof signupSchema>
+export const loginSchema = z.object({
+  usernameOrEmail: requiredTrimmedString,
+  password: requiredTrimmedString,
+  cfToken: z.string(),
+  rememberMe: z.boolean(),
+})
