@@ -119,7 +119,7 @@
 .FormContent {
   display: flex;
   flex-direction: column;
-  gap: var(--16px);
+  gap: var(--20px);
   block-size: 100%;
 }
 
@@ -189,10 +189,6 @@
   }
 }
 
-.Relative {
-  position: relative;
-}
-
 .ShowPassword {
   --size: var(--24px);
   position: absolute;
@@ -239,6 +235,7 @@
 
 .TurnstileWrapper {
   block-size: 72px; // to preserve space for turnstile captcha
+  padding-block-start: 2px;
 
   &:has(> .Error) {
     margin-block-end: var(--16px);
@@ -258,7 +255,7 @@
   margin-block-start: auto;
 
   &.Disabled {
-    opacity: 0.7;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 }
@@ -267,6 +264,12 @@
   flex: 1;
   display: flex;
   justify-content: flex-end;
+}
+
+.Flex {
+  @media (min-width: 32rem) {
+    flex: 1;
+  }
 }
 
 .Loader {

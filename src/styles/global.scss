@@ -80,7 +80,7 @@ h6 {
 html,
 body,
 #root /* Для більшості React застосунків */ {
-  height: 100%;
+  block-size: 100%;
 }
 
 body {
@@ -318,8 +318,8 @@ body {
     arial,
     sans-serif;
   background-color: var(--bigscreen-bg);
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
 }
 
 .Gradient {
@@ -335,7 +335,8 @@ body {
     border-radius: 100vmax;
     opacity: 0;
     transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
-
+    mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+    mask-clip: content-box, border-box;
     -webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
     -webkit-mask-clip: content-box, border-box;
     -webkit-mask-composite: xor;
