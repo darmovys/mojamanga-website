@@ -6,6 +6,7 @@ import { username, captcha, openAPI } from 'better-auth/plugins'
 import { i18n } from '@better-auth/i18n'
 import { loginSchema, signupSchema } from '@/schemas/auth'
 import { createAuthMiddleware } from 'better-auth/api'
+import { UserRole } from '@/generated/prisma/enums'
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -36,6 +37,16 @@ export const auth = betterAuth({
     maxPasswordLength: Infinity,
     enabled: true,
     autoSignIn: false,
+  },
+  user: {
+    additionalFields: {
+      role: {
+        type: 'string',
+        required: true,
+        defaultValue: 'USER' satisfies UserRole,
+        input: false, // don't allow user to set role
+      },
+    },
   },
   plugins: [
     i18n({
@@ -99,3 +110,6 @@ export const auth = betterAuth({
     }),
   },
 })
+
+export type Session = typeof auth.$Infer.Session
+export type User = typeof auth.$Infer.Session.user
