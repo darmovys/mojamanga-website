@@ -1,6 +1,6 @@
 import { authClient } from '@/lib/auth-client'
 import { showTimedToast } from '@/lib/toast'
-import { ALLOWED_SYMBOLS, signupSchema } from '@/schemas/signup'
+import { ALLOWED_SYMBOLS, signupSchema } from '@/schemas/auth'
 import { revalidateLogic, useForm, useStore } from '@tanstack/react-form-start'
 import { useNavigate } from '@tanstack/react-router'
 import { useRef, useState, useTransition } from 'react'
