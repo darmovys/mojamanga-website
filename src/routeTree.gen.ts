@@ -15,10 +15,8 @@ import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
-import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc.$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const NotificationsRoute = NotificationsRouteImport.update({
@@ -50,11 +48,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiSplatRoute = ApiSplatRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthSignupIndexRoute = AuthSignupIndexRouteImport.update({
   id: '/signup/',
   path: '/signup/',
@@ -64,11 +57,6 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
   getParentRoute: () => AuthRouteRoute,
-} as any)
-const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
-  id: '/api/rpc/$',
-  path: '/api/rpc/$',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -82,9 +70,7 @@ export interface FileRoutesByFullPath {
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
-  '/api/$': typeof ApiSplatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/rpc/$': typeof ApiRpcSplatRoute
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
 }
@@ -94,9 +80,7 @@ export interface FileRoutesByTo {
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
-  '/api/$': typeof ApiSplatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/rpc/$': typeof ApiRpcSplatRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
 }
@@ -108,9 +92,7 @@ export interface FileRoutesById {
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
-  '/api/$': typeof ApiSplatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/rpc/$': typeof ApiRpcSplatRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
 }
@@ -122,9 +104,7 @@ export interface FileRouteTypes {
     | '/bookmarks'
     | '/catalog'
     | '/notifications'
-    | '/api/$'
     | '/api/auth/$'
-    | '/api/rpc/$'
     | '/login/'
     | '/signup/'
   fileRoutesByTo: FileRoutesByTo
@@ -134,9 +114,7 @@ export interface FileRouteTypes {
     | '/bookmarks'
     | '/catalog'
     | '/notifications'
-    | '/api/$'
     | '/api/auth/$'
-    | '/api/rpc/$'
     | '/login'
     | '/signup'
   id:
@@ -147,9 +125,7 @@ export interface FileRouteTypes {
     | '/bookmarks'
     | '/catalog'
     | '/notifications'
-    | '/api/$'
     | '/api/auth/$'
-    | '/api/rpc/$'
     | '/_auth/login/'
     | '/_auth/signup/'
   fileRoutesById: FileRoutesById
@@ -161,9 +137,7 @@ export interface RootRouteChildren {
   BookmarksRoute: typeof BookmarksRoute
   CatalogRoute: typeof CatalogRoute
   NotificationsRoute: typeof NotificationsRoute
-  ApiSplatRoute: typeof ApiSplatRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -210,13 +184,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_auth/signup/': {
       id: '/_auth/signup/'
       path: '/signup'
@@ -230,13 +197,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/login/'
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRouteRoute
-    }
-    '/api/rpc/$': {
-      id: '/api/rpc/$'
-      path: '/api/rpc/$'
-      fullPath: '/api/rpc/$'
-      preLoaderRoute: typeof ApiRpcSplatRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -269,9 +229,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookmarksRoute: BookmarksRoute,
   CatalogRoute: CatalogRoute,
   NotificationsRoute: NotificationsRoute,
-  ApiSplatRoute: ApiSplatRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
-  ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
