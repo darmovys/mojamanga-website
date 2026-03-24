@@ -77,17 +77,9 @@ h6 {
 
 /* GLOBAL STYLES */
 
-html,
-body,
-#root /* Для більшості React застосунків */ {
-  block-size: 100%;
-}
+// FONT FACES
 
-body {
-  scrollbar-gutter: stable;
-  overflow-y: auto;
-}
-
+/* Main font */
 @font-face {
   font-family: 'FixelText';
   font-style: normal;
@@ -101,7 +93,7 @@ body {
   font-display: swap;
 }
 
-/* Вимикаю альтернативний стиль літери "а". Суто суб'єктивне рішення */
+/* I'm turning off the alternate style for the letter "а". It's purely a personal choice. */
 @font-face {
   font-family: 'FixelText';
   src: url('/fonts/FixelVariable/FixelVariable.woff2')
@@ -115,7 +107,7 @@ body {
   unicode-range: U+0061, U+0430;
 }
 
-/* Текст логотипу */
+/* Logo font */
 @font-face {
   font-family: 'Alegreya Sans';
   font-style: normal;
@@ -125,7 +117,7 @@ body {
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 
-/* Курсивний шрифт */
+/* Italic font */
 @font-face {
   font-family: 'FixelText';
   font-style: italic;
@@ -136,6 +128,7 @@ body {
   font-display: fallback;
 }
 
+/* Font fallback */
 @font-face {
   font-family: 'Verdana Fallback';
   src: local(Verdana);
@@ -145,14 +138,49 @@ body {
   line-gap-override: 16%;
 }
 
+// BODY STYLES
+
+html,
+body,
+#root {
+  block-size: 100%;
+}
+
+body {
+  scrollbar-gutter: stable;
+  overflow-y: auto;
+  font-family:
+    'FixelText',
+    'Verdana Fallback',
+    -apple-system,
+    BlinkMacSystemFont,
+    avenir next,
+    avenir,
+    helvetica neue,
+    Adwaita Sans,
+    Cantarell,
+    Ubuntu,
+    roboto,
+    noto,
+    helvetica,
+    arial,
+    sans-serif;
+  background-color: var(--bigscreen-bg);
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
+}
+
+// TOKENS
+
 html {
+  // color tokens
   --blue-50: oklch(96.85% 0.015 260.73);
   --blue-100: oklch(92.79% 0.033 261.03);
   --blue-200: oklch(87.46% 0.058 260.45);
   --blue-300: oklch(79.67% 0.099 257.14);
   --blue-400: oklch(69.44% 0.149 259.26);
   --blue-500: oklch(60.2% 0.196 262.8);
-  --blue-600: oklch(54.59% 0.213 265.48); /* brand blue */
+  --blue-600: oklch(54.59% 0.213 265.48);
   --blue-700: oklch(46.95% 0.225 265.88);
   --blue-800: oklch(40.87% 0.187 267.51);
   --blue-900: oklch(36.62% 0.144 267.82);
@@ -166,8 +194,7 @@ html {
   --pink-500: oklch(66.47% 0.233 354.88);
   --pink-600: oklch(60.35% 0.234 2.11);
   --pink-700: oklch(54.07% 0.212 5.5);
-  --pink-800: oklch(47.12% 0.182 5.16); /* brand pink */
-  --pink-900: oklch(41.64% 0.156 3.52);
+  --pink-800: oklch(47.12% 0.182 5.16);
   --pink-950: oklch(29.1% 0.114 4.85);
 
   --brand-blue: var(--blue-500);
@@ -181,7 +208,7 @@ html {
   --background: #fff;
   --tone-0: oklch(0% 0 0);
   --tone-1: oklch(14.479% 0.00002 271.152);
-  --tone-2: oklch(22.645% 0.00003 271.152);
+  --tone-2: oklch(17.764% 0.00002 271.152);
   --tone-3: oklch(23.536% 0.00404 84.55);
   --tone-4: oklch(24.997% 0.00717 67.405);
   --tone-5: oklch(33.674% 0.00531 91.552);
@@ -195,8 +222,6 @@ html {
   --tone-13: oklch(97.614% 0.00011 271.152);
   --tone-14: oklch(99.107% 0.00011 271.152);
   --tone-15: oklch(100% 0.00011 271.152);
-
-  --tone-2: hsl(0, 0%, 11%);
 
   // transparent variants
   --tone-2-tr-05: oklch(22.645% 0.00003 271.152 / 0.05);
@@ -227,8 +252,32 @@ html {
 
   --input-hover-border: oklch(91.583% 0.0001 271.152);
 
-  /* Sizing */
+  // dark theme
+  &.dark {
+    --bigscreen-bg: #000000;
+    --background: #030303;
+    --sys-primary: var(--tone-12);
+    --sys-outline-variant: var(--tone-4);
+    --sys-surface: var(--tone-3);
+    --sys-surface-low: var(--tone-2);
+    --sys-surface-lowest: var(--tone-1);
+    --sys-surface-high: var(--tone-2);
+    --sys-surface-highest: var(--tone-4);
+    --sys-surface-inverse: var(--tone-11);
+    --sys-on-primary: var(--tone-1);
+    --sys-on-surface: var(--tone-8);
+    --sys-on-surface-variant: oklch(70.733% 0.01404 82.354);
+    --sys-on-surface-highest: var(--tone-5);
+    --sys-on-surface-highest-variant: var(--tone-7);
+    --sys-on-surface-high: var(--tone-0);
+    --sys-on-surface-inverse: var(--tone-2);
+    --sys-on-button: var(--tone-1);
+    --sys-outline: var(--tone-5);
 
+    --input-hover-border: oklch(32.492% 0.00994 61.039);
+  }
+
+  // sizing tokens
   --2px: 0.125rem;
   --4px: 0.25rem;
   --8px: 0.5rem;
@@ -252,33 +301,8 @@ html {
   --512px: 32rem;
   --640px: 40rem;
   --768px: 48rem;
-}
 
-.dark {
-  --bigscreen-bg: #000000;
-  --background: #030303;
-  --sys-primary: var(--tone-12);
-  --sys-outline-variant: var(--tone-4);
-  --sys-surface: var(--tone-3);
-  --sys-surface-low: var(--tone-2);
-  --sys-surface-lowest: var(--tone-1);
-  --sys-surface-high: var(--tone-2);
-  --sys-surface-highest: var(--tone-4);
-  --sys-surface-inverse: var(--tone-11);
-  --sys-on-primary: var(--tone-1);
-  --sys-on-surface: var(--tone-8);
-  --sys-on-surface-variant: oklch(70.733% 0.01404 82.354);
-  --sys-on-surface-highest: var(--tone-5);
-  --sys-on-surface-highest-variant: var(--tone-7);
-  --sys-on-surface-high: var(--tone-0);
-  --sys-on-surface-inverse: var(--tone-2);
-  --sys-on-button: var(--tone-1);
-  --sys-outline: var(--tone-5);
-
-  --input-hover-border: oklch(32.492% 0.00994 61.039);
-}
-
-:root {
+  // shadow tokens
   --shadow-color: from var(--bigscreen-bg) l c h;
   --shadow-elevation-low:
     0px 0.1px 0.1px oklch(var(--shadow-color) / 0.33),
@@ -300,27 +324,33 @@ html {
     4.1px 12.8px 15.1px -2.5px oklch(var(--shadow-color) / 0.32);
 }
 
-body {
-  font-family:
-    'FixelText',
-    'Verdana Fallback',
-    -apple-system,
-    BlinkMacSystemFont,
-    avenir next,
-    avenir,
-    helvetica neue,
-    Adwaita Sans,
-    Cantarell,
-    Ubuntu,
-    roboto,
-    noto,
-    helvetica,
-    arial,
-    sans-serif;
-  background-color: var(--bigscreen-bg);
-  min-block-size: 100vh;
-  min-block-size: 100dvh;
+// THEME ANIMATION
+
+::view-transition-new(root) {
+  mask: url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWtlYTYwc2p6amZtcWIyeDBjMmRyY3F6cmhzZHBxeDFzbmx6ZWF6ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/i2tLw5ZyikSFdkeGHT/giphy.gif')
+    center / 0 no-repeat;
+  animation: scale 1s;
+  animation-fill-mode: both;
 }
+
+::view-transition-old(root),
+.dark::view-transition-old(root) {
+  animation: none;
+  animation-fill-mode: both;
+  z-index: -1;
+}
+.dark::view-transition-new(root) {
+  animation: scale 1s;
+  animation-fill-mode: both;
+}
+
+@keyframes scale {
+  to {
+    mask-size: 200vmax;
+  }
+}
+
+// REUSED CLASSES
 
 .Gradient {
   position: relative;

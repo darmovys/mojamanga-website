@@ -51,12 +51,23 @@ export function ThemeProvider({
     }
   }, [theme])
 
-  const setTheme = useCallback(
+  const applyTheme = useCallback(
     (newTheme: Theme) => {
       localStorage.setItem(storageKey, newTheme)
       setThemeState(newTheme)
     },
     [storageKey],
+  )
+
+  const setTheme = useCallback(
+    (newTheme: Theme) => {
+      if (!document.startViewTransition) {
+        applyTheme(newTheme)
+        return
+      }
+      document.startViewTransition(() => applyTheme(newTheme))
+    },
+    [applyTheme],
   )
 
   const toggleTheme = useCallback(() => {
