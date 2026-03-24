@@ -1,0 +1,422 @@
+@use '../../styles/breakpoints' as *;
+
+.Wrapper {
+  --spacing: var(--40px);
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
+  inline-size: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--sys-surface);
+
+  @media (min-width: 32rem) {
+    background-color: revert;
+  }
+}
+
+.MainHeader {
+  padding: var(--12px) var(--spacing);
+  color: var(--sys-on-primary);
+  background-color: var(--sys-surface);
+  margin-block-end: var(--8px);
+  display: flex;
+  justify-content: space-between;
+
+  @media (min-width: 32rem) {
+    background-color: revert;
+    padding: var(--12px) var(--24px);
+    margin-block-end: revert;
+  }
+
+  @include up('tablet') {
+    padding: var(--20px) var(--24px) var(--40px);
+  }
+}
+
+.ThemeButton {
+  --border-radius: 100vmax;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 45px;
+  block-size: 45px;
+  padding: var(--8px);
+  color: var(--sys-primary);
+  background-color: transparent;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-12);
+    }
+  }
+
+  &:focus-visible {
+    background-color: var(--state-primary-opacity-12);
+  }
+}
+
+.MainSectionWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  @media (min-width: 32rem) {
+    padding-inline: var(--24px);
+  }
+}
+
+.MainSection {
+  display: flex;
+  flex: 1;
+
+  @media (min-width: 32rem) {
+    flex: revert;
+  }
+}
+
+.Logo {
+  transform: translateX(-4px);
+}
+
+.Content {
+  --border-radius: var(--20px);
+  max-inline-size: var(--512px);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-basis: var(--512px);
+  background-color: var(--sys-surface);
+  padding: 0 var(--spacing) var(--spacing) var(--spacing);
+
+  @media (min-width: 32rem) {
+    border-radius: var(--border-radius);
+    padding: var(--spacing);
+  }
+}
+
+.LoginHeader {
+  margin-block-end: var(--16px);
+}
+
+.LoginTitle {
+  color: var(--sys-primary);
+  font-size: var(--20px);
+
+  @media (min-width: 32rem) {
+    font-size: var(--28px);
+  }
+}
+
+.FormContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--20px);
+  block-size: 100%;
+}
+
+.FieldLabel {
+  color: var(--sys-primary);
+  display: block;
+  margin-block-end: var(--4px);
+  font-weight: 500;
+}
+
+.FieldInputWrapper {
+  position: relative;
+  color: var(--sys-on-surface-highest-variant);
+}
+
+.FieldInput {
+  background-color: var(--sys-on-surface-highest);
+  border: 2px solid var(--sys-on-surface-highest);
+  outline: none;
+  min-inline-size: 0;
+  inline-size: 100%;
+  border-radius: var(--4px);
+  padding: var(--4px) var(--12px);
+  color: inherit;
+
+  &[data-focused] {
+    border-color: var(--blue-300);
+    color: var(--sys-on-surface);
+  }
+}
+
+.Error {
+  margin-block-start: var(--4px);
+  display: flex;
+  align-items: center;
+  gap: var(--4px);
+  color: var(--danger);
+  font-size: var(--12px);
+
+  svg {
+    align-self: flex-start;
+  }
+}
+
+.PasswordFieldInput {
+  composes: FieldInput;
+  padding-inline-end: 35px;
+}
+
+.ShowPassword {
+  --size: var(--24px);
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 10px;
+  transform: translateY(-50%);
+  block-size: var(--size);
+  inline-size: var(--size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  border-radius: var(--4px);
+  cursor: pointer;
+  transition-property: color, background-color;
+  transition-duration: 400ms;
+  transition-timing-function: cubic-bezier(0.3, 0.7, 0.4, 1);
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+  }
+
+  svg {
+    color: var(--sys-on-surface-highest-variant);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      transition: background-color 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+      background-color: var(--state-primary-opacity-16);
+    }
+
+    &:hover,
+    &:focus-visible {
+      svg {
+        transition: color 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+        color: var(--sys-primary);
+      }
+    }
+  }
+}
+
+.CheckboxWrapper {
+  display: flex;
+  gap: var(--8px);
+  font-size: var(--14px);
+  color: var(--sys-primary);
+
+  label {
+    margin-block-start: 2.6px;
+  }
+}
+
+.Checkbox {
+  --size: var(--24px);
+  display: flex;
+  inline-size: var(--size);
+  block-size: var(--size);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--4px);
+  outline: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+
+  &[data-unchecked] {
+    border: 1px solid var(--sys-on-surface-highest-variant);
+    background-color: var(--sys-on-surface-highest);
+  }
+
+  &[data-checked] {
+    background-color: var(--blue-400);
+    color: oklch(97.614% 0.00011 271.152);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 0.1875rem var(--state-primary-opacity-12);
+    border: 1px solid var(--blue-400);
+  }
+}
+
+.Indicator {
+  transform: scale(0);
+  transition: 0.15s transform cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &[data-checked] {
+    transform: scale(1);
+  }
+}
+
+.CheckboxText {
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+}
+
+.NoteText {
+  color: var(--sys-on-surface-highest-variant);
+}
+
+.TurnstileWrapper {
+  block-size: 72px; // to preserve space for turnstile captcha
+  margin-block-end: auto;
+
+  @media (min-width: 32rem) {
+    margin-block: auto;
+  }
+
+  &:has(> .Error) {
+    margin-block-end: var(--16px);
+  }
+}
+
+.ButtonBase {
+  border: none;
+  border-radius: 100vmax;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  &:focus-visible,
+  &:hover {
+    outline: none;
+  }
+}
+
+.SubmitButton {
+  composes: ButtonBase;
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+  padding: var(--8px) var(--16px);
+  font-weight: 500;
+  margin-block-start: auto;
+
+  &.Disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.Side {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.Flex {
+  @media (min-width: 32rem) {
+    flex: 1;
+  }
+}
+
+.Loader {
+  color: var(--sys-on-primary);
+  animation: spin 1000ms linear infinite;
+}
+
+.SignupText {
+  margin-block: var(--10px);
+  display: flex;
+  justify-content: center;
+  gap: var(--8px);
+  color: var(--sys-primary);
+  font-size: var(--14px);
+}
+
+.SignupLink {
+  color: var(--blue-400);
+  outline-offset: 2px;
+  position: relative; // for click target helper
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* for better times if I find the proper OAuth implementation */
+
+// .OAuthSection {
+//   background-color: var(--sys-surface-low);
+//   margin-inline: calc(var(--spacing) * -1);
+//   margin-block-end: calc(var(--spacing) * -1);
+//   padding: var(--16px) var(--40px) var(--24px) var(--40px);
+
+//   @media (min-width: 32rem) {
+//     border-end-start-radius: var(--border-radius);
+//     border-end-end-radius: var(--border-radius);
+//   }
+// }
+
+// .OAuthHeader {
+//   text-align: center;
+//   color: var(--sys-on-surface-highest-variant);
+//   font-size: 16px;
+//   line-height: 20px;
+//   font-weight: 600;
+//   margin-block-end: var(--16px);
+// }
+
+// .OAuthProviders {
+//   display: flex;
+//   align-items: center;
+//   gap: var(--8px);
+//   margin-block-end: var(--16px);
+// }
+
+// .ProviderButton {
+//   composes: ButtonBase;
+//   justify-content: center;
+//   gap: var(--4px);
+//   color: var(--sys-primary);
+//   font-weight: 500;
+//   background-color: transparent;
+//   outline: 2px solid var(--sysPrimary);
+//   outline-offset: -2px;
+//   padding-block: var(--10px);
+//   padding-inline-start: var(--16px);
+//   padding-inline-end: var(--24px);
+//   outline: 2px solid var(--sys-primary);
+//   outline-offset: -2px;
+//   flex: 1;
+
+//   @media (hover: hover) {
+//     &:hover {
+//       background-color: var(--state-primary-opacity-8);
+//     }
+//   }
+
+//   &:focus-visible {
+//     background-color: var(--state-primary-opacity-8);
+//   }
+
+//   svg {
+//     block-size: 20px;
+//     inline-size: 20px;
+//   }
+// }
