@@ -1,15 +1,6 @@
 import { Button } from '@base-ui/react'
 import styles from './Header.module.scss'
-import {
-  Bell,
-  Ellipsis,
-  Layers,
-  LogIn,
-  Moon,
-  Plus,
-  Sun,
-  SunMoon,
-} from 'lucide-react'
+import { Bell, Ellipsis, Layers, LogIn, Moon, Plus, Sun } from 'lucide-react'
 import clsx from 'clsx'
 import Logo from '../Logo'
 import { useTheme } from '@/lib/theme-provider'
@@ -17,11 +8,11 @@ import VisuallyHidden from '../VisuallyHidden'
 import { Link } from '@tanstack/react-router'
 import SearchContentField from '../SearchContentField'
 import { Image } from '@unpic/react'
-import { useState } from 'react'
+import { authClient } from '@/lib/auth-client'
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme()
-  const [isAuthed, setIsAuthed] = useState(false) // Імітований статус. Варто прибрати
+  const { data: session } = authClient.useSession()
   return (
     <header className={styles.Wrapper}>
       <div className={styles.FlexContainer}>
@@ -38,12 +29,6 @@ export default function Header() {
       <div className={styles.FlexContainer}>
         <SearchContentField className={styles.HeaderSearchField} />
         <Button onClick={toggleTheme} className={styles.TertiaryButton}>
-          {theme === 'system' && (
-            <>
-              <SunMoon />
-              <VisuallyHidden>Системна тема</VisuallyHidden>
-            </>
-          )}
           {theme === 'light' && (
             <>
               <Sun />
@@ -63,7 +48,7 @@ export default function Header() {
         </Button>
       </div>
       <div className={styles.FlexContainer}>
-        {isAuthed ? (
+        {session?.user ? (
           <>
             <Button
               className={clsx({
@@ -87,8 +72,11 @@ export default function Header() {
               className={clsx({ [styles.UserButton]: true, Gradient: true })}
             >
               <Image
-                src="https://api.dicebear.com/9.x/glass/svg?seed=Blue"
-                alt="User Avatar"
+                src={
+                  session.user.image ??
+                  `https://api.dicebear.com/9.x/glass/svg?seed=${session.user.displayUsername}`
+                }
+                alt={session.user.name}
                 layout="fullWidth"
               />
               <VisuallyHidden>Сповіщення</VisuallyHidden>
@@ -97,7 +85,7 @@ export default function Header() {
         ) : (
           <Button
             nativeButton={false}
-            render={<Link to="/signup" />}
+            render={<Link to="/login" />}
             className={clsx({ [styles.PrimaryButton]: true, Gradient: true })}
           >
             <LogIn size={18} />

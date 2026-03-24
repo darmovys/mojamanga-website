@@ -10,7 +10,6 @@ import styles from './MobileMenu.module.scss'
 import {
   Sun,
   Moon,
-  Clock,
   LogIn,
   X,
   ChevronDown,
@@ -27,6 +26,7 @@ import {
   Bookmark,
   Bell,
   MessageSquare,
+  LogOut,
 } from 'lucide-react'
 import clsx from 'clsx'
 import { useTheme } from '@/lib/theme-provider'
@@ -37,6 +37,8 @@ import useNestedMenuAnimation from './use-nested-menu-animation'
 import Logo from '../Logo'
 import VisuallyHidden from '../VisuallyHidden'
 import { Image } from '@unpic/react'
+import { authClient } from '@/lib/auth-client'
+import { showTimedToast } from '@/lib/toast'
 
 const WORK_TYPE_TITLES: Record<WorkType, string> = {
   [WorkType.MANGA]: 'Манга',
@@ -128,6 +130,7 @@ type MobileMenuProps = {
 }
 
 export default function MobileMenu({ trigger }: MobileMenuProps) {
+  const { data: session } = authClient.useSession()
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const shouldReduceMotion = useReducedMotion()
@@ -138,7 +141,34 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
     setIsMotionAllowed,
     handleAccordionOpenChange,
   } = useNestedMenuAnimation()
-  const [isAuthed, setIsAuthed] = useState(true)
+
+  async function handleLogout() {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          showTimedToast(
+            {
+              type: 'success',
+              title: 'Успіх',
+              description: 'Ви вийшли з акаунту',
+            },
+            4000,
+          )
+          setShowMobileMenu(false)
+        },
+        onError: ({ error }) => {
+          showTimedToast(
+            {
+              type: 'error',
+              title: 'Сталася помилка',
+              description: error.message,
+            },
+            6000,
+          )
+        },
+      },
+    })
+  }
 
   return (
     <Dialog.Root open={showMobileMenu} onOpenChange={setShowMobileMenu}>
@@ -206,12 +236,6 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                           onClick={toggleTheme}
                           className={styles.SecondaryButton}
                         >
-                          {theme === 'system' && (
-                            <>
-                              <Clock size={20} />
-                              <VisuallyHidden>Системний </VisuallyHidden>
-                            </>
-                          )}
                           {theme === 'light' && (
                             <>
                               <Sun size={20} />
@@ -226,7 +250,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                           )}
                           <span className={styles.Text}>Режим</span>
                         </Button>
-                        {isAuthed ? (
+                        {session?.user ? (
                           <Button className={styles.SecondaryButton}>
                             <Settings size={20} />
                             <span className={styles.Text}>Налаштування</span>
@@ -238,7 +262,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                           </Button>
                         )}
                       </div>
-                      {isAuthed && (
+                      {session?.user && (
                         <Button
                           style={{ marginTop: 'calc(var(--4px) * -1)' }}
                           className={styles.SecondaryButton}
@@ -247,10 +271,10 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                           <span className={styles.Text}>Пошук</span>
                         </Button>
                       )}
-                      {!isAuthed ? (
+                      {!session?.user ? (
                         <Button
                           nativeButton={false}
-                          render={<Link to="/signup" />}
+                          render={<Link to="/login" />}
                           className={clsx({
                             [styles.LoginButton]: true,
                             Gradient: true,
@@ -267,11 +291,16 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                           >
                             <Image
                               className={styles.UserAvatar}
-                              src="https://api.dicebear.com/9.x/glass/svg?seed=Blue"
                               layout="fullWidth"
-                              alt="User Avatar"
+                              src={
+                                session.user.image ??
+                                `https://api.dicebear.com/9.x/glass/svg?seed=${session.user.displayUsername}`
+                              }
+                              alt={session.user.name}
                             />
-                            <div className={styles.UserName}>Darmovys</div>
+                            <div className={styles.UserName}>
+                              {session.user.displayUsername}
+                            </div>
                           </Link>
                           <div className={styles.UserCardLinks}>
                             <Link to="/" className={styles.UserCardLink}>
@@ -301,56 +330,87 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                       orientation="horizontal"
                       className={styles.Separator}
                     />
-                    <Accordion.Root className={styles.Accordion}>
-                      <Accordion.Item
-                        className={styles.AccordionItem}
-                        onOpenChange={handleAccordionOpenChange}
-                      >
-                        <Accordion.Header>
-                          <Accordion.Trigger
-                            className={styles.AccordionTrigger}
-                          >
-                            Каталог
-                            <ChevronDown
-                              className={styles.ChevronDown}
-                              size={24}
-                            />
-                          </Accordion.Trigger>
-                        </Accordion.Header>
+                    <div className={styles.MainSection}>
+                      <Accordion.Root className={styles.Accordion}>
+                        <Accordion.Item
+                          className={styles.AccordionItem}
+                          onOpenChange={handleAccordionOpenChange}
+                        >
+                          <Accordion.Header>
+                            <Accordion.Trigger
+                              className={styles.AccordionTrigger}
+                            >
+                              Каталог
+                              <ChevronDown
+                                className={styles.ChevronDown}
+                                size={24}
+                              />
+                            </Accordion.Trigger>
+                          </Accordion.Header>
 
-                        <Accordion.Panel
-                          className={styles.AccordionPanel}
-                          /* по завершенню звичайної анімації появи елементів (fadeIn), 
+                          <Accordion.Panel
+                            className={styles.AccordionPanel}
+                            /* по завершенню звичайної анімації появи елементів (fadeIn), 
                             використовуй анімацію motion для переключення
                             між внутрішнім та зовнішнім списком */
-                          onAnimationEnd={() => setIsMotionAllowed(true)}
-                        >
-                          <AnimatePresence mode="wait">
-                            {!showInnerList ? (
-                              <motion.div
-                                key="outer-list"
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                                // Даємо можливість вперше програти звичайну анімацію fadeIn
-                                variants={
-                                  isMotionAllowed && !shouldReduceMotion
-                                    ? outerListVariants
-                                    : undefined
-                                }
-                              >
-                                {catalogLinks.map((item) => {
-                                  if (item.title === 'Твори') {
-                                    return (
-                                      <div
-                                        key={item.title}
-                                        style={{ position: 'relative' }}
-                                      >
+                            onAnimationEnd={() => setIsMotionAllowed(true)}
+                          >
+                            <AnimatePresence mode="wait">
+                              {!showInnerList ? (
+                                <motion.div
+                                  key="outer-list"
+                                  initial="hidden"
+                                  animate="visible"
+                                  exit="exit"
+                                  // Даємо можливість вперше програти звичайну анімацію fadeIn
+                                  variants={
+                                    isMotionAllowed && !shouldReduceMotion
+                                      ? outerListVariants
+                                      : undefined
+                                  }
+                                >
+                                  {catalogLinks.map((item) => {
+                                    if (item.title === 'Твори') {
+                                      return (
+                                        <div
+                                          key={item.title}
+                                          style={{ position: 'relative' }}
+                                        >
+                                          <Link
+                                            activeProps={{
+                                              className: styles.Active,
+                                            }}
+                                            activeOptions={item.activeOptions}
+                                            to={item.to}
+                                            className={styles.AccordionLink}
+                                            onClick={() =>
+                                              setShowMobileMenu(false)
+                                            }
+                                          >
+                                            <item.icon size={16} />
+                                            <span>{item.title}</span>
+                                            <ChevronRight
+                                              style={{ marginLeft: 'auto' }}
+                                              size={16}
+                                            />
+                                          </Link>
+                                          <Button
+                                            onClick={() =>
+                                              setShowInnerList(true)
+                                            }
+                                            className={
+                                              styles.ChevronRightButton
+                                            }
+                                          />
+                                        </div>
+                                      )
+                                    } else
+                                      return (
                                         <Link
+                                          key={item.title}
                                           activeProps={{
                                             className: styles.Active,
                                           }}
-                                          activeOptions={item.activeOptions}
                                           to={item.to}
                                           className={styles.AccordionLink}
                                           onClick={() =>
@@ -359,96 +419,82 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                         >
                                           <item.icon size={16} />
                                           <span>{item.title}</span>
-                                          <ChevronRight
-                                            style={{ marginLeft: 'auto' }}
-                                            size={16}
-                                          />
                                         </Link>
-                                        <Button
-                                          onClick={() => setShowInnerList(true)}
-                                          className={styles.ChevronRightButton}
-                                        />
-                                      </div>
-                                    )
-                                  } else
-                                    return (
-                                      <Link
-                                        key={item.title}
-                                        activeProps={{
-                                          className: styles.Active,
-                                        }}
-                                        to={item.to}
-                                        className={styles.AccordionLink}
-                                        onClick={() => setShowMobileMenu(false)}
-                                      >
-                                        <item.icon size={16} />
-                                        <span>{item.title}</span>
-                                      </Link>
-                                    )
-                                })}
-                              </motion.div>
-                            ) : (
-                              <motion.div
-                                key="inner-list"
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                                // Даємо можливість вперше програти звичайну анімацію fadeIn
-                                variants={
-                                  isMotionAllowed && !shouldReduceMotion
-                                    ? innerListVariants
-                                    : undefined
-                                }
-                              >
-                                <Button
-                                  className={styles.BackButton}
-                                  onClick={() => setShowInnerList(false)}
+                                      )
+                                  })}
+                                </motion.div>
+                              ) : (
+                                <motion.div
+                                  key="inner-list"
+                                  initial="hidden"
+                                  animate="visible"
+                                  exit="exit"
+                                  // Даємо можливість вперше програти звичайну анімацію fadeIn
+                                  variants={
+                                    isMotionAllowed && !shouldReduceMotion
+                                      ? innerListVariants
+                                      : undefined
+                                  }
                                 >
-                                  <ArrowLeft size={18} />
-                                </Button>
-                                {innerLinks.map((item) => (
-                                  <Link
-                                    key={item.title}
-                                    to={item.to}
-                                    search={item.search}
-                                    className={styles.AccordionLink}
-                                    onClick={() => setShowMobileMenu(false)}
+                                  <Button
+                                    className={styles.BackButton}
+                                    onClick={() => setShowInnerList(false)}
                                   >
-                                    <span>{item.title}</span>
-                                  </Link>
-                                ))}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </Accordion.Panel>
-                      </Accordion.Item>
-                      <Accordion.Item className={styles.AccordionItem}>
-                        <Accordion.Header>
-                          <Accordion.Trigger
-                            className={styles.AccordionTrigger}
-                          >
-                            Інше
-                            <ChevronDown
-                              className={styles.ChevronDown}
-                              size={24}
-                            />
-                          </Accordion.Trigger>
-                        </Accordion.Header>
-                        <Accordion.Panel className={styles.AccordionPanel}>
-                          {otherLinks.map((item) => (
-                            <Link
-                              activeProps={{ className: styles.Active }}
-                              to={item.to}
-                              className={styles.AccordionLink}
-                              key={item.title}
+                                    <ArrowLeft size={18} />
+                                  </Button>
+                                  {innerLinks.map((item) => (
+                                    <Link
+                                      key={item.title}
+                                      to={item.to}
+                                      search={item.search}
+                                      className={styles.AccordionLink}
+                                      onClick={() => setShowMobileMenu(false)}
+                                    >
+                                      <span>{item.title}</span>
+                                    </Link>
+                                  ))}
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </Accordion.Panel>
+                        </Accordion.Item>
+                        <Accordion.Item className={styles.AccordionItem}>
+                          <Accordion.Header>
+                            <Accordion.Trigger
+                              className={styles.AccordionTrigger}
                             >
-                              <item.icon size={16} />
-                              <span>{item.title}</span>
-                            </Link>
-                          ))}
-                        </Accordion.Panel>
-                      </Accordion.Item>
-                    </Accordion.Root>
+                              Інше
+                              <ChevronDown
+                                className={styles.ChevronDown}
+                                size={24}
+                              />
+                            </Accordion.Trigger>
+                          </Accordion.Header>
+                          <Accordion.Panel className={styles.AccordionPanel}>
+                            {otherLinks.map((item) => (
+                              <Link
+                                activeProps={{ className: styles.Active }}
+                                to={item.to}
+                                className={styles.AccordionLink}
+                                key={item.title}
+                              >
+                                <item.icon size={16} />
+                                <span>{item.title}</span>
+                              </Link>
+                            ))}
+                          </Accordion.Panel>
+                        </Accordion.Item>
+                      </Accordion.Root>
+                      {session?.user && (
+                        <Button
+                          onClick={handleLogout}
+                          className={styles.ExitButton}
+                        >
+                          <LogOut size={20} />
+                          Вийти
+                        </Button>
+                      )}
+                    </div>
                   </ScrollArea.Content>
                 </ScrollArea.Viewport>
                 <ScrollArea.Scrollbar className={styles.Scrollbar}>

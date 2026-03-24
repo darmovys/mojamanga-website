@@ -202,6 +202,8 @@ html {
   --danger: oklch(60.307% 0.22945 27.676);
   --success: oklch(63.226% 0.20525 143.97);
   --warning: oklch(86.563% 0.17261 92.311);
+  --danger-background: oklch(from var(--danger) l c h / 0.12);
+  --danger-background-active: oklch(from var(--danger) l c h / 0.2);
 
   --default-overlay-color: oklch(0% 0 0 / 0.5);
   --bigscreen-bg: oklab(84.551% 0.00443 0.00843);
@@ -250,6 +252,10 @@ html {
   --state-primary-opacity-12: oklch(71.462% 0.213 265.48 / 0.122);
   --state-primary-opacity-16: oklch(71.462% 0.213 265.48 / 0.161);
 
+  --state-on-surface-opacity-6: oklch(95% 0.00011 271.152);
+  --state-on-surface-opacity-12: oklch(82.344% 0.00009 271.152);
+  --state-on-surface-opacity-variant: oklch(82.344% 0.00009 271.152);
+
   --input-hover-border: oklch(91.583% 0.0001 271.152);
 
   // dark theme
@@ -275,6 +281,10 @@ html {
     --sys-outline: var(--tone-5);
 
     --input-hover-border: oklch(32.492% 0.00994 61.039);
+
+    --state-on-surface-opacity-6: oklch(40.225% 0.00706 84.552);
+    --state-on-surface-opacity-12: oklch(52.071% 0.00952 91.571);
+    --state-on-surface-opacity-variant: oklch(40.225% 0.00706 84.552);
   }
 
   // sizing tokens
