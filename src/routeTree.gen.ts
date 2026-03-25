@@ -15,9 +15,9 @@ import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
@@ -48,6 +48,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthSignupIndexRoute = AuthSignupIndexRouteImport.update({
   id: '/signup/',
   path: '/signup/',
@@ -58,11 +63,6 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -70,7 +70,7 @@ export interface FileRoutesByFullPath {
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/$': typeof ApiSplatRoute
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
 }
@@ -80,7 +80,7 @@ export interface FileRoutesByTo {
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/$': typeof ApiSplatRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
 }
@@ -92,7 +92,7 @@ export interface FileRoutesById {
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/$': typeof ApiSplatRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
 }
@@ -104,7 +104,7 @@ export interface FileRouteTypes {
     | '/bookmarks'
     | '/catalog'
     | '/notifications'
-    | '/api/auth/$'
+    | '/api/$'
     | '/login/'
     | '/signup/'
   fileRoutesByTo: FileRoutesByTo
@@ -114,7 +114,7 @@ export interface FileRouteTypes {
     | '/bookmarks'
     | '/catalog'
     | '/notifications'
-    | '/api/auth/$'
+    | '/api/$'
     | '/login'
     | '/signup'
   id:
@@ -125,7 +125,7 @@ export interface FileRouteTypes {
     | '/bookmarks'
     | '/catalog'
     | '/notifications'
-    | '/api/auth/$'
+    | '/api/$'
     | '/_auth/login/'
     | '/_auth/signup/'
   fileRoutesById: FileRoutesById
@@ -137,7 +137,7 @@ export interface RootRouteChildren {
   BookmarksRoute: typeof BookmarksRoute
   CatalogRoute: typeof CatalogRoute
   NotificationsRoute: typeof NotificationsRoute
-  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiSplatRoute: typeof ApiSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -184,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_auth/signup/': {
       id: '/_auth/signup/'
       path: '/signup'
@@ -197,13 +204,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/login/'
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRouteRoute
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -229,7 +229,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookmarksRoute: BookmarksRoute,
   CatalogRoute: CatalogRoute,
   NotificationsRoute: NotificationsRoute,
-  ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiSplatRoute: ApiSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
