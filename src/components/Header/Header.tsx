@@ -10,6 +10,7 @@ import SearchContentField from '../SearchContentField'
 import { Image } from '@unpic/react'
 import { authClient } from '@/lib/auth-client'
 import { Catalog, catalogHandle } from './Catalog'
+import { OtherLinks, otherLinksHandle } from './OtherLinks'
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme()
@@ -50,10 +51,16 @@ export default function Header() {
             </>
           )}
         </Button>
-        <Button className={styles.TertiaryButton}>
-          <Ellipsis />
-          <VisuallyHidden>Інше</VisuallyHidden>
-        </Button>
+        <Menu.Trigger
+          handle={otherLinksHandle}
+          render={
+            <Button className={styles.TertiaryButton}>
+              <Ellipsis />
+              <VisuallyHidden>Інше</VisuallyHidden>
+            </Button>
+          }
+        />
+        <OtherLinks />
       </div>
       <div className={styles.FlexContainer}>
         {session?.user ? (
