@@ -1,6 +1,15 @@
 import { linkOptions } from '@tanstack/react-router'
 import { WorkType } from '@/generated/prisma/enums'
-import { Layers, Users, Pencil, Palette, User, Newspaper } from 'lucide-react'
+import {
+  Layers,
+  Users,
+  Pencil,
+  Palette,
+  User,
+  Newspaper,
+  BookPlus,
+  UserRound,
+} from 'lucide-react'
 
 export const WORK_TYPE_TITLES: Record<WorkType, string> = {
   [WorkType.MANGA]: 'Манга',
@@ -74,3 +83,30 @@ export const workTypeLinks = linkOptions(
     },
   })),
 )
+
+export const addContentLinks = linkOptions([
+  {
+    title: 'Додати твір',
+    icon: BookPlus,
+    to: '/about',
+    activeOptions: {
+      exact: true,
+    },
+  },
+  {
+    title: 'Додати Команду',
+    icon: Users,
+    to: '/about',
+    activeOptions: {
+      exact: true,
+    },
+  },
+  {
+    title: 'Додати людину',
+    icon: UserRound,
+    to: '/about',
+    activeOptions: {
+      exact: true,
+    },
+  },
+])

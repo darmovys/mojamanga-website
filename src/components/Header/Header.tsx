@@ -11,6 +11,7 @@ import { Image } from '@unpic/react'
 import { authClient } from '@/lib/auth-client'
 import { Catalog, catalogHandle } from './Catalog'
 import { OtherLinks, otherLinksHandle } from './OtherLinks'
+import { addContentHandle, AddContentMenu } from './AddContentMenu'
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme()
@@ -65,15 +66,21 @@ export default function Header() {
       <div className={styles.FlexContainer}>
         {session?.user ? (
           <>
-            <Button
-              className={clsx({
-                [styles.SecondaryButton]: true,
-                Gradient: true,
-              })}
-            >
-              <Plus />
-              <VisuallyHidden>Додавання контенту</VisuallyHidden>
-            </Button>
+            <Menu.Trigger
+              handle={addContentHandle}
+              render={
+                <Button
+                  className={clsx({
+                    [styles.SecondaryButton]: true,
+                    Gradient: true,
+                  })}
+                >
+                  <Plus />
+                  <VisuallyHidden>Додавання контенту</VisuallyHidden>
+                </Button>
+              }
+            />
+            <AddContentMenu />
             <Button
               className={clsx({
                 [styles.SecondaryButton]: true,
