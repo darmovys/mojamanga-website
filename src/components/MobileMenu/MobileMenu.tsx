@@ -6,19 +6,12 @@ import {
   type Variants,
   useReducedMotion,
 } from 'motion/react'
-import styles from './MobileMenu.module.scss'
 import {
   Sun,
   Moon,
   LogIn,
   X,
   ChevronDown,
-  Layers,
-  Users,
-  Pencil,
-  Palette,
-  User,
-  Newspaper,
   ChevronRight,
   ArrowLeft,
   Search,
@@ -31,87 +24,15 @@ import {
 import clsx from 'clsx'
 import { useTheme } from '@/lib/theme-provider'
 import { Accordion, Button, ScrollArea, Separator } from '@base-ui/react'
-import { Link, linkOptions } from '@tanstack/react-router'
-import { WorkType } from '@/generated/prisma/enums'
+import { Link } from '@tanstack/react-router'
 import useNestedMenuAnimation from './use-nested-menu-animation'
 import Logo from '../Logo'
 import VisuallyHidden from '../VisuallyHidden'
 import { Image } from '@unpic/react'
 import { authClient } from '@/lib/auth-client'
 import { showTimedToast } from '@/lib/toast'
-
-const WORK_TYPE_TITLES: Record<WorkType, string> = {
-  [WorkType.MANGA]: 'Манга',
-  [WorkType.MANHWA]: 'Манхва',
-  [WorkType.MANHUA]: 'Маньхва',
-  [WorkType.MALOPUS]: 'Мальопис',
-  [WorkType.COMIC]: 'Комікс',
-  [WorkType.WEBCOMIC]: 'Вебкомікс',
-}
-
-const catalogLinks = linkOptions([
-  {
-    title: 'Твори',
-    icon: Layers,
-    to: '/catalog',
-    activeOptions: {
-      exact: false,
-    },
-  },
-  {
-    title: 'Команди',
-    icon: Users,
-    to: '/about',
-    activeOptions: {
-      exact: false,
-    },
-  },
-  {
-    title: 'Користувачі',
-    icon: User,
-    to: '/about',
-    activeOptions: {
-      exact: false,
-    },
-  },
-  {
-    title: 'Автори',
-    icon: Pencil,
-    to: '/about',
-    activeOptions: {
-      exact: false,
-    },
-  },
-  {
-    title: 'Художники',
-    icon: Palette,
-    to: '/about',
-    activeOptions: {
-      exact: false,
-    },
-  },
-])
-
-const otherLinks = linkOptions([
-  {
-    title: 'Новини',
-    icon: Newspaper,
-    to: '/about',
-    activeOptions: {
-      exact: false,
-    },
-  },
-])
-
-const innerLinks = linkOptions(
-  Object.entries(WORK_TYPE_TITLES).map(([type, title]) => ({
-    title,
-    to: '/catalog',
-    search: {
-      types: [type as WorkType],
-    },
-  })),
-)
+import { catalogLinks, otherLinks, workTypeLinks } from '@/lib/navigation-links'
+import styles from './MobileMenu.module.scss'
 
 const outerListVariants: Variants = {
   hidden: { opacity: 0, x: -10, transition: { duration: 0.1 } },
@@ -442,7 +363,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                   >
                                     <ArrowLeft size={18} />
                                   </Button>
-                                  {innerLinks.map((item) => (
+                                  {workTypeLinks.map((item) => (
                                     <Link
                                       key={item.title}
                                       to={item.to}

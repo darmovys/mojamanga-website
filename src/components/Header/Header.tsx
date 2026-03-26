@@ -1,4 +1,4 @@
-import { Button } from '@base-ui/react'
+import { Button, Menu } from '@base-ui/react'
 import styles from './Header.module.scss'
 import { Bell, Ellipsis, Layers, LogIn, Moon, Plus, Sun } from 'lucide-react'
 import clsx from 'clsx'
@@ -9,22 +9,30 @@ import { Link } from '@tanstack/react-router'
 import SearchContentField from '../SearchContentField'
 import { Image } from '@unpic/react'
 import { authClient } from '@/lib/auth-client'
+import { Catalog, catalogHandle } from './Catalog'
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme()
   const { data: session } = authClient.useSession()
+
   return (
     <header className={styles.Wrapper}>
       <div className={styles.FlexContainer}>
         <Link className={styles.LogoLink} to="/">
           <Logo />
         </Link>
-        <Button
-          className={clsx({ [styles.PrimaryButton]: true, Gradient: true })}
-        >
-          <Layers size={18} />
-          Каталог
-        </Button>
+        <Menu.Trigger
+          handle={catalogHandle}
+          render={
+            <Button
+              className={clsx({ [styles.PrimaryButton]: true, Gradient: true })}
+            >
+              <Layers size={18} />
+              Каталог
+            </Button>
+          }
+        />
+        <Catalog />
       </div>
       <div className={styles.FlexContainer}>
         <SearchContentField className={styles.HeaderSearchField} />

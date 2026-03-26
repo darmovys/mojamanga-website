@@ -140,12 +140,6 @@ h6 {
 
 // BODY STYLES
 
-html,
-body,
-#root {
-  block-size: 100%;
-}
-
 body {
   scrollbar-gutter: stable;
   overflow-y: auto;
@@ -252,9 +246,8 @@ html {
   --state-primary-opacity-12: oklch(71.462% 0.213 265.48 / 0.122);
   --state-primary-opacity-16: oklch(71.462% 0.213 265.48 / 0.161);
 
-  --state-on-surface-opacity-6: oklch(95% 0.00011 271.152);
-  --state-on-surface-opacity-12: oklch(82.344% 0.00009 271.152);
-  --state-on-surface-opacity-variant: oklch(82.344% 0.00009 271.152);
+  --state-on-surface-opacity-variant: oklch(91.279% 0.0001 271.152);
+  --state-on-surface-opacity-variant-2: oklch(90% 0 0);
 
   --input-hover-border: oklch(91.583% 0.0001 271.152);
 
@@ -282,9 +275,8 @@ html {
 
     --input-hover-border: oklch(32.492% 0.00994 61.039);
 
-    --state-on-surface-opacity-6: oklch(40.225% 0.00706 84.552);
-    --state-on-surface-opacity-12: oklch(52.071% 0.00952 91.571);
     --state-on-surface-opacity-variant: oklch(40.225% 0.00706 84.552);
+    --state-on-surface-opacity-variant-2: oklch(30% 0 0);
   }
 
   // sizing tokens
