@@ -12,10 +12,12 @@ import { authClient } from '@/lib/auth-client'
 import { Catalog, catalogHandle } from './Catalog'
 import { OtherLinks, otherLinksHandle } from './OtherLinks'
 import { addContentHandle, AddContentMenu } from './AddContentMenu'
+import { UserMenu, userMenuHandle } from './UserMenu'
+import Skeleton from '../Skeleton'
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme()
-  const { data: session } = authClient.useSession()
+  const { data: session, isPending } = authClient.useSession()
 
   return (
     <header className={styles.Wrapper}>
@@ -64,7 +66,13 @@ export default function Header() {
         <OtherLinks />
       </div>
       <div className={styles.FlexContainer}>
-        {session?.user ? (
+        {isPending ? (
+          <Skeleton
+            height="2.8125rem"
+            width="11.5625rem"
+            borderRadius="100vmax"
+          />
+        ) : session?.user ? (
           <>
             <Menu.Trigger
               handle={addContentHandle}
@@ -90,19 +98,28 @@ export default function Header() {
               <Bell />
               <VisuallyHidden>Сповіщення</VisuallyHidden>
             </Button>
-            <Button
-              className={clsx({ [styles.UserButton]: true, Gradient: true })}
-            >
-              <Image
-                src={
-                  session.user.image ??
-                  `https://api.dicebear.com/9.x/glass/svg?seed=${session.user.displayUsername}`
-                }
-                alt={session.user.name}
-                layout="fullWidth"
-              />
-              <VisuallyHidden>Сповіщення</VisuallyHidden>
-            </Button>
+            <Menu.Trigger
+              handle={userMenuHandle}
+              render={
+                <Button
+                  className={clsx({
+                    [styles.UserButton]: true,
+                    Gradient: true,
+                  })}
+                >
+                  <Image
+                    src={
+                      session.user.image ??
+                      `https://api.dicebear.com/9.x/glass/svg?seed=${session.user.displayUsername}`
+                    }
+                    alt={session.user.name}
+                    layout="fullWidth"
+                  />
+                  <VisuallyHidden>Користувач</VisuallyHidden>
+                </Button>
+              }
+            />
+            <UserMenu user={session.user} />
           </>
         ) : (
           <Button
