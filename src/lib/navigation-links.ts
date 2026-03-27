@@ -9,6 +9,11 @@ import {
   Newspaper,
   BookPlus,
   UserRound,
+  Bell,
+  Bookmark,
+  MessageSquare,
+  Settings,
+  Shield,
 } from 'lucide-react'
 
 export const WORK_TYPE_TITLES: Record<WorkType, string> = {
@@ -104,6 +109,49 @@ export const addContentLinks = linkOptions([
   {
     title: 'Додати людину',
     icon: UserRound,
+    to: '/about',
+    activeOptions: {
+      exact: true,
+    },
+  },
+])
+
+export const userLinks = linkOptions([
+  {
+    title: 'Сповіщення',
+    icon: Bell,
+    to: '/about',
+    activeOptions: {
+      exact: true,
+    },
+  },
+  {
+    title: 'Коментарі',
+    icon: MessageSquare,
+    to: '/about',
+    activeOptions: {
+      exact: true,
+    },
+  },
+  {
+    title: 'Закладки',
+    icon: Bookmark,
+    to: '/about',
+    activeOptions: {
+      exact: true,
+    },
+  },
+  {
+    title: 'Модераторска',
+    icon: Shield,
+    to: '/about',
+    activeOptions: {
+      exact: true,
+    },
+  },
+  {
+    title: 'Налаштування',
+    icon: Settings,
     to: '/about',
     activeOptions: {
       exact: true,
