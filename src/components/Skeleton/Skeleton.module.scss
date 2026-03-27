@@ -1,0 +1,19 @@
+.Skeleton {
+  --base-color: var(--skeleton-bg);
+  --line-height: normal;
+  --border-radius: 0;
+
+  background-color: var(--base-color);
+  block-size: var(--height);
+  inline-size: var(--width);
+  line-height: var(--line-height);
+  border-radius: var(--border-radius);
+
+  animation: skeleton-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}

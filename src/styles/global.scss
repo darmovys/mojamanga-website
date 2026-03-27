@@ -251,6 +251,8 @@ html {
 
   --input-hover-border: oklch(91.583% 0.0001 271.152);
 
+  --skeleton-bg: oklch(57.534% 0.0122 285.939 / 0.17);
+
   // dark theme
   &.dark {
     --bigscreen-bg: #000000;
@@ -273,10 +275,12 @@ html {
     --sys-on-button: var(--tone-1);
     --sys-outline: var(--tone-5);
 
-    --input-hover-border: oklch(32.492% 0.00994 61.039);
-
     --state-on-surface-opacity-variant: oklch(40.225% 0.00706 84.552);
     --state-on-surface-opacity-variant-2: oklch(30% 0 0);
+
+    --input-hover-border: oklch(32.492% 0.00994 61.039);
+
+    --skeleton-bg: oklch(57.534% 0.0122 285.939 / 0.34);
   }
 
   // sizing tokens
