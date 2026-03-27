@@ -14,12 +14,12 @@ import {
   ChevronDown,
   ChevronRight,
   ArrowLeft,
-  Search,
   Settings,
   Bookmark,
   Bell,
   MessageSquare,
   LogOut,
+  Shield,
 } from 'lucide-react'
 import clsx from 'clsx'
 import { useTheme } from '@/lib/theme-provider'
@@ -33,6 +33,7 @@ import { authClient } from '@/lib/auth-client'
 import { showTimedToast } from '@/lib/toast'
 import { catalogLinks, otherLinks, workTypeLinks } from '@/lib/navigation-links'
 import styles from './MobileMenu.module.scss'
+import Skeleton from '../Skeleton'
 
 const outerListVariants: Variants = {
   hidden: { opacity: 0, x: -10, transition: { duration: 0.1 } },
@@ -51,7 +52,7 @@ type MobileMenuProps = {
 }
 
 export default function MobileMenu({ trigger }: MobileMenuProps) {
-  const { data: session } = authClient.useSession()
+  const { data: session, isPending } = authClient.useSession()
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const shouldReduceMotion = useReducedMotion()
@@ -153,46 +154,68 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                   <ScrollArea.Content>
                     <div className={styles.TopSection}>
                       <div className={styles.FlexRow}>
-                        <Button
-                          onClick={toggleTheme}
-                          className={styles.SecondaryButton}
-                        >
-                          {theme === 'light' && (
-                            <>
-                              <Sun size={20} />
-                              <VisuallyHidden>Світлий </VisuallyHidden>
-                            </>
-                          )}
-                          {theme === 'dark' && (
-                            <>
-                              <Moon size={20} />
-                              <VisuallyHidden>Темний </VisuallyHidden>
-                            </>
-                          )}
-                          <span className={styles.Text}>Режим</span>
-                        </Button>
-                        {session?.user ? (
-                          <Button className={styles.SecondaryButton}>
-                            <Settings size={20} />
-                            <span className={styles.Text}>Налаштування</span>
-                          </Button>
+                        {isPending ? (
+                          <Skeleton
+                            height="var(--40px)"
+                            width="100%"
+                            borderRadius="100vmax"
+                          />
                         ) : (
-                          <Button className={styles.SecondaryButton}>
-                            <Search size={20} />
-                            <span className={styles.Text}>Пошук</span>
-                          </Button>
+                          <>
+                            <Button
+                              onClick={toggleTheme}
+                              className={styles.SecondaryButton}
+                            >
+                              {theme === 'light' && (
+                                <>
+                                  <Sun size={20} />
+                                  {session?.user ? (
+                                    <>
+                                      <VisuallyHidden>Світлий</VisuallyHidden>
+                                      <span className={styles.Text}>Режим</span>
+                                    </>
+                                  ) : (
+                                    <span className={styles.Text}>
+                                      Світлий режим
+                                    </span>
+                                  )}
+                                </>
+                              )}
+                              {theme === 'dark' && (
+                                <>
+                                  <Moon size={20} />
+                                  {session?.user ? (
+                                    <>
+                                      <VisuallyHidden>Темний</VisuallyHidden>
+                                      <span className={styles.Text}>Режим</span>
+                                    </>
+                                  ) : (
+                                    <span className={styles.Text}>
+                                      Темний режим
+                                    </span>
+                                  )}
+                                </>
+                              )}
+                            </Button>
+                            {session?.user && (
+                              <Button className={styles.SecondaryButton}>
+                                <Settings size={20} />
+                                <span className={styles.Text}>
+                                  Налаштування
+                                </span>
+                              </Button>
+                            )}
+                          </>
                         )}
                       </div>
-                      {session?.user && (
-                        <Button
-                          style={{ marginTop: 'calc(var(--4px) * -1)' }}
-                          className={styles.SecondaryButton}
-                        >
-                          <Search size={20} />
-                          <span className={styles.Text}>Пошук</span>
-                        </Button>
-                      )}
-                      {!session?.user ? (
+
+                      {isPending ? (
+                        <Skeleton
+                          height="70px"
+                          width="100%"
+                          borderRadius="var(--10px)"
+                        />
+                      ) : !session?.user ? (
                         <Button
                           nativeButton={false}
                           render={<Link to="/login" />}
@@ -403,10 +426,21 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                 <span>{item.title}</span>
                               </Link>
                             ))}
+                            {(session?.user.role === 'ADMIN' ||
+                              session?.user.role === 'MODERATOR') && (
+                              <Link
+                                activeProps={{ className: styles.Active }}
+                                to="/about"
+                                className={styles.AccordionLink}
+                              >
+                                <Shield size={16} />
+                                <span>Модераторська</span>
+                              </Link>
+                            )}
                           </Accordion.Panel>
                         </Accordion.Item>
                       </Accordion.Root>
-                      {session?.user && (
+                      {!isPending && session?.user && (
                         <Button
                           onClick={handleLogout}
                           className={styles.ExitButton}

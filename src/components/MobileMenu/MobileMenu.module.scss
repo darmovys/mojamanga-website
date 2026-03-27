@@ -101,7 +101,6 @@
   flex: 1;
   padding: var(--8px);
   background-color: var(--sys-on-surface-highest);
-  border-radius: var(--12px);
   transition: background-color 0.6s ease;
 
   &:active {
@@ -290,6 +289,7 @@
   border-radius: 12px;
   color: var(--danger);
   background-color: var(--danger-background);
+  will-change: transform;
 
   &:active {
     background-color: var(--danger-background-active);
