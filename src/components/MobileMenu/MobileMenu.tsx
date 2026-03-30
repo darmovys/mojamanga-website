@@ -24,7 +24,7 @@ import {
 import clsx from 'clsx'
 import { useTheme } from '@/lib/theme-provider'
 import { Accordion, Button, ScrollArea, Separator } from '@base-ui/react'
-import { Link } from '@tanstack/react-router'
+import { Link, useRouter } from '@tanstack/react-router'
 import useNestedMenuAnimation from './use-nested-menu-animation'
 import Logo from '../Logo'
 import VisuallyHidden from '../VisuallyHidden'
@@ -32,8 +32,9 @@ import { Image } from '@unpic/react'
 import { authClient } from '@/lib/auth-client'
 import { showTimedToast } from '@/lib/toast'
 import { catalogLinks, otherLinks, workTypeLinks } from '@/lib/navigation-links'
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { authQueries } from '@/services/queries'
 import styles from './MobileMenu.module.scss'
-import Skeleton from '../Skeleton'
 
 const outerListVariants: Variants = {
   hidden: { opacity: 0, x: -10, transition: { duration: 0.1 } },
@@ -52,7 +53,10 @@ type MobileMenuProps = {
 }
 
 export default function MobileMenu({ trigger }: MobileMenuProps) {
-  const { data: session, isPending } = authClient.useSession()
+  const queryClient = useQueryClient()
+  const router = useRouter()
+  const { data: authState } = useSuspenseQuery(authQueries.user())
+
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const shouldReduceMotion = useReducedMotion()
@@ -67,7 +71,13 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
   async function handleLogout() {
     await authClient.signOut({
       fetchOptions: {
-        onSuccess: () => {
+        onSuccess: async () => {
+          await queryClient.invalidateQueries({
+            queryKey: authQueries.all,
+          })
+
+          await router.invalidate()
+
           showTimedToast(
             {
               type: 'success',
@@ -154,68 +164,50 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                   <ScrollArea.Content>
                     <div className={styles.TopSection}>
                       <div className={styles.FlexRow}>
-                        {isPending ? (
-                          <Skeleton
-                            height="var(--40px)"
-                            width="100%"
-                            borderRadius="100vmax"
-                          />
-                        ) : (
-                          <>
-                            <Button
-                              onClick={toggleTheme}
-                              className={styles.SecondaryButton}
-                            >
-                              {theme === 'light' && (
+                        <Button
+                          onClick={toggleTheme}
+                          className={styles.SecondaryButton}
+                        >
+                          {theme === 'light' && (
+                            <>
+                              <Sun size={20} />
+                              {authState.user ? (
                                 <>
-                                  <Sun size={20} />
-                                  {session?.user ? (
-                                    <>
-                                      <VisuallyHidden>Світлий</VisuallyHidden>
-                                      <span className={styles.Text}>Режим</span>
-                                    </>
-                                  ) : (
-                                    <span className={styles.Text}>
-                                      Світлий режим
-                                    </span>
-                                  )}
+                                  <VisuallyHidden>Світлий</VisuallyHidden>
+                                  <span className={styles.Text}>Режим</span>
                                 </>
-                              )}
-                              {theme === 'dark' && (
-                                <>
-                                  <Moon size={20} />
-                                  {session?.user ? (
-                                    <>
-                                      <VisuallyHidden>Темний</VisuallyHidden>
-                                      <span className={styles.Text}>Режим</span>
-                                    </>
-                                  ) : (
-                                    <span className={styles.Text}>
-                                      Темний режим
-                                    </span>
-                                  )}
-                                </>
-                              )}
-                            </Button>
-                            {session?.user && (
-                              <Button className={styles.SecondaryButton}>
-                                <Settings size={20} />
+                              ) : (
                                 <span className={styles.Text}>
-                                  Налаштування
+                                  Світлий режим
                                 </span>
-                              </Button>
-                            )}
-                          </>
+                              )}
+                            </>
+                          )}
+                          {theme === 'dark' && (
+                            <>
+                              <Moon size={20} />
+                              {authState.user ? (
+                                <>
+                                  <VisuallyHidden>Темний</VisuallyHidden>
+                                  <span className={styles.Text}>Режим</span>
+                                </>
+                              ) : (
+                                <span className={styles.Text}>
+                                  Темний режим
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </Button>
+                        {authState.user && (
+                          <Button className={styles.SecondaryButton}>
+                            <Settings size={20} />
+                            <span className={styles.Text}>Налаштування</span>
+                          </Button>
                         )}
                       </div>
 
-                      {isPending ? (
-                        <Skeleton
-                          height="70px"
-                          width="100%"
-                          borderRadius="var(--10px)"
-                        />
-                      ) : !session?.user ? (
+                      {!authState.isAuthenticated ? (
                         <Button
                           nativeButton={false}
                           render={<Link to="/login" />}
@@ -237,13 +229,13 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                               className={styles.UserAvatar}
                               layout="fullWidth"
                               src={
-                                session.user.image ??
-                                `https://api.dicebear.com/9.x/glass/svg?seed=${session.user.displayUsername}`
+                                authState.user.image ??
+                                `https://api.dicebear.com/9.x/glass/svg?seed=${authState.user.displayUsername}`
                               }
-                              alt={session.user.name}
+                              alt={authState.user.name}
                             />
                             <div className={styles.UserName}>
-                              {session.user.displayUsername}
+                              {authState.user.displayUsername}
                             </div>
                           </Link>
                           <div className={styles.UserCardLinks}>
@@ -426,21 +418,23 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                 <span>{item.title}</span>
                               </Link>
                             ))}
-                            {(session?.user.role === 'ADMIN' ||
-                              session?.user.role === 'MODERATOR') && (
-                              <Link
-                                activeProps={{ className: styles.Active }}
-                                to="/about"
-                                className={styles.AccordionLink}
-                              >
-                                <Shield size={16} />
-                                <span>Модераторська</span>
-                              </Link>
-                            )}
+
+                            {authState.isAuthenticated &&
+                              (authState.user.role === 'ADMIN' ||
+                                authState.user.role === 'MODERATOR') && (
+                                <Link
+                                  activeProps={{ className: styles.Active }}
+                                  to="/about"
+                                  className={styles.AccordionLink}
+                                >
+                                  <Shield size={16} />
+                                  <span>Модераторська</span>
+                                </Link>
+                              )}
                           </Accordion.Panel>
                         </Accordion.Item>
                       </Accordion.Root>
-                      {!isPending && session?.user && (
+                      {authState.isAuthenticated && (
                         <Button
                           onClick={handleLogout}
                           className={styles.ExitButton}

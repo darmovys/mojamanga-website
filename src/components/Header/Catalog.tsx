@@ -19,7 +19,7 @@ export function Catalog() {
             {catalogLinks.map((link) => {
               if (link.title === 'Твори') {
                 return (
-                  <Menu.SubmenuRoot>
+                  <Menu.SubmenuRoot key={link.title}>
                     <Menu.SubmenuTrigger
                       className={styles.SubmenuTrigger}
                       render={<Link to={link.to} />}

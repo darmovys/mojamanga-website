@@ -1,5 +1,5 @@
-import { Button, Menu, Separator } from '@base-ui/react'
-import { Link } from '@tanstack/react-router'
+import { Menu, Separator } from '@base-ui/react'
+import { Link, useRouter } from '@tanstack/react-router'
 import { userLinks } from '@/lib/navigation-links'
 import clsx from 'clsx'
 import { Image } from '@unpic/react'
@@ -9,6 +9,8 @@ import { authClient } from '@/lib/auth-client'
 import { showTimedToast } from '@/lib/toast'
 import { ArrowSvg } from './ArrowSvg'
 import styles from './DropdownMenu.module.scss'
+import { useQueryClient } from '@tanstack/react-query'
+import { authQueries } from '@/services/queries'
 
 export const userMenuHandle = Menu.createHandle()
 
@@ -17,10 +19,18 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user }: UserMenuProps) {
+  const queryClient = useQueryClient()
+  const router = useRouter()
   async function handleLogout() {
     await authClient.signOut({
       fetchOptions: {
-        onSuccess: () => {
+        onSuccess: async () => {
+          await queryClient.invalidateQueries({
+            queryKey: authQueries.all,
+          })
+
+          await router.invalidate()
+
           showTimedToast(
             {
               type: 'success',
@@ -102,11 +112,7 @@ export function UserMenu({ user }: UserMenuProps) {
               }
             })}
             <Separator orientation="horizontal" className={styles.Separator} />
-            <Menu.Item
-              onClick={handleLogout}
-              render={<Button />}
-              className={styles.ExitButton}
-            >
+            <Menu.Item onClick={handleLogout} className={styles.ExitButton}>
               <LogOut size={18} />
               <span>Вийти</span>
             </Menu.Item>

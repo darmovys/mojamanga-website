@@ -1,5 +1,5 @@
-import { api } from '@/lib/api-client'
 import { queryOptions } from '@tanstack/react-query'
+import { api } from '@/lib/api-client'
 
 export const authQueries = {
   all: ['auth'],
@@ -15,6 +15,5 @@ export const authQueries = {
 
         return response.data
       },
-      staleTime: 1000 * 60 * 5,
     }),
 }

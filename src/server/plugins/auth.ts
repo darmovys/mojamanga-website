@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { Elysia } from 'elysia'
 import { cors } from '@elysiajs/cors'
 import { redirect } from '@tanstack/react-router'
+import { getRequestHeaders } from '@tanstack/react-start/server'
 
 export const betterAuthPlugin = new Elysia({
   name: 'better-auth',
@@ -18,7 +19,8 @@ export const betterAuthPlugin = new Elysia({
   .mount(auth.handler)
   .macro({
     authed: {
-      async resolve({ status, request: { headers } }) {
+      async resolve({ status }) {
+        const headers = getRequestHeaders()
         const session = await auth.api.getSession({
           headers,
         })
@@ -30,14 +32,24 @@ export const betterAuthPlugin = new Elysia({
       },
     },
   })
-  .get('/user_session', async ({ request }) => {
-    if (!request?.headers) {
-      return null
+  .get('/user_session', async () => {
+    const headers = getRequestHeaders()
+
+    const userSession = await auth.api.getSession({ headers: headers })
+
+    if (userSession?.user) {
+      return {
+        isAuthenticated: true as const,
+        user: userSession.user,
+        session: userSession.session,
+      }
     }
 
-    const userSession = await auth.api.getSession({ headers: request.headers })
-
-    return userSession
+    return {
+      isAuthenticated: false as const,
+      user: undefined,
+      session: undefined,
+    }
   })
   .get(
     '/is-moderator',

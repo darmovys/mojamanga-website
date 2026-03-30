@@ -1,11 +1,14 @@
 import { authClient } from '@/lib/auth-client'
 import { showTimedToast } from '@/lib/toast'
 import { loginSchema } from '@/schemas/auth'
+import { authQueries } from '@/services/queries'
 import { revalidateLogic, useForm } from '@tanstack/react-form-start'
+import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useState, useTransition } from 'react'
 
 export function useLogin() {
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [isPending, startIsPendingTransition] = useTransition()
   const [isPasswordShown, setIsPasswordShown] = useState(false)
@@ -36,7 +39,10 @@ export function useLogin() {
             rememberMe: value.rememberMe,
             fetchOptions: {
               headers: { 'x-captcha-response': value.cfToken },
-              onSuccess: () => {
+              onSuccess: async () => {
+                await queryClient.invalidateQueries({
+                  queryKey: authQueries.all,
+                })
                 navigate({ to: '/' })
                 showTimedToast(
                   {

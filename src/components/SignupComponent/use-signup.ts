@@ -1,13 +1,16 @@
 import { authClient } from '@/lib/auth-client'
 import { showTimedToast } from '@/lib/toast'
 import { ALLOWED_SYMBOLS, signupSchema } from '@/schemas/auth'
+import { authQueries } from '@/services/queries'
 import { revalidateLogic, useForm, useStore } from '@tanstack/react-form-start'
+import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useRef, useState, useTransition } from 'react'
 
 type StrengthScore = 1 | 2 | 3 | 4 | 5
 
 export function useSignup() {
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [isPending, startTransition] = useTransition()
   const [isPasswordShown, setIsPasswordShown] = useState(false)
@@ -51,7 +54,10 @@ export function useSignup() {
           name: value.username,
           fetchOptions: {
             headers: { 'x-captcha-response': value.cfToken },
-            onSuccess: () => {
+            onSuccess: async () => {
+              await queryClient.invalidateQueries({
+                queryKey: authQueries.all,
+              })
               navigate({ to: '/' })
               showTimedToast(
                 {

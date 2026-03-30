@@ -15,6 +15,7 @@ import GlobalSearchSection from '@/components/GlobalSearchSection'
 import globalCSS from '@/styles/global.scss?url'
 import AppToasts from '@/components/AppToasts'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { authQueries } from '@/services/queries'
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
@@ -37,6 +38,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { rel: 'stylesheet', href: globalCSS, suppressHydrationWarning: true },
       ],
     }),
+    beforeLoad: async ({ context }) => {
+      const authState = await context.queryClient.ensureQueryData(
+        authQueries.user(),
+      )
+
+      return { authState }
+    },
+
     component: RootComponent,
   },
 )

@@ -1,5 +1,5 @@
 import { useTheme } from '@/lib/theme-provider'
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Link, Outlet, redirect } from '@tanstack/react-router'
 import styles from './route.module.scss'
 import { Button } from '@base-ui/react'
 import Logo from '@/components/Logo'
@@ -12,6 +12,14 @@ export const Route = createFileRoute('/_auth')({
     showMobileNavbar: false,
     showGlobalSearchSection: false,
     showStandardHeader: false,
+  },
+  beforeLoad: async ({ context, location }) => {
+    if (context.authState.isAuthenticated) {
+      throw redirect({
+        to: '/',
+        search: { redirect: location.href },
+      })
+    }
   },
 })
 
