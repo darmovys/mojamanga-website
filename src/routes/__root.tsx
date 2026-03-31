@@ -82,12 +82,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <div id="root">
             {showNavbar && <MobileNavigation />}
             {showStandardHeader && <Header />}
-            {showGlobalSearchSection && <GlobalSearchSection />}
+            {showGlobalSearchSection && (
+              <GlobalSearchSection isHiddenOnMobile={true} />
+            )}
             {children}
           </div>
         </ThemeProvider>
-        <TanStackRouterDevtools position="bottom-right" />
-        <ReactQueryDevtools buttonPosition="bottom-left" />
+        {/* <TanStackRouterDevtools position="bottom-right" />
+        <ReactQueryDevtools buttonPosition="bottom-left" /> */}
 
         <Scripts />
       </body>

@@ -1,19 +1,22 @@
 @use '../../styles/breakpoints' as *;
 
 .Wrapper {
+  display: var(--display);
   background-color: var(--sys-surface);
   padding: var(--8px) var(--10px);
   position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
   transition: transform 300ms ease-in-out;
   will-change: transform;
   z-index: 9;
+  padding: var(--4px) var(--16px) var(--8px);
 
   @include up('tablet') {
-    top: 69px; // Компенсує висоту header-а
+    display: block;
     padding: var(--4px) var(--16px) var(--8px);
+    inset-block-start: 69px; // Компенсує висоту header-а
   }
 
   @include up('laptop') {

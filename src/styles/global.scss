@@ -1,3 +1,5 @@
+@use './breakpoints' as *;
+
 /* CSS RESET (from https://www.joshwcomeau.com/css/custom-css-reset/) */
 
 /* 1. Use a more-intuitive box-sizing model */
@@ -73,6 +75,10 @@ h6 {
   */
 #root {
   isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100vh; /* Резервний варіант для старих браузерів */
+  min-block-size: 100dvh;
 }
 
 /* GLOBAL STYLES */
@@ -284,6 +290,11 @@ html {
   }
 
   // sizing tokens
+  --bottom-menu-size: 4.375rem;
+  @include up('tablet') {
+    --bottom-menu-size: 0;
+  }
+
   --2px: 0.125rem;
   --4px: 0.25rem;
   --8px: 0.5rem;
@@ -301,13 +312,18 @@ html {
   --64px: 4rem;
   --96px: 6rem;
   --128px: 8rem;
+  --160px: 10rem;
   --192px: 12rem;
+  --220px: 13.75rem;
   --256px: 16rem;
   --288px: 18rem;
   --432px: 27rem;
   --512px: 32rem;
-  --640px: 40rem;
+  --650px: 40.625rem;
   --768px: 48rem;
+  --960px: 60rem;
+  --1100px: 68.75rem;
+  --1500px: 93.75rem;
 
   // shadow tokens
   --shadow-color: from var(--bigscreen-bg) l c h;

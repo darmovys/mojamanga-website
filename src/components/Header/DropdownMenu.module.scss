@@ -99,6 +99,14 @@
   }
 }
 
+.AddContentPopup {
+  composes: Popup;
+
+  .Item {
+    inline-size: auto;
+  }
+}
+
 .UserItem {
   composes: Item;
   outline: 1px solid var(--sys-outline-variant);

@@ -2,11 +2,12 @@
 
 .Wrapper {
   position: fixed;
-  bottom: 0;
-  left: 0;
+  inset-block-end: 0;
+  inset-inline-start: 0;
   background-color: var(--sys-surface);
-  padding: var(--12px) 0;
-  width: 100%;
+  block-size: var(--bottom-menu-size);
+  align-items: center;
+  inline-size: 100%;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   box-shadow: 0 3px 6px oklch(59.132% 0.01431 63.658/ 0.2);
@@ -20,7 +21,7 @@
   display: flex;
   justify-content: center;
   min-width: 0;
-  width: 100%;
+  inline-size: 100%;
 }
 
 .NavLink {
@@ -50,7 +51,7 @@
 .ItemTitle {
   overflow: hidden;
   display: block;
-  width: 100%;
+  inline-size: 100%;
   white-space: nowrap;
   text-overflow: ellipsis;
   text-align: center;
@@ -58,7 +59,7 @@
 }
 
 .NavLinkIcon {
-  width: fit-content;
+  inline-size: fit-content;
   margin-inline: auto;
   flex-shrink: 0;
 }
