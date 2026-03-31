@@ -15,7 +15,9 @@ import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TeamIndexRouteImport } from './routes/team/index'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as TeamCreateIndexRouteImport } from './routes/team/create/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
 
@@ -48,9 +50,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamIndexRoute = TeamIndexRouteImport.update({
+  id: '/team/',
+  path: '/team/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamCreateIndexRoute = TeamCreateIndexRouteImport.update({
+  id: '/team/create/',
+  path: '/team/create/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignupIndexRoute = AuthSignupIndexRouteImport.update({
@@ -71,8 +83,10 @@ export interface FileRoutesByFullPath {
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/team/': typeof TeamIndexRoute
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
+  '/team/create/': typeof TeamCreateIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -81,8 +95,10 @@ export interface FileRoutesByTo {
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/team': typeof TeamIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
+  '/team/create': typeof TeamCreateIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,8 +109,10 @@ export interface FileRoutesById {
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/team/': typeof TeamIndexRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
+  '/team/create/': typeof TeamCreateIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -105,8 +123,10 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/notifications'
     | '/api/$'
+    | '/team/'
     | '/login/'
     | '/signup/'
+    | '/team/create/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -115,8 +135,10 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/notifications'
     | '/api/$'
+    | '/team'
     | '/login'
     | '/signup'
+    | '/team/create'
   id:
     | '__root__'
     | '/'
@@ -126,8 +148,10 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/notifications'
     | '/api/$'
+    | '/team/'
     | '/_auth/login/'
     | '/_auth/signup/'
+    | '/team/create/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -138,6 +162,8 @@ export interface RootRouteChildren {
   CatalogRoute: typeof CatalogRoute
   NotificationsRoute: typeof NotificationsRoute
   ApiSplatRoute: typeof ApiSplatRoute
+  TeamIndexRoute: typeof TeamIndexRoute
+  TeamCreateIndexRoute: typeof TeamCreateIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -184,11 +210,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/team/': {
+      id: '/team/'
+      path: '/team'
+      fullPath: '/team/'
+      preLoaderRoute: typeof TeamIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/$': {
       id: '/api/$'
       path: '/api/$'
       fullPath: '/api/$'
       preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/team/create/': {
+      id: '/team/create/'
+      path: '/team/create'
+      fullPath: '/team/create/'
+      preLoaderRoute: typeof TeamCreateIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/signup/': {
@@ -230,6 +270,8 @@ const rootRouteChildren: RootRouteChildren = {
   CatalogRoute: CatalogRoute,
   NotificationsRoute: NotificationsRoute,
   ApiSplatRoute: ApiSplatRoute,
+  TeamIndexRoute: TeamIndexRoute,
+  TeamCreateIndexRoute: TeamCreateIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

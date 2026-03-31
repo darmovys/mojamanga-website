@@ -1,0 +1,125 @@
+@use '../../../styles/breakpoints' as *;
+
+.MaxWidthWrapper {
+  min-block-size: 100dvh;
+  max-inline-size: var(--1100px);
+  margin-inline: auto;
+  inline-size: 100%;
+
+  @include up('tablet') {
+    margin-block-start: var(--16px);
+    padding-inline: var(--24px);
+  }
+
+  @include up('laptop') {
+    padding-inline: var(--16px);
+  }
+}
+
+.Wrapper {
+  block-size: 100dvh;
+  background-color: var(--sys-surface-highest);
+  color: var(--sys-on-surface);
+
+  @include up('tablet') {
+    border-start-start-radius: var(--8px);
+    border-start-end-radius: var(--8px);
+  }
+}
+
+.Content {
+  position: relative;
+  block-size: 100dvh;
+  padding: var(--16px);
+}
+
+.ContentTitle {
+  display: none;
+
+  @include up('tablet') {
+    display: revert;
+    font-size: var(--20px);
+    font-weight: 500;
+    margin-block-end: var(--10px);
+  }
+}
+
+.Label {
+  display: block;
+  font-size: var(--14px);
+  color: var(--sys-on-surface-variant);
+  margin-block-end: var(--4px);
+}
+
+.FooterMenu {
+  background-color: var(--sys-surface-highest);
+  border-block-start: 1px solid var(--sys-outline);
+  padding: var(--12px);
+  position: sticky;
+  inset-block-end: var(--bottom-menu-size);
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  z-index: 9;
+  display: flex;
+  gap: var(--8px);
+
+  @include up('tablet') {
+    border-end-start-radius: var(--8px);
+    border-end-end-radius: var(--8px);
+  }
+}
+
+.UploadZone {
+  --height: var(--220px);
+  --width: var(--160px);
+  --enter-time: 350ms;
+  --leave-time: 450ms;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  inline-size: var(--width);
+  block-size: var(--height);
+  border-radius: var(--4px);
+  color: var(--sys-on-surface-variant);
+  position: relative;
+  transition: color var(--leave-time) ease;
+
+  &:hover {
+    color: var(--sys-on-surface);
+    transition: color var(--enter-time) ease;
+
+    .Rectangle {
+      transition: stroke var(--enter-time) ease;
+
+      stroke: var(--sys-on-surface);
+
+      animation: marching-ants 1.3s linear infinite;
+      animation-delay: 0.8ms;
+    }
+  }
+}
+
+.UploadZoneBorder {
+  position: absolute;
+  inline-size: var(--width);
+  block-size: var(--height);
+  pointer-events: none;
+}
+
+.Rectangle {
+  inline-size: var(--width);
+  block-size: var(--height);
+  rx: var(--8px);
+  fill: transparent;
+  stroke: var(--sys-outline);
+  stroke-width: 3;
+  stroke-dasharray: 5 2;
+  transition: stroke var(--leave-time) ease;
+}
+
+@keyframes marching-ants {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
