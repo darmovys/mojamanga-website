@@ -1,0 +1,39 @@
+@use '../../styles/breakpoints' as *;
+
+.GoBackHeader {
+  position: sticky;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  inset-inline-start: 0;
+  z-index: 10;
+  color: var(--sys-on-surface);
+  background-color: var(--sys-surface);
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  padding: var(--14px) var(--8px);
+
+  @include up('tablet') {
+    display: none;
+  }
+}
+
+.Header {
+  font-size: var(--16px);
+  font-weight: 460;
+}
+
+.BackButton {
+  block-size: var(--32px);
+  inline-size: var(--32px);
+  background-color: transparent;
+  border: none;
+  color: inherit;
+  outline-offset: 2px;
+  position: relative; // for click target helper
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
