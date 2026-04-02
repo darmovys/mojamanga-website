@@ -69,23 +69,38 @@
   }
 }
 
+.UploadAvatarWrapper {
+  --height: var(--200px);
+  --width: var(--140px);
+  --border-radius: var(--8px);
+  display: flex;
+  gap: var(--16px);
+
+  @include up('tablet') {
+    --height: var(--220px);
+    --width: var(--160px);
+  }
+}
+
+.AvatarBlock {
+  inline-size: var(--width);
+  block-size: var(--height);
+}
+
 .UploadZone {
-  --height: var(--220px);
-  --width: var(--160px);
+  composes: AvatarBlock;
   --enter-time: 350ms;
   --leave-time: 450ms;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  inline-size: var(--width);
-  block-size: var(--height);
-  border-radius: var(--4px);
   color: var(--sys-on-surface-variant);
   position: relative;
   transition: color var(--leave-time) ease;
 
-  &:hover {
+  &[data-drag-active='true'] {
     color: var(--sys-on-surface);
     transition: color var(--enter-time) ease;
 
@@ -97,6 +112,36 @@
       animation: marching-ants 1.3s linear infinite;
       animation-delay: 0.8ms;
     }
+  }
+
+  @media (pointer: fine) {
+    &:hover {
+      color: var(--sys-on-surface);
+      transition: color var(--enter-time) ease;
+
+      .Rectangle {
+        transition: stroke var(--enter-time) ease;
+        stroke: var(--sys-on-surface);
+      }
+    }
+  }
+  &[data-drag-active='true'] {
+    color: var(--sys-on-surface);
+    transition: color var(--enter-time) ease;
+
+    .Rectangle {
+      transition: stroke var(--enter-time) ease;
+      stroke: var(--sys-on-surface);
+
+      animation: marching-ants 1.3s linear infinite;
+      animation-delay: 0.8ms;
+    }
+  }
+
+  &:focus-visible {
+    border-radius: var(--4px);
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
   }
 }
 
@@ -110,7 +155,7 @@
 .Rectangle {
   inline-size: var(--width);
   block-size: var(--height);
-  rx: var(--8px);
+  rx: var(--border-radius);
   fill: transparent;
   stroke: var(--sys-outline);
   stroke-width: 3;
@@ -118,8 +163,80 @@
   transition: stroke var(--leave-time) ease;
 }
 
+.UploadedAvatar {
+  composes: AvatarBlock;
+  overflow: hidden; // to crop image corners
+  border-radius: var(--border-radius);
+  position: relative;
+
+  img {
+    object-fit: cover;
+    object-position: center;
+    inline-size: var(--width);
+    block-size: var(--height);
+    pointer-events: none;
+    user-select: none;
+  }
+}
+
+.Loading {
+  position: absolute;
+  inset: 0;
+  background: oklch(0% 0 0 / 0.7);
+  display: grid;
+  place-content: center;
+  color: #fff;
+}
+
+.TrashButton {
+  --inset: var(--8px);
+  --size: var(--32px);
+  position: absolute;
+  inset-block-start: var(--inset);
+  inset-inline-end: var(--inset);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  inline-size: var(--size);
+  block-size: var(--size);
+  background-color: var(--danger-background-active);
+  opacity: 0.8;
+  border-radius: var(--8px);
+  color: var(--danger);
+  border: none;
+  cursor: pointer;
+  transition: opacity 300ms ease;
+
+  &:hover,
+  &:focus-visible {
+    transition-duration: 250ms;
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.Loader {
+  animation: spin 1000ms linear infinite;
+}
+
 @keyframes marching-ants {
   to {
     stroke-dashoffset: -28;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
