@@ -1,0 +1,69 @@
+.Overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--default-overlay-color);
+}
+
+.Popup {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  inline-size: 90vw;
+  max-width: var(--800px);
+  block-size: fit-content;
+  background: var(--sys-surface-highest);
+  border-radius: var(--12px);
+  padding: var(--16px) var(--24px);
+}
+
+.Heading {
+  margin-block-end: var(--8px);
+  font-size: var(--24px);
+  color: var(--sys-primary);
+}
+
+.ActionsSection {
+  display: flex;
+  margin-block-start: var(--12px);
+  gap: var(--8px);
+}
+
+.Button {
+  --border-radius: 100vmax;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  padding: var(--4px) var(--12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  outline: 2px solid var(--sys-primary);
+  outline-offset: -2px;
+  background-color: transparent;
+
+  &:focus-visible,
+  &:hover {
+    outline: none;
+  }
+}
+
+.CancelButton {
+  composes: Button;
+  color: var(--sys-primary);
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-8);
+    }
+  }
+
+  &:focus-visible {
+    background-color: var(--state-primary-opacity-8);
+  }
+}
+
+.ClipButton {
+  composes: Button;
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+}

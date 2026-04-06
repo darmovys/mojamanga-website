@@ -32,7 +32,7 @@ export const filesRouter = new Elysia({
             async ({ body, user }) => {
               const { contentType, fileName, size } = body
 
-              const uniqueKey = `uploads/${user.id}/${createId()}-${fileName.replace(/\s+/g, '_')}`
+              const uniqueKey = `uploads/temp/${user.id}/${createId()}-${fileName.replace(/\s+/g, '_')}`
 
               const command = new PutObjectCommand({
                 Bucket: process.env.S3_BUCKET_NAME!,
@@ -78,7 +78,7 @@ export const filesRouter = new Elysia({
 
               await S3.send(command)
 
-              return { message: 'Файл успішно видалено' }
+              return { message: 'Зображення видалено' }
             },
             {
               authed: true,

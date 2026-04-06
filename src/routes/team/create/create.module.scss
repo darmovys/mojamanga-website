@@ -179,13 +179,17 @@
   }
 }
 
-.Loading {
+.Overlay {
   position: absolute;
   inset: 0;
   background: oklch(0% 0 0 / 0.7);
   display: grid;
   place-content: center;
   color: #fff;
+}
+
+.Error {
+  color: var(--danger);
 }
 
 .TrashButton {

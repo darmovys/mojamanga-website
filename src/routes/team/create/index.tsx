@@ -2,14 +2,17 @@ import { createFileRoute } from '@tanstack/react-router'
 import styles from './create.module.scss'
 import GoBackHeader from '@/components/GoBackHeader'
 import { Button } from '@base-ui/react'
-import { LoaderCircle, Trash2, UploadCloud } from 'lucide-react'
+import { CircleAlert, LoaderCircle, Trash2, UploadCloud } from 'lucide-react'
 import { FileRejection, useDropzone } from 'react-dropzone'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { Image } from '@unpic/react'
 import { api } from '@/lib/api-client'
 import VisuallyHidden from '@/components/VisuallyHidden'
 import ClickTargetHelper from '@/components/ClickTargetHelper'
+import Resizer from 'react-image-file-resizer'
+import CropImageDialog from '@/components/CropImageDialog'
+import { AnimatePresence } from 'motion/react'
 
 export const Route = createFileRoute('/team/create/')({
   component: RouteComponent,
@@ -27,19 +30,38 @@ interface FileState {
 
 function RouteComponent() {
   const [fileState, setFileState] = useState<FileState | null>(null)
+  const [imageToCrop, setImageToCrop] = useState<File | null>(null)
+
+  const [cropImageUrl, setCropImageUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!imageToCrop) {
+      setCropImageUrl(null)
+      return
+    }
+
+    const newUrl = URL.createObjectURL(imageToCrop)
+    setCropImageUrl(newUrl)
+
+    return () => {
+      URL.revokeObjectURL(newUrl)
+    }
+  }, [imageToCrop])
+
+  useEffect(() => {
+    return () => {
+      if (fileState?.objectUrl) {
+        URL.revokeObjectURL(fileState.objectUrl)
+      }
+    }
+  }, [fileState?.objectUrl])
 
   async function removeFile() {
     if (!fileState) return
 
     if (!fileState.key) {
-      showTimedToast(
-        {
-          type: 'error',
-          title: 'Помилка',
-          description: 'Відсутній ключ файлу',
-        },
-        3000,
-      )
+      if (fileState.objectUrl) URL.revokeObjectURL(fileState.objectUrl)
+      setFileState(null)
       return
     }
 
@@ -75,11 +97,10 @@ function RouteComponent() {
         return
       }
 
-      showTimedToast({ type: 'success', title: data.message }, 4000)
-
-      if (fileState.objectUrl) {
-        URL.revokeObjectURL(fileState.objectUrl)
-      }
+      showTimedToast(
+        { type: 'success', title: 'Успіх', description: data.message },
+        4000,
+      )
 
       setFileState(null)
     } catch (_) {
@@ -117,11 +138,8 @@ function RouteComponent() {
       })
 
       if (error !== null) {
-        if (error.value === 'Файл не валідний') {
-          showTimedToast(
-            { type: 'error', title: 'Помилка', description: error.value },
-            4000,
-          )
+        if (error.value === 'Необхідна авторизація') {
+          showAuthToast()
         } else if (error.status === 422) {
           showTimedToast(
             {
@@ -129,6 +147,11 @@ function RouteComponent() {
               title: 'Помилка',
               description: error.value.message,
             },
+            4000,
+          )
+        } else {
+          showTimedToast(
+            { type: 'error', title: 'Помилка', description: error.value },
             4000,
           )
         }
@@ -163,7 +186,11 @@ function RouteComponent() {
                 : null,
             )
             showTimedToast(
-              { type: 'success', title: 'Файл успішно завантажено' },
+              {
+                type: 'success',
+                title: 'Успіх',
+                description: 'Зображення завантажено',
+              },
               3000,
             )
             resolve()
@@ -186,9 +213,71 @@ function RouteComponent() {
     }
   }
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  function cropFile(file: File) {
+    Resizer.imageFileResizer(
+      file,
+      99999,
+      99999,
+      'webp',
+      100,
+      0,
+      (uri) => setImageToCrop(uri as File),
+      'file',
+    )
+  }
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
-      uploadFile(acceptedFiles[0])
+      const receivedFile = acceptedFiles[0]
+      try {
+        const dimensions = await getImageDimensions(receivedFile)
+        if (dimensions.height === 525 && dimensions.width === 375) {
+          Resizer.imageFileResizer(
+            receivedFile,
+            99999,
+            99999,
+            'webp',
+            100,
+            0,
+            (uri) => uploadFile(uri as File),
+            'file',
+          )
+        } else if (dimensions.height < 525) {
+          showTimedToast(
+            {
+              type: 'warning',
+              title: 'Попередження',
+              description:
+                'Висота зображення повинна становити принаймні 375px',
+            },
+            4000,
+          )
+          return
+        } else if (dimensions.width < 525) {
+          showTimedToast(
+            {
+              type: 'warning',
+              title: 'Попередження',
+              description:
+                'Ширина зображення повинна становити принаймні 525px',
+            },
+            4000,
+          )
+          return
+        } else {
+          cropFile(receivedFile)
+        }
+      } catch (_) {
+        showTimedToast(
+          {
+            type: 'error',
+            title: 'Помилка',
+            description: 'Не вдалося завантажити зображення',
+          },
+          4000,
+        )
+        return
+      }
     }
   }, [])
 
@@ -258,6 +347,7 @@ function RouteComponent() {
                 <UploadCloud size={20} />
                 <span>Завантажте</span>
                 <span>фото</span>
+
                 <svg
                   className={styles.UploadZoneBorder}
                   xmlns="http://www.w3.org/2000/svg"
@@ -277,8 +367,16 @@ function RouteComponent() {
                 />
 
                 {fileState.uploading && !fileState.isDeleting && (
-                  <div className={styles.Loading}>{fileState.progress}%</div>
+                  <div className={styles.Overlay}>{fileState.progress}%</div>
                 )}
+
+                {!fileState.uploading &&
+                  !fileState.isDeleting &&
+                  fileState.error && (
+                    <div className={styles.Overlay}>
+                      <CircleAlert className={styles.Error} size={30} />
+                    </div>
+                  )}
 
                 {!fileState.uploading && (
                   <Button
@@ -303,6 +401,33 @@ function RouteComponent() {
                 )}
               </div>
             )}
+            <AnimatePresence>
+              {imageToCrop && cropImageUrl && (
+                <CropImageDialog
+                  src={cropImageUrl}
+                  originalName={imageToCrop.name}
+                  croppedWidth={375}
+                  croppedHeight={525}
+                  onCropped={(file) => {
+                    if (!file) {
+                      showTimedToast(
+                        {
+                          type: 'error',
+                          title: 'Помилка',
+                          description: 'Не вдалося обрізати зображення',
+                        },
+                        3000,
+                      )
+                      return
+                    }
+                    uploadFile(file)
+                  }}
+                  onClose={() => {
+                    setImageToCrop(null)
+                  }}
+                />
+              )}
+            </AnimatePresence>
           </div>
         </div>
         <footer className={styles.FooterMenu}>
@@ -312,4 +437,25 @@ function RouteComponent() {
       </div>
     </div>
   )
+}
+
+const getImageDimensions = (
+  file: File,
+): Promise<{ width: number; height: number }> => {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const img = new window.Image()
+
+    img.onload = () => {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight })
+      URL.revokeObjectURL(url)
+    }
+
+    img.onerror = () => {
+      reject(new Error('Не вдалося завантажити зображення'))
+      URL.revokeObjectURL(url)
+    }
+
+    img.src = url
+  })
 }
