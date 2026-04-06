@@ -11,14 +11,14 @@
   transition:
     transform 150ms,
     opacity 150ms;
+  outline: 1px solid var(--sys-outline-variant);
+  box-shadow: var(--shadow-border);
 
   &[data-starting-style],
   &[data-ending-style] {
     opacity: 0;
     transform: scale(0.9);
   }
-
-  outline: 1px solid var(--sys-outline-variant);
 }
 
 .Arrow {
@@ -91,24 +91,18 @@
   }
 }
 
-.UserPopup {
-  composes: Popup;
-
-  .Item {
-    inline-size: var(--256px);
-  }
+.AddContentItem {
+  composes: Item;
+  inline-size: auto;
 }
 
-.AddContentPopup {
-  composes: Popup;
-
-  .Item {
-    inline-size: auto;
-  }
+.UserMenuItem {
+  composes: Item;
+  inline-size: var(--256px);
 }
 
 .UserItem {
-  composes: Item;
+  composes: UserMenuItem;
   outline: 1px solid var(--sys-outline-variant);
   border-radius: var(--8px);
 
@@ -144,7 +138,7 @@
 }
 
 .ExitButton {
-  composes: Item;
+  composes: UserMenuItem;
   color: var(--danger);
   cursor: pointer;
   border: none;

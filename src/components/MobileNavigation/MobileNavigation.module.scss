@@ -2,6 +2,7 @@
 
 .Wrapper {
   position: fixed;
+  z-index: 15;
   inset-block-end: 0;
   inset-inline-start: 0;
   background-color: var(--sys-surface);

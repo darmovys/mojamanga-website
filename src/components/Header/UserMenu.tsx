@@ -59,7 +59,7 @@ export function UserMenu({ user }: UserMenuProps) {
     <Menu.Root handle={userMenuHandle}>
       <Menu.Portal>
         <Menu.Positioner className={styles.Positioner} sideOffset={10}>
-          <Menu.Popup className={styles.UserPopup}>
+          <Menu.Popup className={styles.Popup}>
             <Menu.Arrow className={styles.Arrow}>
               <ArrowSvg />
             </Menu.Arrow>
@@ -89,7 +89,7 @@ export function UserMenu({ user }: UserMenuProps) {
                     <Menu.Item
                       render={<Link to={link.to} />}
                       key={link.title}
-                      className={styles.Item}
+                      className={styles.UserMenuItem}
                     >
                       <link.icon size={18} />
                       <span>{link.title}</span>
@@ -103,7 +103,7 @@ export function UserMenu({ user }: UserMenuProps) {
                   <Menu.Item
                     render={<Link to={link.to} />}
                     key={link.title}
-                    className={styles.Item}
+                    className={styles.UserMenuItem}
                   >
                     <link.icon size={18} />
                     <span>{link.title}</span>

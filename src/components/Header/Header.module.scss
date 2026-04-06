@@ -12,6 +12,10 @@
     gap: var(--16px);
     z-index: 10;
   }
+
+  @include up('laptop') {
+    box-shadow: var(--shadow-border);
+  }
 }
 
 .LogoLink {
@@ -81,12 +85,12 @@
 
   @media (hover: hover) {
     &:hover {
-      background-color: var(--state-primary-opacity-12);
+      background-color: var(--state-on-surface-opacity-variant-2);
     }
   }
 
   &:focus-visible {
-    background-color: var(--state-primary-opacity-12);
+    background-color: var(--state-on-surface-opacity-variant-2);
   }
 }
 

@@ -11,7 +11,7 @@ export function AddContentMenu() {
     <Menu.Root handle={addContentHandle}>
       <Menu.Portal>
         <Menu.Positioner className={styles.Positioner} sideOffset={10}>
-          <Menu.Popup className={styles.AddContentPopup}>
+          <Menu.Popup className={styles.Popup}>
             <Menu.Arrow className={styles.Arrow}>
               <ArrowSvg />
             </Menu.Arrow>
@@ -19,7 +19,7 @@ export function AddContentMenu() {
               <Menu.Item
                 render={<Link to={link.to} />}
                 key={link.title}
-                className={styles.Item}
+                className={styles.AddContentItem}
               >
                 <link.icon size={18} />
                 <span>{link.title}</span>

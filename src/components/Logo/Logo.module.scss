@@ -7,6 +7,10 @@
 .LogoImageWrapper {
   display: flex;
   transform: translateY(-1px);
+
+  img {
+    outline: none;
+  }
 }
 
 .LogoTextWrapper {

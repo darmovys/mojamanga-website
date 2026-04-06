@@ -129,19 +129,22 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                   initial={{
                     opacity: 0,
                     y: shouldReduceMotion ? '0%' : '100%',
+                    filter: 'blur(4px)',
                   }}
                   animate={{
                     opacity: 1,
                     y: '0%',
-                    transition: { ease: 'easeOut' },
+                    filter: 'blur(0px)',
                   }}
                   exit={{
                     opacity: 0,
-                    y: shouldReduceMotion ? '0%' : '100%',
-                    transition: { ease: 'easeIn' },
+                    y: shouldReduceMotion ? '0%' : '80%',
+                    filter: 'blur(4px)',
                   }}
                   transition={{
-                    duration: 0.2,
+                    type: 'spring',
+                    duration: 0.45,
+                    bounce: 0,
                   }}
                 />
               }
