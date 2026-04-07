@@ -1,5 +1,6 @@
 import { api } from '@/lib/api-client'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
+import { getImageDimensions } from '@/lib/utils'
 import { useCallback, useEffect, useState } from 'react'
 import { useDropzone, FileRejection } from 'react-dropzone'
 import Resizer from 'react-image-file-resizer'
@@ -14,7 +15,14 @@ interface FileState {
   objectUrl?: string
 }
 
-export function useCreateAvatar() {
+interface ImageUploadConfig {
+  width: number
+  height: number
+}
+
+export function useImageUpload(config: ImageUploadConfig) {
+  const { width, height } = config
+
   const [fileState, setFileState] = useState<FileState | null>(null)
   const [imageToCrop, setImageToCrop] = useState<File | null>(null)
 
@@ -212,60 +220,61 @@ export function useCreateAvatar() {
     )
   }
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      const receivedFile = acceptedFiles[0]
-      try {
-        const dimensions = await getImageDimensions(receivedFile)
-        if (dimensions.height === 525 && dimensions.width === 375) {
-          Resizer.imageFileResizer(
-            receivedFile,
-            99999,
-            99999,
-            'webp',
-            100,
-            0,
-            (uri) => uploadFile(uri as File),
-            'file',
-          )
-        } else if (dimensions.height < 525) {
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        const receivedFile = acceptedFiles[0]
+        try {
+          const dimensions = await getImageDimensions(receivedFile)
+          if (dimensions.width === width && dimensions.height === height) {
+            Resizer.imageFileResizer(
+              receivedFile,
+              99999,
+              99999,
+              'webp',
+              100,
+              0,
+              (uri) => uploadFile(uri as File),
+              'file',
+            )
+          } else if (dimensions.height < height) {
+            showTimedToast(
+              {
+                type: 'warning',
+                title: 'Попередження',
+                description: `Висота зображення повинна становити принаймні ${height}px`,
+              },
+              4000,
+            )
+            return
+          } else if (dimensions.width < width) {
+            showTimedToast(
+              {
+                type: 'warning',
+                title: 'Попередження',
+                description: `Ширина зображення повинна становити принаймні ${width}px`,
+              },
+              4000,
+            )
+            return
+          } else {
+            cropFile(receivedFile)
+          }
+        } catch (_) {
           showTimedToast(
             {
-              type: 'warning',
-              title: 'Попередження',
-              description:
-                'Висота зображення повинна становити принаймні 375px',
+              type: 'error',
+              title: 'Помилка',
+              description: 'Не вдалося завантажити зображення',
             },
             4000,
           )
           return
-        } else if (dimensions.width < 525) {
-          showTimedToast(
-            {
-              type: 'warning',
-              title: 'Попередження',
-              description:
-                'Ширина зображення повинна становити принаймні 525px',
-            },
-            4000,
-          )
-          return
-        } else {
-          cropFile(receivedFile)
         }
-      } catch (_) {
-        showTimedToast(
-          {
-            type: 'error',
-            title: 'Помилка',
-            description: 'Не вдалося завантажити зображення',
-          },
-          4000,
-        )
-        return
       }
-    }
-  }, [])
+    },
+    [width, height],
+  )
 
   const onDropRejected = useCallback((fileRejections: FileRejection[]) => {
     if (fileRejections.length > 0) {
@@ -323,26 +332,7 @@ export function useCreateAvatar() {
     imageToCrop,
     setImageToCrop,
     cropImageUrl,
+    croppedWidth: width,
+    croppedHeight: height,
   }
-}
-
-const getImageDimensions = (
-  file: File,
-): Promise<{ width: number; height: number }> => {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file)
-    const img = new window.Image()
-
-    img.onload = () => {
-      resolve({ width: img.naturalWidth, height: img.naturalHeight })
-      URL.revokeObjectURL(url)
-    }
-
-    img.onerror = () => {
-      reject(new Error('Не вдалося завантажити зображення'))
-      URL.revokeObjectURL(url)
-    }
-
-    img.src = url
-  })
 }

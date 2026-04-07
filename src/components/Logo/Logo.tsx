@@ -12,6 +12,7 @@ export default function Logo({ className }: LogoProps) {
     <div className={clsx(styles.Wrapper, className)}>
       <div className={styles.LogoImageWrapper}>
         <Image
+          className={styles.LogoImage}
           layout="fullWidth"
           height={45}
           src={logo}

@@ -31,6 +31,9 @@
   position: relative;
   block-size: 100dvh;
   padding: var(--16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--16px);
 }
 
 .ContentTitle {
@@ -69,26 +72,38 @@
   }
 }
 
-.UploadAvatarWrapper {
+.UploadWrapper {
   --height: var(--200px);
-  --width: var(--140px);
   --border-radius: var(--8px);
   display: flex;
   gap: var(--16px);
 
   @include up('tablet') {
     --height: var(--220px);
+  }
+}
+
+.UploadAvatarWrapper {
+  composes: UploadWrapper;
+  --width: var(--140px);
+
+  @include up('tablet') {
     --width: var(--160px);
   }
 }
 
-.AvatarBlock {
+.UploadBackgroundWrapper {
+  composes: UploadWrapper;
+  --width: 100%;
+}
+
+.CoverBlock {
   inline-size: var(--width);
   block-size: var(--height);
 }
 
 .UploadZone {
-  composes: AvatarBlock;
+  composes: CoverBlock;
   --enter-time: 350ms;
   --leave-time: 450ms;
   cursor: pointer;
@@ -163,8 +178,8 @@
   transition: stroke var(--leave-time) ease;
 }
 
-.UploadedAvatar {
-  composes: AvatarBlock;
+.UploadedCover {
+  composes: CoverBlock;
   overflow: hidden; // to crop image corners
   border-radius: var(--border-radius);
   position: relative;
@@ -203,10 +218,10 @@
   align-items: center;
   inline-size: var(--size);
   block-size: var(--size);
-  background-color: var(--danger-background-active);
+  background-color: var(--danger);
   opacity: 0.8;
   border-radius: var(--8px);
-  color: var(--danger);
+  color: #fff;
   border: none;
   cursor: pointer;
   transition: opacity 300ms ease;
