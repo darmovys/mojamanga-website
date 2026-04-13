@@ -10,17 +10,18 @@
 }
 
 .SearchField {
-  background-color: var(--sys-on-surface-highest);
+  background-color: var(--sys-surface-low);
+  box-shadow: var(--inset-shadow);
   color: inherit;
   border-radius: 100vmax;
-  border: 2px solid var(--sys-on-surface-highest);
+  border: none;
   font-weight: 500;
   padding: 0 var(--8px) 0 var(--40px);
   display: flex;
   align-items: center;
   gap: var(--8px);
-  width: 100%;
-  height: 44px;
+  inline-size: 100%;
+  block-size: 44px;
   min-width: 0;
   outline: none;
 
@@ -28,19 +29,15 @@
     color: var(--sys-on-surface-highest-variant);
   }
 
-  &:hover {
-    border-color: var(--input-hover-border);
-  }
-
   &:focus-visible {
-    border-color: var(--blue-300);
+    outline: 2px solid var(--blue-300);
     color: var(--sys-on-surface);
   }
 }
 
 .SearchIcon {
   position: absolute;
-  top: 0;
-  left: 14px;
+  inset-block-start: 0;
+  inset-inline-start: 14px;
   transform: translateY(calc(50% + 1.5px));
 }

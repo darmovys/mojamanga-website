@@ -33,8 +33,9 @@
 }
 
 .FieldInput {
-  background-color: var(--sys-on-surface-highest);
-  border: 2px solid var(--sys-on-surface-highest);
+  background-color: var(--sys-surface-low);
+  box-shadow: var(--inset-shadow);
+  border: none;
   outline: none;
   min-inline-size: 0;
   inline-size: 100%;
@@ -43,7 +44,7 @@
   color: inherit;
 
   &[data-focused] {
-    border-color: var(--blue-300);
+    outline: 2px solid var(--blue-300);
     color: var(--sys-on-surface);
   }
 }
@@ -133,10 +134,10 @@
   padding: 0;
   margin: 0;
   border: none;
+  box-shadow: var(--inset-shadow);
 
   &[data-unchecked] {
-    border: 1px solid var(--sys-on-surface-highest-variant);
-    background-color: var(--sys-on-surface-highest);
+    background-color: var(--sys-surface-low);
   }
 
   &[data-checked] {

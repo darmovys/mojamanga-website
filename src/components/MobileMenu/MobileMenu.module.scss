@@ -235,13 +235,11 @@
 
 .BackButton {
   inline-size: 100%;
-  background-color: transparent;
-  border: none;
+  justify-content: flex-start;
   padding: var(--8px) var(--12px);
   border-radius: var(--8px);
   color: var(--sys-on-surface);
   margin-block-end: var(--4px);
-  cursor: pointer;
 }
 
 .UserCard {
