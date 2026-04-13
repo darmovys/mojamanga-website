@@ -49,7 +49,7 @@
     "clsx": "^2.1.1",
     "elysia": "^1.4.28",
     "immer": "^11.1.4",
-    "lucide-react": "^0.545.0",
+    "lucide-react": "^1.7.0",
     "motion": "^12.34.3",
     "nitro": "npm:nitro-nightly@latest",
     "openapi-types": "^12.1.3",
