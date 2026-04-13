@@ -37,6 +37,7 @@ import {
 import { produce } from 'immer'
 import { createId } from '@paralleldrive/cuid2'
 import { LinkInputField } from './LinkInputField'
+import { useForm } from '@tanstack/react-form-start'
 
 const MAX_DESCRIPTION_LENGTH = 500
 
@@ -67,74 +68,29 @@ export interface ActiveLink {
 function CreateTeamForm() {
   const avatar = useImageUpload({ width: 375, height: 525 })
   const background = useImageUpload({ width: 1450, height: 540 })
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const remainingSymbols = MAX_DESCRIPTION_LENGTH - description.length
 
-  const [activeLinks, updateActiveLinks] = useState<ActiveLink[]>([])
   const [isLinksSectionShown, setIsLinksSectionShown] = useState(true)
   const [isOverflowVisible, setIsOverflowVisible] = useState(true)
   const [hasAccordionAnimationFinished, setHasAccordionAnimationFinished] =
     useState(false)
 
-  function handleDescriptionChange(value: string) {
-    if (value.length > MAX_DESCRIPTION_LENGTH) {
-      return
-    }
-    setDescription(value)
-  }
-
-  function handleAddLink() {
-    updateActiveLinks(
-      produce((draft) => {
-        draft.push({
-          id: createId(),
-          type: null,
-          url: '',
-        })
-      }),
-    )
-  }
-
-  function handleRemoveLink(id: string) {
-    updateActiveLinks(
-      produce((draft) => {
-        const index = draft.findIndex((link) => link.id === id)
-        if (index !== -1) draft.splice(index, 1)
-      }),
-    )
-  }
-
-  function handleChangeLinkType(id: string, newType: LinkType) {
-    updateActiveLinks(
-      produce((draft) => {
-        const link = draft.find((link) => link.id === id)
-        if (link) link.type = newType
-      }),
-    )
-  }
-
-  function handleChangeLinkUrl(id: string, newUrl: string) {
-    updateActiveLinks(
-      produce((draft) => {
-        const link = draft.find((link) => link.id === id)
-        if (link) link.url = newUrl
-      }),
-    )
-  }
+  const form = useForm({
+    defaultValues: {
+      title: '',
+      description: '',
+      links: [] as ActiveLink[],
+    },
+    onSubmit: async ({ value }) => {
+      console.log('Дані форми: ', value)
+    },
+  })
 
   function handleClearForm() {
-    if (avatar.fileState !== null) {
-      console.log('А я взагалі тут? ', avatar.fileState)
-      avatar.removeFile()
-    }
-    if (background.fileState !== null) {
-      console.log('А я взагалі тут? ', background.fileState)
-      background.removeFile()
-    }
-    setTitle('')
-    setDescription('')
-    updateActiveLinks([])
+    if (avatar.fileState !== null) avatar.removeFile()
+    if (background.fileState !== null) background.removeFile()
+
+    form.reset()
+
     setIsLinksSectionShown(true)
     setIsOverflowVisible(true)
     setHasAccordionAnimationFinished(false)
@@ -151,19 +107,20 @@ function CreateTeamForm() {
     }
   }
 
-  const selectedLinkTypes = activeLinks
-    .map((link) => link.type)
-    .filter(Boolean) as LinkType[]
-
-  const maxLinksReached = activeLinks.length >= Object.keys(LINK_META).length
-
   return (
     <div className={styles.MaxWidthWrapper}>
       <GoBackHeader title="Створення команди" />
       <div className={styles.Wrapper}>
         <div className={styles.Content}>
           <h1 className={styles.ContentTitle}>Створення команди</h1>
-          <main className={styles.Form}>
+          <form
+            className={styles.Form}
+            onSubmit={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              form.handleSubmit()
+            }}
+          >
             <div>
               <span className={styles.Label}>
                 Аватар
@@ -398,14 +355,20 @@ function CreateTeamForm() {
                 Назва
                 <RequiredTooltip />
               </label>
-              <input
-                id="title"
+              <form.Field
                 name="title"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                autoComplete="off"
-                className={styles.FieldInput}
+                children={(field) => (
+                  <input
+                    id="title"
+                    name={field.name}
+                    type="text"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    autoComplete="off"
+                    className={styles.FieldInput}
+                  />
+                )}
               />
             </div>
 
@@ -413,125 +376,219 @@ function CreateTeamForm() {
               <label htmlFor="description" className={styles.Label}>
                 Опис
               </label>
-              <textarea
-                id="description"
+              <form.Field
                 name="description"
-                value={description}
-                onChange={(e) => handleDescriptionChange(e.target.value)}
-                autoComplete="off"
-                className={styles.FieldInput}
-                style={{ resize: 'vertical', height: 'var(--160px)' }}
+                children={(field) => {
+                  const remainingSymbols =
+                    MAX_DESCRIPTION_LENGTH - field.state.value.length
+
+                  return (
+                    <>
+                      <textarea
+                        id="description"
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => {
+                          if (e.target.value.length <= MAX_DESCRIPTION_LENGTH) {
+                            field.handleChange(e.target.value)
+                          }
+                        }}
+                        autoComplete="off"
+                        className={styles.FieldInput}
+                        style={{ resize: 'vertical', height: 'var(--160px)' }}
+                      />
+                      <span className={styles.MaxDescriptionLength}>
+                        {remainingSymbols}/{MAX_DESCRIPTION_LENGTH}
+                      </span>
+                    </>
+                  )
+                }}
               />
-              <span className={styles.MaxDescriptionLength}>
-                {remainingSymbols}/{MAX_DESCRIPTION_LENGTH}
-              </span>
             </div>
 
-            <div>
-              <div className={styles.LinksHeader}>
-                <span className={styles.Label}>Посилання</span>
-                <AnimatePresence>
-                  {activeLinks.length > 1 && (
-                    <MotionButton
-                      initial={{ opacity: 0, filter: 'blur(4px)' }}
-                      animate={{ opacity: 1, filter: 'blur(0px)' }}
-                      exit={{ opacity: 0, filter: 'blur(4px)' }}
-                      transition={{ type: 'spring', duration: 0.25, bounce: 0 }}
-                      className={styles.HideLinksButton}
-                      onClick={handleLinksPresence}
-                    >
-                      <ClickTargetHelper />
-                      <motion.div
-                        initial={false}
-                        animate={{
-                          rotate: isLinksSectionShown ? '180deg' : '0deg',
-                        }}
-                        transition={{
-                          type: 'spring',
-                          duration: 0.4,
-                          bounce: 0,
-                        }}
-                      >
-                        <ChevronUp size={18} />
-                      </motion.div>
-                    </MotionButton>
-                  )}
-                </AnimatePresence>
-              </div>
+            <form.Field
+              name="links"
+              children={(field) => {
+                const activeLinks = field.state.value
+                const selectedLinkTypes = activeLinks
+                  .map((link) => link.type)
+                  .filter(Boolean) as LinkType[]
+                const maxLinksReached =
+                  activeLinks.length >= Object.keys(LINK_META).length
 
-              <Accordion.Root
-                value={isLinksSectionShown ? ['links'] : []}
-                onValueChange={(values) =>
-                  setIsLinksSectionShown(values.length > 0)
+                function handleAddLink() {
+                  field.handleChange(
+                    produce((draft) => {
+                      draft.push({
+                        id: createId(),
+                        type: null,
+                        url: '',
+                      })
+                    }),
+                  )
                 }
-              >
-                <Accordion.Item value="links">
-                  <Accordion.Header style={{ display: 'none' }}>
-                    <Accordion.Trigger />
-                  </Accordion.Header>
-                  <Accordion.Panel
-                    style={{ overflow: isOverflowVisible ? 'visible' : 'clip' }}
-                    className={styles.AccordionPanel}
-                    onTransitionEnd={() =>
-                      setHasAccordionAnimationFinished(true)
-                    }
-                  >
-                    <div
-                      className={clsx(styles.LinksList, {
-                        [styles.MarginEnd]:
-                          activeLinks.length > 0 && !maxLinksReached,
-                      })}
-                    >
-                      <AnimatePresence>
-                        {activeLinks.map((link) => {
-                          const availableTypes = (
-                            Object.keys(LINK_META) as LinkType[]
-                          ).filter(
-                            (type) =>
-                              !selectedLinkTypes.includes(type) ||
-                              type === link.type,
-                          )
 
-                          return (
-                            <LinkInputField
-                              key={link.id}
-                              link={link}
-                              availableTypes={availableTypes}
-                              onChangeLinkType={(id, newType) =>
-                                handleChangeLinkType(id, newType)
-                              }
-                              onChangeLinkUrl={(id, value) =>
-                                handleChangeLinkUrl(id, value)
-                              }
-                              onRemoveLink={(id) => handleRemoveLink(id)}
-                              hasAccordionAnimationFinished={
-                                hasAccordionAnimationFinished
-                              }
-                            />
-                          )
-                        })}
+                function handleRemoveLink(id: string) {
+                  field.handleChange(
+                    produce((draft) => {
+                      const index = draft.findIndex((link) => link.id === id)
+                      if (index !== -1) draft.splice(index, 1)
+                    }),
+                  )
+                }
+
+                function handleChangeLinkType(id: string, newType: LinkType) {
+                  field.handleChange(
+                    produce((draft) => {
+                      const link = draft.find((link) => link.id === id)
+                      if (link) link.type = newType
+                    }),
+                  )
+                }
+
+                function handleChangeLinkUrl(id: string, newUrl: string) {
+                  field.handleChange(
+                    produce((draft) => {
+                      const link = draft.find((link) => link.id === id)
+                      if (link) link.url = newUrl
+                    }),
+                  )
+                }
+
+                return (
+                  <div>
+                    <div className={styles.LinksHeader}>
+                      <span className={styles.Label}>Посилання</span>
+                      <AnimatePresence>
+                        {activeLinks.length > 1 && (
+                          <MotionButton
+                            type="button"
+                            initial={{ opacity: 0, filter: 'blur(4px)' }}
+                            animate={{ opacity: 1, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, filter: 'blur(4px)' }}
+                            transition={{
+                              type: 'spring',
+                              duration: 0.25,
+                              bounce: 0,
+                            }}
+                            className={styles.HideLinksButton}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              handleLinksPresence()
+                            }}
+                          >
+                            <ClickTargetHelper />
+                            <motion.div
+                              initial={false}
+                              animate={{
+                                rotate: isLinksSectionShown ? '180deg' : '0deg',
+                              }}
+                              transition={{
+                                type: 'spring',
+                                duration: 0.4,
+                                bounce: 0,
+                              }}
+                            >
+                              <ChevronUp size={18} />
+                            </motion.div>
+                          </MotionButton>
+                        )}
                       </AnimatePresence>
                     </div>
 
-                    {!maxLinksReached && (
-                      <MotionButton
-                        onClick={handleAddLink}
-                        className={styles.AddLinkButton}
-                      >
-                        <span>Додати посилання</span>
-                        <Link size={12} />
-                      </MotionButton>
-                    )}
-                  </Accordion.Panel>
-                </Accordion.Item>
-              </Accordion.Root>
-            </div>
-          </main>
+                    <Accordion.Root
+                      value={isLinksSectionShown ? ['links'] : []}
+                      onValueChange={(values) =>
+                        setIsLinksSectionShown(values.length > 0)
+                      }
+                    >
+                      <Accordion.Item value="links">
+                        <Accordion.Header style={{ display: 'none' }}>
+                          <Accordion.Trigger />
+                        </Accordion.Header>
+                        <Accordion.Panel
+                          style={{
+                            overflow: isOverflowVisible ? 'visible' : 'clip',
+                          }}
+                          className={styles.AccordionPanel}
+                          onTransitionEnd={() =>
+                            setHasAccordionAnimationFinished(true)
+                          }
+                        >
+                          <div
+                            className={clsx(styles.LinksList, {
+                              [styles.MarginEnd]:
+                                activeLinks.length > 0 && !maxLinksReached,
+                            })}
+                          >
+                            <AnimatePresence>
+                              {activeLinks.map((link) => {
+                                const availableTypes = (
+                                  Object.keys(LINK_META) as LinkType[]
+                                ).filter(
+                                  (type) =>
+                                    !selectedLinkTypes.includes(type) ||
+                                    type === link.type,
+                                )
+
+                                return (
+                                  <LinkInputField
+                                    key={link.id}
+                                    link={link}
+                                    availableTypes={availableTypes}
+                                    onChangeLinkType={(id, newType) =>
+                                      handleChangeLinkType(id, newType)
+                                    }
+                                    onChangeLinkUrl={(id, value) =>
+                                      handleChangeLinkUrl(id, value)
+                                    }
+                                    onRemoveLink={(id) => handleRemoveLink(id)}
+                                    hasAccordionAnimationFinished={
+                                      hasAccordionAnimationFinished
+                                    }
+                                  />
+                                )
+                              })}
+                            </AnimatePresence>
+                          </div>
+
+                          {!maxLinksReached && (
+                            <MotionButton
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                handleAddLink()
+                              }}
+                              className={styles.AddLinkButton}
+                            >
+                              <span>Додати посилання</span>
+                              <Link size={12} />
+                            </MotionButton>
+                          )}
+                        </Accordion.Panel>
+                      </Accordion.Item>
+                    </Accordion.Root>
+                  </div>
+                )
+              }}
+            />
+          </form>
         </div>
         <footer className={styles.FooterMenu}>
-          <MotionButton className={clsx(styles.SendButton, 'Gradient')}>
-            Створити
-          </MotionButton>
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
+              <MotionButton
+                onClick={() => form.handleSubmit()}
+                disabled={!canSubmit || isSubmitting}
+                className={clsx(styles.SendButton, 'Gradient')}
+              >
+                {isSubmitting ? 'Створення...' : 'Створити'}
+              </MotionButton>
+            )}
+          />
+
           <MotionButton
             onClick={handleClearForm}
             className={clsx(styles.ClearButton, 'Gradient')}
