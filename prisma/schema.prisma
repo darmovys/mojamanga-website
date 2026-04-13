@@ -108,8 +108,10 @@ model Verification {
 // ================= TEAMS =================
 
 model Team {
-  id   String @id @default(cuid(2))
-  name String
+  id             String  @id @default(cuid(2))
+  name           String
+  avatarUrl      String
+  descriptionUrl String?
 
   members            TeamMember[]
   publishingVersions PublishingVersion[]
@@ -118,6 +120,31 @@ model Team {
   updatedAt DateTime @updatedAt
 
   @@map("teams")
+}
+
+model Link {
+  id         String   @id @default(cuid(2))
+  type       LinkType
+  url        String
+  customName String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("links")
+}
+
+enum LinkType {
+  DISCORD
+  INSTAGRAM
+  TELEGRAM
+  TIKTOK
+  FACEBOOK
+  X
+  MONOBANK
+  BUYMEACOFFEE
+  DONATELLO
+  SITE
 }
 
 model TeamMember {

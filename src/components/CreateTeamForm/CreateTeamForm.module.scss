@@ -5,6 +5,8 @@
   max-inline-size: var(--1100px);
   margin-inline: auto;
   inline-size: 100%;
+  display: flex;
+  flex-direction: column;
 
   @include up('tablet') {
     margin-block-start: var(--16px);
@@ -17,9 +19,11 @@
 }
 
 .Wrapper {
-  block-size: 100dvh;
   background-color: var(--sys-surface-highest);
   color: var(--sys-on-surface);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 
   @include up('tablet') {
     border-start-start-radius: var(--8px);
@@ -29,11 +33,8 @@
 
 .Content {
   position: relative;
-  block-size: 100dvh;
+  flex: 1;
   padding: var(--16px);
-  display: flex;
-  flex-direction: column;
-  gap: var(--16px);
 }
 
 .ContentTitle {
@@ -47,28 +48,221 @@
   }
 }
 
+.Form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--16px);
+  --enter-time: 350ms;
+  --leave-time: 450ms;
+}
+
 .Label {
-  display: block;
+  display: flex;
   font-size: var(--14px);
+  font-weight: 550;
   color: var(--sys-on-surface-variant);
   margin-block-end: var(--4px);
 }
 
-.FooterMenu {
+.FieldInput {
+  background-color: var(--sys-surface-low);
+  border: none;
+  outline: none;
+  min-inline-size: 0;
+  inline-size: 100%;
+  border-radius: var(--4px);
+  padding: var(--8px) var(--12px);
+  color: var(--sys-on-surface-highest-variant);
+  box-shadow: var(--inset-shadow);
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    color: var(--sys-on-surface);
+  }
+}
+
+.LinksHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  margin-block-end: var(--4px);
+  position: relative;
+
+  .Label {
+    margin-block-end: revert;
+  }
+}
+
+.HideLinksButton {
+  background-color: var(--sys-surface);
+  color: var(--sys-primary);
+  box-shadow: var(--shadow-border);
+  transition: background-color 250ms ease;
+  border-radius: var(--4px);
+  position: relative; // for click target helper
+
+  @media (hover: hover) {
+    &:hover {
+      transition-duration: 200ms;
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    outline-offset: 2px;
+  }
+}
+
+.AccordionPanel {
+  --duration: 250ms;
+  block-size: var(--accordion-panel-height);
+  filter: blur(0px);
+  transition:
+    block-size var(--duration) var(--emulate-spring),
+    filter var(--duration) var(--emulate-spring);
+
+  will-change: block-size, filter;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    filter: blur(4px);
+    block-size: 0;
+  }
+}
+
+.LinksList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--16px);
+
+  &.MarginEnd {
+    margin-block-end: var(--16px);
+  }
+}
+
+.LinkFieldInputWrapper {
+  position: relative;
+}
+
+.LinkFieldInput {
+  composes: FieldInput;
+  padding-inline-start: calc(var(--64px) + var(--8px));
+  padding-inline-end: calc(var(--32px) + var(--8px));
+}
+
+.SelectWrapper {
+  position: absolute;
+  inset-inline-start: 5px;
+  inset-block-start: 50%;
+  inline-size: calc(var(--64px) - var(--4px));
+  block-size: var(--28px);
+  border-radius: var(--4px);
+  transform: translateY(-50%);
+}
+
+.Select {
+  position: absolute;
+  inset: 0;
+  gap: var(--4px);
   background-color: var(--sys-surface-highest);
-  border-block-start: 1px solid var(--sys-outline);
-  padding: var(--12px);
-  position: sticky;
-  inset-block-end: var(--bottom-menu-size);
-  inset-inline-start: 0;
-  inset-inline-end: 0;
-  z-index: 9;
+  color: var(--sys-primary);
+  box-shadow: var(--shadow-border);
+  transition: background-color 250ms ease;
+  border-radius: inherit;
+
+  @media (hover: hover) {
+    &:hover {
+      transition-duration: 200ms;
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    outline-offset: 2px;
+  }
+}
+
+.Popup {
+  background-color: var(--sys-surface-high);
+  color: var(--sys-on-surface);
+  outline: 1px solid var (--sys-outline-variant);
+  box-shadow: var(--shadow-border);
+  border-radius: var(--8px);
+  overflow: clip; // to trim off popup corners
+  will-change: transform, opacity, filter;
+  filter: blur(0px);
+
+  transform-origin: var(--transform-origin);
+  transition:
+    transform 150ms var(--emulate-spring),
+    opacity 150ms var(--emulate-spring),
+    filter 150ms var(--emulate-spring);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    filter: blur(4px);
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.Item {
   display: flex;
   gap: var(--8px);
+  align-items: center;
+  padding: var(--10px) var(--16px);
+  inline-size: var(--220px);
+  cursor: pointer;
+  outline: none;
 
-  @include up('tablet') {
-    border-end-start-radius: var(--8px);
-    border-end-end-radius: var(--8px);
+  @media (hover: hover) {
+    &[data-highlighted] {
+      background-color: var(--state-on-surface-opacity-variant);
+    }
+  }
+
+  &:focus-visible {
+    background-color: var(--state-on-surface-opacity-variant);
+  }
+}
+
+.MaxDescriptionLength {
+  font-size: var(--14px);
+  font-weight: 500;
+  color: var(--sys-on-surface-variant);
+}
+
+.AddLinkButton {
+  border: 2px dashed var(--sys-on-surface-variant);
+  border-radius: var(--4px);
+  inline-size: 100%;
+  padding: var(--8px) var(--12px);
+  gap: var(--4px);
+  font-weight: 500;
+  font-size: var(--14px);
+  color: var(--sys-on-surface-variant);
+  transition:
+    color var(--leave-time) ease,
+    background-color var(--leave-time) ease;
+
+  @media (hover: hover) {
+    &:hover {
+      transition:
+        color var(--enter-time) ease,
+        background-color var(--leave-time) ease;
+
+      background-color: var(--state-on-surface-opacity-variant-3);
+      color: var(--sys-on-surface);
+      border-color: var(--sys-on-surface);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    outline-offset: 2px;
   }
 }
 
@@ -104,13 +298,14 @@
 
 .UploadZone {
   composes: CoverBlock;
-  --enter-time: 350ms;
-  --leave-time: 450ms;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  border-radius: var(--8px);
+  background-color: var(--sys-surface-low);
+  box-shadow: var(--inset-shadow);
   color: var(--sys-on-surface-variant);
   position: relative;
   transition: color var(--leave-time) ease;
@@ -207,24 +402,31 @@
   color: var(--danger);
 }
 
-.TrashButton {
+.TrashButtonWrapper {
   --inset: var(--8px);
   --size: var(--32px);
+  --border-radius: var(--8px);
   position: absolute;
   inset-block-start: var(--inset);
   inset-inline-end: var(--inset);
+  inline-size: var(--size);
+  block-size: var(--size);
+}
+
+.TrashButton {
+  position: absolute;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  inline-size: var(--size);
-  block-size: var(--size);
   background-color: var(--danger);
   opacity: 0.8;
-  border-radius: var(--8px);
+  border-radius: var(--border-radius);
   color: #fff;
+  transition: opacity 300ms ease;
   border: none;
   cursor: pointer;
-  transition: opacity 300ms ease;
+  box-shadow: var(--shadow-border);
 
   &:hover,
   &:focus-visible {
@@ -238,14 +440,69 @@
   }
 
   &[data-disabled] {
-    opacity: 0.5;
     cursor: not-allowed;
     pointer-events: none;
+    opacity: 0.5;
   }
+}
+
+.TrashLinkButtonWrapper {
+  composes: TrashButtonWrapper;
+  --size: calc(var(--28px) + var(--2px));
+  inset-block-start: 50%;
+  inset-inline-end: var(--6px);
+  transform: translateY(-50%);
 }
 
 .Loader {
   animation: spin 1000ms linear infinite;
+}
+
+.FooterMenu {
+  background-color: var(--sys-surface-highest);
+  border-block-start: 1px solid var(--sys-outline);
+  padding: var(--12px);
+  position: sticky;
+  inset-block-end: var(--bottom-menu-size);
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  z-index: 9;
+  display: flex;
+  gap: var(--12px);
+
+  @include up('tablet') {
+    border-end-start-radius: var(--8px);
+    border-end-end-radius: var(--8px);
+  }
+}
+
+.FooterButtonBase {
+  padding: var(--4px) var(--10px);
+  border-radius: 100vmax;
+}
+
+.SendButton {
+  composes: FooterButtonBase;
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+}
+
+.ClearButton {
+  composes: FooterButtonBase;
+  color: var(--sys-primary);
+  outline: 2px solid var(--sys-primary);
+  outline-offset: -2px;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-8);
+      outline: none;
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
 }
 
 @keyframes marching-ants {
