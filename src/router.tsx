@@ -28,7 +28,6 @@ declare module '@tanstack/react-router' {
     router: ReturnType<typeof getRouter>
   }
   interface StaticDataRouteOption {
-    showMobileNavbar?: boolean
     showStandardHeader?: boolean
     showGlobalSearchSection?: boolean
   }

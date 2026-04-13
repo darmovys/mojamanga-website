@@ -9,7 +9,6 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/lib/theme-provider'
-import MobileNavigation from '@/components/MobileNavigation'
 import Header from '@/components/Header'
 import GlobalSearchSection from '@/components/GlobalSearchSection'
 import globalCSS from '@/styles/global.scss?url'
@@ -59,10 +58,6 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const showNavbar = useMatches({
-    select: (matches) =>
-      !matches.some((m) => m.staticData?.showMobileNavbar === false),
-  })
   const showStandardHeader = useMatches({
     select: (matches) =>
       !matches.some((m) => m.staticData?.showStandardHeader === false),
@@ -80,7 +75,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <ThemeProvider>
           <AppToasts />
           <div id="root">
-            {showNavbar && <MobileNavigation />}
             {showStandardHeader && <Header />}
             {showGlobalSearchSection && (
               <GlobalSearchSection isHiddenOnMobile={true} />
