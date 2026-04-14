@@ -1,10 +1,10 @@
 import { LinkType } from '@/generated/prisma/enums'
-import { ActiveLink } from './CreateTeamForm'
 import { motion } from 'motion/react'
 import { LinkSelector } from './LinkSelector'
 import MotionButton from '../MotionButton'
 import { Trash2 } from 'lucide-react'
 import VisuallyHidden from '../VisuallyHidden'
+import { ActiveLink } from './use-team-form'
 import styles from './CreateTeamForm.module.scss'
 
 interface LinkInputField {

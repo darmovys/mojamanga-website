@@ -1,12 +1,12 @@
 import { LinkType } from '@/generated/prisma/enums'
 import { useState } from 'react'
-import { LINK_META } from './CreateTeamForm'
 import { Select } from '@base-ui/react'
 import { motion } from 'motion/react'
 import { tapAnimation } from '../MotionButton'
 import VisuallyHidden from '../VisuallyHidden'
 import { Check, ChevronDown, CircleQuestionMark } from 'lucide-react'
 import ClickTargetHelper from '../ClickTargetHelper'
+import { LINK_META } from './use-team-form'
 import styles from './CreateTeamForm.module.scss'
 
 interface LinkSelectorProps {

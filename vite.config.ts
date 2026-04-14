@@ -22,7 +22,7 @@ const config = defineConfig({
     viteReact(),
   ],
   server: {
-    allowedHosts: ['.a.free.pinggy.link'],
+    allowedHosts: ['.run.pinggy-free.link'],
   },
   optimizeDeps: {
     include: ['@tanstack/react-form-start'], // solves use-sync-external-store error with tanstack form

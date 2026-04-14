@@ -2,7 +2,7 @@
 
 .MaxWidthWrapper {
   min-block-size: 100dvh;
-  max-inline-size: var(--1100px);
+  max-inline-size: var(--960px);
   margin-inline: auto;
   inline-size: 100%;
   display: flex;
@@ -54,6 +54,15 @@
   gap: var(--16px);
   --enter-time: 350ms;
   --leave-time: 450ms;
+}
+
+.CoversWrapper {
+  display: grid;
+  gap: var(--16px);
+
+  @include up('tablet') {
+    grid-template-columns: var(--160px) 1fr;
+  }
 }
 
 .Label {

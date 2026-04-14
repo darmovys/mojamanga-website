@@ -16,8 +16,8 @@ interface CropImageDialogProps {
   onClose: () => void
 }
 
-const MotionBackdrop = motion(Dialog.Backdrop)
-const MotionPopup = motion(Dialog.Popup)
+const MotionBackdrop = motion.create(Dialog.Backdrop)
+const MotionPopup = motion.create(Dialog.Popup)
 
 function CropImageDialog({
   src,

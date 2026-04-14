@@ -62,8 +62,6 @@ export const filesRouter = new Elysia({
             async ({ params, user, status }) => {
               const key = decodeURIComponent(params.key)
 
-              console.log('Ключ ', key)
-
               if (!key.includes(`/${user.id}/`)) {
                 return status(
                   403,
