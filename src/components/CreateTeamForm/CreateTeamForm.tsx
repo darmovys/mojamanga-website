@@ -17,7 +17,7 @@ import CropImageDialog from '../CropImageDialog'
 import { showTimedToast } from '@/lib/toast'
 import styles from './CreateTeamForm.module.scss'
 import { useImageUpload } from './use-image-upload'
-import { RequiredTooltip } from './RequiredTooltip'
+import { Tooltip } from './Tooltip'
 import { useState } from 'react'
 import clsx from 'clsx'
 import { LinkType } from '@/generated/prisma/enums'
@@ -124,7 +124,7 @@ function CreateTeamForm() {
             <div>
               <span className={styles.Label}>
                 Аватар
-                <RequiredTooltip />
+                <Tooltip text="Обов'язкове поле" />
               </span>
               <div className={styles.UploadAvatarWrapper}>
                 {!avatar.fileState && (
@@ -353,7 +353,7 @@ function CreateTeamForm() {
             <div>
               <label htmlFor="title" className={styles.Label}>
                 Назва
-                <RequiredTooltip />
+                <Tooltip text="Обов'язкове поле" />
               </label>
               <form.Field
                 name="title"
@@ -459,7 +459,10 @@ function CreateTeamForm() {
                 return (
                   <div>
                     <div className={styles.LinksHeader}>
-                      <span className={styles.Label}>Посилання</span>
+                      <span className={styles.Label}>
+                        Посилання
+                        <Tooltip text="Наполегливо просимо надати принаймні одне посилання на групу чи сайт команди для більш ймовірного схвалення" />
+                      </span>
                       <AnimatePresence>
                         {activeLinks.length > 1 && (
                           <MotionButton
