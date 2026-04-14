@@ -5,6 +5,7 @@ import { createId } from '@paralleldrive/cuid2'
 import { Elysia } from 'elysia'
 import { z } from 'zod'
 import { betterAuthPlugin } from '../plugins/auth'
+import { uploadTeamImageRateLimit } from '@/lib/redis'
 
 const uploadRequestSchema = z.object({
   fileName: z.string(),
@@ -55,6 +56,18 @@ export const filesRouter = new Elysia({
             {
               body: uploadRequestSchema,
               authed: true,
+              // beforeHandle: async ({ user, status }) => {
+              //   const { success } = await uploadTeamImageRateLimit.limit(
+              //     user.id,
+              //   )
+
+              //   if (!success) {
+              //     return status(
+              //       429,
+              //       'Забагато запитів. Будь ласка, зачекайте кілька секунд.',
+              //     )
+              //   }
+              // },
             },
           )
           .delete(
