@@ -3,6 +3,7 @@ import { openapi } from '@elysiajs/openapi'
 import { betterAuthPlugin } from './plugins/auth'
 import { OpenAPI } from './plugins/auth'
 import { filesRouter } from './routes/files'
+import { cronJobsPlugin } from './plugins/cron-jobs'
 
 export const app = new Elysia({
   prefix: '/api',
@@ -18,3 +19,4 @@ export const app = new Elysia({
   )
   .use(betterAuthPlugin)
   .use(filesRouter)
+  .use(cronJobsPlugin)
