@@ -108,6 +108,9 @@
   color: var(--sys-on-primary);
   background-color: var(--sys-primary);
   text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .Separator {

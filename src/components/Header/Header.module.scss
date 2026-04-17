@@ -47,6 +47,9 @@
   gap: var(--8px);
   font-weight: 500;
   text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .IconButton {
