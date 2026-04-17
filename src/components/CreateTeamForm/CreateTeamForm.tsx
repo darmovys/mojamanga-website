@@ -1,14 +1,15 @@
-import GoBackHeader from '../GoBackHeader'
 import {
+  ArrowLeft,
   ChevronUp,
   CircleAlert,
+  Info,
   Link,
   LoaderCircle,
   Trash2,
   UploadCloud,
 } from 'lucide-react'
 import { Image } from '@unpic/react'
-import { Accordion } from '@base-ui/react'
+import { Accordion, Button } from '@base-ui/react'
 import ClickTargetHelper from '../ClickTargetHelper'
 import VisuallyHidden from '../VisuallyHidden'
 import { AnimatePresence, motion } from 'motion/react'
@@ -24,6 +25,9 @@ import { produce } from 'immer'
 import { createId } from '@paralleldrive/cuid2'
 import { LinkInputField } from './LinkInputField'
 import { LINK_META, useTeamForm } from './use-team-form'
+import HelperDialog from '../HelperDialog'
+import { useHelperDialog } from './use-helper-dialog'
+import { useGoBack } from '@/hooks/use-go-back'
 
 const MAX_DESCRIPTION_LENGTH = 500
 
@@ -41,12 +45,51 @@ function CreateTeamForm() {
     setIsLinksSectionShown,
   } = useTeamForm()
 
+  const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
+    useHelperDialog()
+
+  const { handleGoBack } = useGoBack()
+
   return (
     <div className={styles.MaxWidthWrapper}>
-      <GoBackHeader title="Створення команди" />
+      <div className={styles.GoBackHeader}>
+        <Button onClick={handleGoBack} className={styles.GoBackHeaderButton}>
+          <ClickTargetHelper />
+          <ArrowLeft size={20} />
+        </Button>
+        <h1 className={styles.GoBackHeading}>Створення команди</h1>
+        <HelperDialog
+          title={title}
+          content={content}
+          mdast={mdast}
+          open={isHelperOpen}
+          onOpenChange={handleHelperOpenChange}
+          trigger={(openDialog) => (
+            <Button onClick={openDialog} className={styles.InfoButton}>
+              <Info size={20} />
+              <VisuallyHidden>Довідка</VisuallyHidden>
+            </Button>
+          )}
+        />
+      </div>
       <div className={styles.Wrapper}>
         <div className={styles.Content}>
-          <h1 className={styles.ContentTitle}>Створення команди</h1>
+          <div className={styles.ContentHeaderWrapper}>
+            <h1 className={styles.ContentTitle}>Створення команди</h1>
+            <HelperDialog
+              title={title}
+              content={content}
+              mdast={mdast}
+              open={isHelperOpen}
+              onOpenChange={handleHelperOpenChange}
+              trigger={(openDialog) => (
+                <Button onClick={openDialog} className={styles.HelperButton}>
+                  <Info size={16} />
+                  <span>Довідка</span>
+                </Button>
+              )}
+            />
+          </div>
           <form
             className={styles.Form}
             onSubmit={(e) => {

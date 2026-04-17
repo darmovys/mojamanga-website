@@ -1,0 +1,40 @@
+.Body {
+  color: var(--sys-on-surface);
+}
+
+.OrderedList {
+  padding-inline-start: var(--32px);
+
+  &:not(:last-of-type) {
+    margin-block-end: var(--12px);
+  }
+}
+
+.TextSection {
+  padding-block: var(--6px);
+}
+
+.Link {
+  text-decoration: none;
+  color: var(--blue-400);
+  font-weight: 500;
+  outline-offset: 1px;
+  box-shadow: 0 1.5px 0 var(--blue-400);
+  transition: box-shadow 0.2s;
+
+  @media (hover: hover) {
+    &:hover {
+      box-shadow: 0 0 0 transparent;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    outline-offset: 0px;
+  }
+}
+
+.LinkIcon {
+  display: inline-block;
+  margin-inline-start: var(--2px);
+}

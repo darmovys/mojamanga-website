@@ -1,0 +1,132 @@
+@use '../../styles/breakpoints' as *;
+
+.Backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--default-overlay-color);
+}
+
+.Viewport {
+  position: fixed;
+  inset: 0;
+}
+
+.ScrollViewport {
+  block-size: 100%;
+  overscroll-behavior: contain;
+
+  [data-ending-style] & {
+    pointer-events: none;
+  }
+}
+
+.ScrollContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 100%;
+}
+
+.Scrollbar {
+  position: absolute;
+  display: flex;
+  inline-size: var(--4px);
+  margin-inline-start: 0;
+  margin-inline-end: var(--4px);
+  justify-content: center;
+  border-radius: var(--16px);
+  opacity: 0;
+  transition: opacity 250ms;
+  pointer-events: none;
+
+  &:hover,
+  &[data-scrolling] {
+    opacity: 1;
+    transition-duration: 75ms;
+    transition-delay: 0ms;
+    pointer-events: auto;
+  }
+
+  [data-ending-style] & {
+    transition-duration: 250ms;
+    opacity: 0;
+  }
+
+  @include up('tablet') {
+    inline-size: var(--8px);
+  }
+}
+
+.ScrollbarThumb {
+  inline-size: 100%;
+  border-radius: inherit;
+  background-color: var(--sys-outline);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    transform: translate(-50%, -50%);
+    inline-size: calc(100% + var(--16px));
+    block-size: calc(100% + var(--16px));
+  }
+}
+
+.Popup {
+  position: relative;
+  background-color: var(--sys-surface-high);
+  color: var(--sys-on-surface);
+  box-shadow: var(--shadow-border);
+  inline-size: min(var(--800px), calc(100vw - var(--24px)));
+  padding: var(--32px);
+  padding-inline: var(--32px);
+  padding-block: var(--10px) var(--12px);
+  margin: var(--64px) auto;
+  border-radius: var(--8px);
+  outline: 0;
+  display: flex;
+  flex-direction: column;
+
+  @include up('tablet') {
+    inline-size: min(var(--800px), calc(100vw - var(--32px)));
+  }
+}
+
+.HeaderSection {
+  margin-block-end: var(--8px);
+}
+
+.HeadingWrapper {
+  display: flex;
+  padding-block-end: var(--4px);
+}
+
+.Heading {
+  font-size: var(--28px);
+  font-weight: 550;
+}
+
+.Separator {
+  border-block-start: 2px solid var(--sys-outline);
+}
+
+.FooterSection {
+  margin-block-start: var(--8px);
+}
+
+.FooterContents {
+  display: flex;
+  justify-content: flex-end;
+  padding-block-start: var(--8px);
+}
+
+.CloseButton {
+  padding: var(--4px) var(--12px);
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+  border-radius: var(--8px);
+  &::before {
+    border-radius: var(--8px) !important;
+  }
+}

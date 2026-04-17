@@ -64,11 +64,6 @@
 
 .Button {
   border-radius: 100vmax;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  padding: 0;
   color: var(--sys-on-surface);
 }
 
@@ -78,10 +73,6 @@
   block-size: 40px;
   outline: 2px solid var(--sys-primary);
   background-color: transparent;
-
-  &:active {
-    background-color: var(--state-primary-opacity-12);
-  }
 
   &:hover,
   &:focus-visible {
@@ -103,12 +94,10 @@
   filter: var(--drop-shadow-border);
   will-change: transform;
   transition:
-    background-color 0.6s ease,
+    background-color 0.2s var(--bg-animation),
     transform 150ms ease-out;
 
   &:active {
-    transform: scale(0.96);
-    transition: background-color 0.3s ease;
     background-color: var(--state-on-surface-opacity-variant);
   }
 }
@@ -140,9 +129,6 @@
 }
 
 .AccordionTrigger {
-  border: none;
-  display: flex;
-  align-items: center;
   justify-content: space-between;
   padding: var(--16px) var(--20px);
   background-color: var(--sys-on-surface-highest);
@@ -150,7 +136,6 @@
   border-radius: var(--12px);
   color: var(--sys-on-surface);
   filter: var(--drop-shadow-border);
-  cursor: pointer;
 
   &[data-panel-open] {
     border-end-start-radius: 0;
@@ -293,8 +278,4 @@
   border-radius: 12px;
   color: var(--danger);
   background-color: var(--danger-background);
-
-  &:active {
-    background-color: var(--danger-background-active);
-  }
 }

@@ -30,13 +30,8 @@
 
 .Button {
   --border-radius: 100vmax;
-  border: none;
   border-radius: var(--border-radius);
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  transition: background-color 0.2s var(--bg-animation);
 
   &:focus-visible,
   &:hover {

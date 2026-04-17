@@ -35,6 +35,7 @@ import { catalogLinks, otherLinks, workTypeLinks } from '@/lib/navigation-links'
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { authQueries } from '@/services/queries'
 import styles from './MobileMenu.module.scss'
+import MotionButton from '../MotionButton'
 
 const outerListVariants: Variants = {
   hidden: { opacity: 0, x: -10, transition: { duration: 0.1 } },
@@ -151,7 +152,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
             >
               <div className={styles.CloseSection}>
                 <Logo />
-                <Button
+                <MotionButton
                   render={<Dialog.Close />}
                   className={clsx({
                     [styles.CloseButton]: true,
@@ -160,14 +161,14 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                 >
                   <VisuallyHidden>Закрити Вікно</VisuallyHidden>
                   <X size={24} />
-                </Button>
+                </MotionButton>
               </div>
               <ScrollArea.Root className={styles.ScrollArea}>
                 <ScrollArea.Viewport className={styles.Viewport}>
                   <ScrollArea.Content>
                     <div className={styles.TopSection}>
                       <div className={styles.FlexRow}>
-                        <Button
+                        <MotionButton
                           onClick={toggleTheme}
                           className={styles.SecondaryButton}
                         >
@@ -201,17 +202,17 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                               )}
                             </>
                           )}
-                        </Button>
+                        </MotionButton>
                         {authState.user && (
-                          <Button className={styles.SecondaryButton}>
+                          <MotionButton className={styles.SecondaryButton}>
                             <Settings size={20} />
                             <span className={styles.Text}>Налаштування</span>
-                          </Button>
+                          </MotionButton>
                         )}
                       </div>
 
                       {!authState.isAuthenticated ? (
-                        <Button
+                        <MotionButton
                           nativeButton={false}
                           render={<Link to="/login" />}
                           className={clsx({
@@ -221,7 +222,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                         >
                           <LogIn size={20} />
                           <span>Вхід | Реєстрація</span>
-                        </Button>
+                        </MotionButton>
                       ) : (
                         <div className={styles.UserCard}>
                           <Link
@@ -438,13 +439,13 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                         </Accordion.Item>
                       </Accordion.Root>
                       {authState.isAuthenticated && (
-                        <Button
+                        <MotionButton
                           onClick={handleLogout}
                           className={styles.ExitButton}
                         >
                           <LogOut size={20} />
                           Вийти
-                        </Button>
+                        </MotionButton>
                       )}
                     </div>
                   </ScrollArea.Content>

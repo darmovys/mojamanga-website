@@ -77,12 +77,13 @@ h6 {
   isolation: isolate;
   display: flex;
   flex-direction: column;
-  min-block-size: 100vh; /* Резервний варіант для старих браузерів */
+  min-block-size: 100vh; /* Fallback option for old browsers */
   min-block-size: 100dvh;
 }
 
 /* Reset button styles */
 button {
+  appearance: none;
   -webkit-appearance: none;
   border-radius: 0;
   text-align: inherit;
@@ -92,12 +93,17 @@ button {
   cursor: pointer;
   border: none;
   color: inherit;
+}
+
+/* GLOBAL STYLES */
+
+// BUTTON STYLES
+
+button {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
-/* GLOBAL STYLES */
 
 // FONT FACES
 
@@ -399,6 +405,7 @@ html {
 
   // custom easings
   --emulate-spring: cubic-bezier(0.2, 0, 0, 1);
+  --bg-animation: cubic-bezier(0, 0, 0.2, 1);
 }
 
 // IMG STYLES

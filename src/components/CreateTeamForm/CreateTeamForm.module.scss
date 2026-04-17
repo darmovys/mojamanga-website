@@ -18,6 +18,56 @@
   }
 }
 
+.GoBackHeader {
+  position: sticky;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  inset-inline-start: 0;
+  z-index: 10;
+  color: var(--sys-on-surface);
+  background-color: oklch(from var(--sys-surface) l c h / 0.8);
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  padding: var(--14px) var(--8px);
+  backdrop-filter: blur(5px);
+  box-shadow: var(--shadow-border);
+
+  @include up('tablet') {
+    display: none;
+  }
+}
+
+.GoBackHeading {
+  font-size: var(--16px);
+  font-weight: 460;
+}
+
+.GoBackHeaderButton {
+  block-size: var(--32px);
+  inline-size: var(--32px);
+  border-radius: 100vmax;
+  outline-offset: 2px;
+  position: relative; // for click target helper
+  transition: background-color 0.2s var(--bg-animation);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
+
+.InfoButton {
+  composes: GoBackHeaderButton;
+  margin-inline-start: auto;
+}
+
 .Wrapper {
   background-color: var(--sys-surface-highest);
   color: var(--sys-on-surface);
@@ -37,14 +87,40 @@
   padding: var(--16px);
 }
 
-.ContentTitle {
+.ContentHeaderWrapper {
   display: none;
 
   @include up('tablet') {
-    display: revert;
-    font-size: var(--20px);
-    font-weight: 500;
+    display: flex;
+    gap: var(--2px);
+    justify-content: space-between;
+    align-items: center;
     margin-block-end: var(--10px);
+  }
+}
+
+.ContentTitle {
+  font-size: var(--20px);
+  font-weight: 500;
+}
+
+.HelperButton {
+  transform: translateY(1px);
+  padding: var(--4px) var(--6px);
+  gap: var(--4px);
+  font-size: var(--14px);
+  border-radius: var(--6px);
+  transition: background-color 0.2s var(--bg-animation);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    background-color: var(--state-on-surface-opacity-variant-2);
+    outline: none;
   }
 }
 
@@ -487,7 +563,10 @@
 
 .FooterButtonBase {
   padding: var(--4px) var(--10px);
-  border-radius: 100vmax;
+  border-radius: var(--8px);
+  &::before {
+    border-radius: var(--8px) !important;
+  }
 }
 
 .SendButton {
@@ -501,6 +580,7 @@
   color: var(--sys-primary);
   outline: 2px solid var(--sys-primary);
   outline-offset: -2px;
+  transition: background-color 0.2s var(--bg-animation);
 
   @media (hover: hover) {
     &:hover {
