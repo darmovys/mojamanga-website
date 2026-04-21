@@ -4,4 +4,4 @@ import { app } from '@/server/elysia'
 
 export const api = createIsomorphicFn()
   .server(() => treaty(app).api)
-  .client(() => treaty<typeof app>('http://localhost:3000').api)
+  .client(() => treaty<typeof app>(import.meta.env.VITE_SITE_URL).api)

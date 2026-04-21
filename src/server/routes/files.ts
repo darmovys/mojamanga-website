@@ -36,7 +36,7 @@ export const filesRouter = new Elysia({
               const uniqueKey = `uploads/temp/${user.id}/${createId()}-${fileName.replace(/\s+/g, '_')}`
 
               const command = new PutObjectCommand({
-                Bucket: process.env.S3_BUCKET_NAME!,
+                Bucket: process.env.S3_BUCKET_NAME,
                 Key: uniqueKey,
                 ContentType: contentType,
                 ContentLength: size,
@@ -83,7 +83,7 @@ export const filesRouter = new Elysia({
               }
 
               const command = new DeleteObjectCommand({
-                Bucket: process.env.S3_BUCKET_NAME!,
+                Bucket: process.env.S3_BUCKET_NAME,
                 Key: key,
               })
 

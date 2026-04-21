@@ -29,7 +29,7 @@ export const cronJobsPlugin = new Elysia({ name: 'cron-jobs' }).use(
         while (isTruncated) {
           // 1. Отримуємо список файлів у папці temp/
           const input: ListObjectsV2CommandInput = {
-            Bucket: process.env.S3_BUCKET_NAME!,
+            Bucket: process.env.S3_BUCKET_NAME,
             Prefix: 'uploads/temp/',
             ContinuationToken: continuationToken,
           }
@@ -54,7 +54,7 @@ export const cronJobsPlugin = new Elysia({ name: 'cron-jobs' }).use(
           // 3. Видаляємо старі файли
           if (objectsToDelete.length > 0) {
             const deleteCommand = new DeleteObjectsCommand({
-              Bucket: process.env.S3_BUCKET_NAME!,
+              Bucket: process.env.S3_BUCKET_NAME,
               Delete: {
                 Objects: objectsToDelete,
                 Quiet: true,

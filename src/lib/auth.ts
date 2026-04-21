@@ -12,26 +12,7 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
-  baseURL: process.env.BETTER_AUTH_URL,
-  // socialProviders: {
-  //   google: {
-  //     clientId: process.env.GOOGLE_CLIENT_ID as string,
-  //     clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-
-  //     mapProfileToUser: (profile) => {
-  //       const suffix = crypto.randomUUID().slice(0, 8)
-  //       const base = profile.given_name.toLowerCase()
-  //       const username = `${base}_${suffix}`
-
-  //       return {
-  //         email: profile.email,
-  //         name: username,
-  //         username,
-  //         displayUsername: username,
-  //       }
-  //     },
-  //   },
-  // },
+  baseURL: process.env.SITE_URL,
   emailAndPassword: {
     minPasswordLength: 1,
     maxPasswordLength: Infinity,
@@ -76,7 +57,7 @@ export const auth = betterAuth({
     }),
     captcha({
       provider: 'cloudflare-turnstile',
-      secretKey: process.env.TURNSTILE_FAKE_SECRET_KEY!,
+      secretKey: process.env.TURNSTILE_FAKE_SECRET_KEY,
     }),
     tanstackStartCookies(),
   ],
