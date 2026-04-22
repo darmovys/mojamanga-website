@@ -16,6 +16,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TeamIndexRouteImport } from './routes/team/index'
+import { Route as ModerationIndexRouteImport } from './routes/moderation/index'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as TeamCreateIndexRouteImport } from './routes/team/create/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
@@ -55,6 +56,11 @@ const TeamIndexRoute = TeamIndexRouteImport.update({
   path: '/team/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ModerationIndexRoute = ModerationIndexRouteImport.update({
+  id: '/moderation/',
+  path: '/moderation/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/moderation': typeof ModerationIndexRoute
   '/team': typeof TeamIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/catalog': typeof CatalogRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/notifications'
     | '/api/$'
+    | '/moderation/'
     | '/team/'
     | '/login/'
     | '/signup/'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/notifications'
     | '/api/$'
+    | '/moderation'
     | '/team'
     | '/login'
     | '/signup'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/notifications'
     | '/api/$'
+    | '/moderation/'
     | '/team/'
     | '/_auth/login/'
     | '/_auth/signup/'
@@ -162,6 +174,7 @@ export interface RootRouteChildren {
   CatalogRoute: typeof CatalogRoute
   NotificationsRoute: typeof NotificationsRoute
   ApiSplatRoute: typeof ApiSplatRoute
+  ModerationIndexRoute: typeof ModerationIndexRoute
   TeamIndexRoute: typeof TeamIndexRoute
   TeamCreateIndexRoute: typeof TeamCreateIndexRoute
 }
@@ -217,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/moderation/': {
+      id: '/moderation/'
+      path: '/moderation'
+      fullPath: '/moderation/'
+      preLoaderRoute: typeof ModerationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/$': {
       id: '/api/$'
       path: '/api/$'
@@ -270,6 +290,7 @@ const rootRouteChildren: RootRouteChildren = {
   CatalogRoute: CatalogRoute,
   NotificationsRoute: NotificationsRoute,
   ApiSplatRoute: ApiSplatRoute,
+  ModerationIndexRoute: ModerationIndexRoute,
   TeamIndexRoute: TeamIndexRoute,
   TeamCreateIndexRoute: TeamCreateIndexRoute,
 }

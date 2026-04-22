@@ -428,7 +428,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                 authState.user.role === 'MODERATOR') && (
                                 <Link
                                   activeProps={{ className: styles.Active }}
-                                  to="/about"
+                                  to="/moderation"
                                   className={styles.AccordionLink}
                                 >
                                   <Shield size={16} />

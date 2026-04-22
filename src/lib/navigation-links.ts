@@ -144,7 +144,7 @@ export const userLinks = linkOptions([
   {
     title: 'Модераторска',
     icon: Shield,
-    to: '/about',
+    to: '/moderation',
     activeOptions: {
       exact: true,
     },
