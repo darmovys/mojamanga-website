@@ -9,7 +9,6 @@ import VisuallyHidden from '@/components/VisuallyHidden'
 export const Route = createFileRoute('/_auth')({
   component: RouteComponent,
   staticData: {
-    showMobileNavbar: false,
     showGlobalSearchSection: false,
     showStandardHeader: false,
   },

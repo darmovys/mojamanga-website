@@ -1,5 +1,5 @@
 import { useForm } from '@tanstack/react-form-start'
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { useImageUpload } from './use-image-upload'
 import { LinkType } from '@/generated/prisma/enums'
 import {
@@ -14,6 +14,10 @@ import {
   XIcon,
 } from '../icons'
 import { Globe } from 'lucide-react'
+import { showAuthToast, showTimedToast } from '@/lib/toast'
+import { ActiveLink, activeLinkSchema } from '@/schemas/teams'
+import { api } from '@/lib/api-client'
+import { useNavigate } from '@tanstack/react-router'
 
 type LinkMeta = {
   label: string
@@ -33,12 +37,6 @@ export const LINK_META: Record<LinkType, LinkMeta> = {
   SITE: { label: 'Сайт', icon: Globe },
 }
 
-export interface ActiveLink {
-  id: string
-  type: LinkType | null
-  url: string
-}
-
 export function useTeamForm() {
   const avatar = useImageUpload({ width: 375, height: 525 })
   const background = useImageUpload({ width: 1450, height: 540 })
@@ -46,6 +44,8 @@ export function useTeamForm() {
   const [isOverflowVisible, setIsOverflowVisible] = useState(true)
   const [hasAccordionAnimationFinished, setHasAccordionAnimationFinished] =
     useState(false)
+  const [isUploading, startUploadingTransition] = useTransition()
+  const navigate = useNavigate()
 
   const form = useForm({
     defaultValues: {
@@ -54,7 +54,113 @@ export function useTeamForm() {
       links: [] as ActiveLink[],
     },
     onSubmit: async ({ value }) => {
-      console.log('Дані форми: ', value)
+      if (avatar.fileState === null || avatar.fileState.key === undefined) {
+        showTimedToast(
+          {
+            type: 'warning',
+            title: 'Попередження',
+            description: 'Прикріпіть обкладинку своєї команди',
+          },
+          4000,
+        )
+        return
+      }
+      if (value.title.trim() === '') {
+        showTimedToast(
+          {
+            type: 'warning',
+            title: 'Попередження',
+            description: 'Надайте назву своїй команді',
+          },
+          4000,
+        )
+        return
+      }
+      if (value.links.some((el) => el.url === '' || el.type === null)) {
+        showTimedToast(
+          {
+            type: 'warning',
+            title: 'Попередження',
+            description: 'Заповніть усі відкриті поля посилань',
+          },
+          4000,
+        )
+        return
+      }
+      const hasInvalidUrl = value.links.some((el) => {
+        const result = activeLinkSchema.shape.url.safeParse(el.url)
+        return !result.success
+      })
+      if (hasInvalidUrl) {
+        showTimedToast(
+          {
+            type: 'warning',
+            title: 'Попередження',
+            description: 'Некоректний формат посилання',
+          },
+          4000,
+        )
+        return
+      }
+
+      const safeAvatarKey = avatar.fileState.key
+      console.log('Значення: ', value)
+
+      startUploadingTransition(async () => {
+        const { error, data } = await api().teams['create-team'].post({
+          title: value.title,
+          description: value.description,
+          avatarKey: safeAvatarKey,
+          backgroundKey: background.fileState?.key,
+          links: value.links,
+        })
+        if (error) {
+          if (error.status === 401) {
+            showAuthToast()
+          } else if (error.status === 422) {
+            showTimedToast(
+              {
+                type: 'warning',
+                title: 'Попередження',
+                description: error.value.message,
+              },
+              4000,
+            )
+          } else if (
+            error.status === 500 ||
+            error.status === 404 ||
+            error.status === 409
+          ) {
+            showTimedToast(
+              {
+                type: 'error',
+                title: 'Помилка',
+                description: error.value,
+              },
+              4000,
+            )
+          } else {
+            showTimedToast(
+              {
+                type: 'warning',
+                title: 'Попередження',
+                description: error.value,
+              },
+              4000,
+            )
+          }
+          return
+        }
+        navigate({ to: '/' })
+        showTimedToast(
+          {
+            type: 'success',
+            title: 'Успіх',
+            description: data.message,
+          },
+          4000,
+        )
+      })
     },
   })
 
@@ -90,5 +196,6 @@ export function useTeamForm() {
     isOverflowVisible,
     hasAccordionAnimationFinished,
     setHasAccordionAnimationFinished,
+    isUploading,
   }
 }

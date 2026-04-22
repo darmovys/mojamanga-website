@@ -28,7 +28,7 @@ export function LinkSelector({
       <Select.Root
         open={isOpen}
         onOpenChange={setIsOpen}
-        value={value ?? undefined}
+        value={value}
         onValueChange={(val) => onChange(val as LinkType)}
       >
         <div className={styles.SelectWrapper}>

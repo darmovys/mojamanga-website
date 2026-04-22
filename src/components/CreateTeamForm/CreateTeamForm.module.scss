@@ -567,12 +567,25 @@
   &::before {
     border-radius: var(--8px) !important;
   }
+
+  &.Loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
 }
 
 .SendButton {
   composes: FooterButtonBase;
   background-color: var(--sys-primary);
   color: var(--sys-on-primary);
+  padding-inline: 0;
+  gap: var(--4px);
+  inline-size: var(--200px);
+
+  svg {
+    margin-block-start: 3px;
+    animation: spin 1000ms linear infinite;
+  }
 }
 
 .ClearButton {

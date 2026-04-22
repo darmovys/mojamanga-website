@@ -43,6 +43,7 @@ function CreateTeamForm() {
     isOverflowVisible,
     isLinksSectionShown,
     setIsLinksSectionShown,
+    isUploading,
   } = useTeamForm()
 
   const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
@@ -101,7 +102,7 @@ function CreateTeamForm() {
             <div className={styles.CoversWrapper}>
               <div>
                 <span className={styles.Label}>
-                  Аватар
+                  Обкладинка
                   <Tooltip text="Обов'язкове поле" />
                 </span>
                 <div className={styles.UploadAvatarWrapper}>
@@ -157,7 +158,9 @@ function CreateTeamForm() {
                         <div className={styles.TrashButtonWrapper}>
                           <MotionButton
                             focusableWhenDisabled={true}
-                            disabled={avatar.fileState.isDeleting}
+                            disabled={
+                              avatar.fileState.isDeleting || isUploading
+                            }
                             onClick={avatar.removeFile}
                             className={styles.TrashButton}
                           >
@@ -271,7 +274,9 @@ function CreateTeamForm() {
                           <MotionButton
                             className={styles.TrashButton}
                             focusableWhenDisabled={true}
-                            disabled={background.fileState.isDeleting}
+                            disabled={
+                              background.fileState.isDeleting || isUploading
+                            }
                             onClick={background.removeFile}
                           >
                             <ClickTargetHelper />
@@ -558,22 +563,30 @@ function CreateTeamForm() {
           </form>
         </div>
         <footer className={styles.FooterMenu}>
-          <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) => (
-              <MotionButton
-                onClick={() => form.handleSubmit()}
-                disabled={!canSubmit || isSubmitting}
-                className={clsx(styles.SendButton, 'Gradient')}
-              >
-                {isSubmitting ? 'Створення...' : 'Створити'}
-              </MotionButton>
+          <MotionButton
+            onClick={() => form.handleSubmit()}
+            focusableWhenDisabled={true}
+            disabled={isUploading}
+            className={clsx(styles.SendButton, 'Gradient', {
+              [styles.Loading]: isUploading,
+            })}
+          >
+            {isUploading ? (
+              <>
+                <span>Надсилаємо..</span>
+                <LoaderCircle size={14} />
+              </>
+            ) : (
+              'Надіслати на розгляд'
             )}
-          />
+          </MotionButton>
 
           <MotionButton
             onClick={handleClearForm}
-            className={clsx(styles.ClearButton, 'Gradient')}
+            focusableWhenDisabled={true}
+            className={clsx(styles.ClearButton, 'Gradient', {
+              [styles.Loading]: isUploading,
+            })}
           >
             Очистити
           </MotionButton>

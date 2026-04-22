@@ -77,7 +77,8 @@ export function useLogin() {
                 showTimedToast(
                   {
                     type: 'success',
-                    title: 'Ви успішно увійшли',
+                    title: 'Успіх',
+                    description: 'Ви увійшли в свій акаунт',
                   },
                   4000,
                 )

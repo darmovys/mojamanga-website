@@ -24,6 +24,7 @@ model User {
   sessions Session[]
   accounts Account[]
 
+  createdTeams     Team[]         @relation("TeamCreator")
   teamMemberships  TeamMember[]
   uploadedChapters Chapter[]
   comments         Comment[]
@@ -108,12 +109,20 @@ model Verification {
 // ================= TEAMS =================
 
 model Team {
-  id             String  @id @default(cuid(2))
-  name           String
-  avatarUrl      String
-  descriptionUrl String?
+  id            String     @id @default(cuid(2))
+  name          String
+  avatarUrl     String?
+  backgroundUrl String?
+  description   String?
+  status        TeamStatus @default(PENDING)
+
+  rejectionStatus String?
+
+  creatorId String
+  creator   User   @relation("TeamCreator", fields: [creatorId], references: [id])
 
   members            TeamMember[]
+  links              TeamLink[]
   publishingVersions PublishingVersion[]
 
   createdAt DateTime @default(now())
@@ -122,16 +131,25 @@ model Team {
   @@map("teams")
 }
 
-model Link {
-  id         String   @id @default(cuid(2))
-  type       LinkType
-  url        String
-  customName String?
+enum TeamStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  BANNED
+}
+
+model TeamLink {
+  id   String   @id @default(cuid(2))
+  type LinkType
+  url  String
+
+  teamId String
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("links")
+  @@map("team_links")
 }
 
 enum LinkType {
@@ -148,13 +166,13 @@ enum LinkType {
 }
 
 model TeamMember {
-  id         String   @id @default(cuid(2))
+  id         String     @id @default(cuid(2))
   userId     String
-  user       User     @relation(fields: [userId], references: [id])
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   teamId     String
-  team       Team     @relation(fields: [teamId], references: [id])
-  role       TeamRole
-  canPublish Boolean  @default(false)
+  team       Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  roles      TeamRole[] @default([TRANSLATOR])
+  canPublish Boolean    @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -164,7 +182,7 @@ model TeamMember {
 }
 
 enum TeamRole {
-  CREATOR
+  ADMIN
   TRANSLATOR
   CLEANER
   TYPER

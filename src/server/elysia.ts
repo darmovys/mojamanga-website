@@ -4,6 +4,7 @@ import { betterAuthPlugin } from './plugins/auth'
 import { OpenAPI } from './plugins/auth'
 import { filesRouter } from './routes/files'
 import { cronJobsPlugin } from './plugins/cron-jobs'
+import { teamsRouter } from './routes/teams'
 
 export const app = new Elysia({
   prefix: '/api',
@@ -19,4 +20,5 @@ export const app = new Elysia({
   )
   .use(betterAuthPlugin)
   .use(filesRouter)
+  .use(teamsRouter)
   .use(cronJobsPlugin)

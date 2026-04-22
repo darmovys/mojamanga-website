@@ -17,7 +17,6 @@ import { PasswordConditionsContent } from './PasswordConditions'
 import { authClient } from '@/lib/auth-client'
 import { useTheme } from '@/lib/theme-provider'
 import { useSignup } from './use-signup'
-
 import styles from './SignupComponent.module.scss'
 
 function SignupComponent() {
