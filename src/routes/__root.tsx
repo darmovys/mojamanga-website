@@ -46,6 +46,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     },
 
     component: RootComponent,
+    notFoundComponent: () => {
+      return <p>Такої сторінки не існує!</p> // Переробити в майбутньому
+    },
   },
 )
 
