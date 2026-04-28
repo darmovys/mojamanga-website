@@ -37,6 +37,8 @@
   transition: background-color 0.2s var(--bg-animation);
   block-size: var(--32px);
   inline-size: var(--32px);
+  position: relative; // for click target helper
+
   @media (hover: hover) {
     &:hover {
       background-color: var(--state-on-surface-opacity-variant-2);
@@ -53,14 +55,12 @@
   composes: GoBackButtonBase;
   border-radius: 100vmax;
   outline-offset: 2px;
-  position: relative; // for click target helper
 }
 
 .MobileMenuButton {
   composes: GoBackButtonBase;
   margin-inline-start: auto;
   border-radius: var(--6px);
-  gap: var(--4px);
 }
 
 .Grid {
@@ -95,6 +95,9 @@
 
   @include up('tablet') {
     display: flex;
+    align-self: flex-start;
+    position: sticky;
+
   }
 }
 
@@ -119,9 +122,15 @@
 }
 
 .NavSectionItemLinkWrapper {
+  --radius: var(--6px);
   display: block;
   text-decoration: none;
   color: inherit;
+  border-radius: var(--radius);
+
+  &:focus-visible {
+    outline: var(--2px) solid var(--blue-400);
+  }
 
   &:not(:last-of-type) {
     margin-block-end: var(--4px);
@@ -133,7 +142,7 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--4px) var(--10px);
-  border-radius: var(--6px);
+  border-radius: var(--radius);
   transition: background-color 0.2s var(--bg-animation);
 
   @media (hover: hover) {

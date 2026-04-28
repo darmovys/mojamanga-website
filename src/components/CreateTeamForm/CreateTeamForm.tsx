@@ -57,6 +57,8 @@ function CreateTeamForm() {
         <Button onClick={handleGoBack} className={styles.GoBackHeaderButton}>
           <ClickTargetHelper />
           <ArrowLeft size={20} />
+          <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
+
         </Button>
         <h1 className={styles.GoBackHeading}>Створення команди</h1>
         <HelperDialog
@@ -67,6 +69,7 @@ function CreateTeamForm() {
           onOpenChange={handleHelperOpenChange}
           trigger={(openDialog) => (
             <Button onClick={openDialog} className={styles.InfoButton}>
+              <ClickTargetHelper />
               <Info size={20} />
               <VisuallyHidden>Довідка</VisuallyHidden>
             </Button>
