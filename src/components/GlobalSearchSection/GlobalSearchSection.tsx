@@ -1,7 +1,7 @@
 import React from 'react'
 import SearchContentField from '../SearchContentField'
 import styles from './GlobalSearchSection.module.scss'
-import useSectionVisibility from './use-scroll-hiding-content'
+import { useSearchFieldScrollStore } from '@/stores/search-field-scroll-store'
 
 interface GlobalSearchSection {
   isHiddenOnMobile: boolean
@@ -10,7 +10,7 @@ interface GlobalSearchSection {
 export default function GlobalSearchSection({
   isHiddenOnMobile,
 }: GlobalSearchSection) {
-  const { isContentVisible } = useSectionVisibility()
+  const isContentVisible = useSearchFieldScrollStore((s) => s.isContentVisible)
 
   const transform = isContentVisible ? 'translateY(0)' : 'translateY(-100%)'
   const display = isHiddenOnMobile ? 'none' : 'block'
