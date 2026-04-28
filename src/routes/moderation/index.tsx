@@ -1,8 +1,11 @@
+import ModerationMenu from '@/components/ModerationMenu'
+import { moderationMenuSchema } from '@/schemas/moderation'
 import { authQueries } from '@/services/queries'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/moderation/')({
+  validateSearch: moderationMenuSchema,
   component: RouteComponent,
   beforeLoad: async ({ context, location }) => {
     if (!context.authState.isAuthenticated) {
@@ -16,6 +19,7 @@ export const Route = createFileRoute('/moderation/')({
 
 function RouteComponent() {
   const { data: authState } = useSuspenseQuery(authQueries.user())
+
   /* 
   TypeScript не знає, що beforeLoad звужує тип authState, 
   тому щоб не писати опційний оператор, прописуємо просту логіку 
@@ -24,5 +28,5 @@ function RouteComponent() {
   if (authState.user.role !== 'ADMIN' && authState.user.role !== 'MODERATOR') {
     return <div>У вас недостатньо прав для взаємодії з цією сторінкою</div>
   }
-  return <div>Hello "/moderation/"!</div>
+  return <ModerationMenu />
 }

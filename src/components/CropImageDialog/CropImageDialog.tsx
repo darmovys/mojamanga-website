@@ -49,10 +49,10 @@ function CropImageDialog({
         <MotionBackdrop
           onClick={onClose}
           className={styles.Overlay}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
+          initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+          animate={{ opacity: 1, backdropFilter: 'blur(2px)' }}
+          exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
         />
         <MotionPopup
           className={styles.Popup}

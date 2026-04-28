@@ -5,7 +5,7 @@
 .Popup {
   padding: var(--12px);
   border-radius: var(--8px);
-  background-color: var(--sys-surface-high);
+  background-color: var(--sys-on-surface-highest);
   color: var(--sys-on-surface);
   transform-origin: var(--transform-origin);
   transition:
@@ -46,11 +46,7 @@
 }
 
 .ArrowFill {
-  fill: var(--sys-surface-high);
-}
-
-.ArrowOuterStroke {
-  fill: var(--sys-surface-high);
+  fill: var(--sys-on-surface-highest);
 }
 
 .ArrowInnerStroke {

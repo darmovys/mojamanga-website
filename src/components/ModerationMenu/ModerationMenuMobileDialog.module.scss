@@ -1,0 +1,59 @@
+.Backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--default-overlay-color);
+}
+
+.Popup {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  inline-size: 90vw;
+  max-width: var(--800px);
+  block-size: fit-content;
+  background-color: var(--sys-surface-high);
+  color: var(--sys-on-surface);
+  border-radius: var(--12px);
+  padding: var(--16px) var(--24px);
+}
+
+.HeaderSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.Heading {
+  font-size: var(--24px);
+}
+
+.CloseButton {
+  --border-radius: 100vmax;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s var(--bg-animation);
+  color: inherit;
+  outline: 2px solid var(--sys-primary);
+  outline-offset: -2px;
+  padding: var(--6px);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-8);
+    }
+  }
+
+  &:focus-visible {
+    background-color: var(--state-primary-opacity-8);
+  }
+
+  &:focus-visible,
+  &:hover {
+    outline: none;
+  }
+}
+
+.Separator {
+  block-size: 1.5px;
+  background-color: var(--sys-outline);
+  margin-block: var(--8px);
+}

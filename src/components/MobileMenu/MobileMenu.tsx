@@ -429,6 +429,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                 <Link
                                   activeProps={{ className: styles.Active }}
                                   to="/moderation"
+                                  search={{ type: 'teams' }}
                                   className={styles.AccordionLink}
                                 >
                                   <Shield size={16} />
