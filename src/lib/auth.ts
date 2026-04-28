@@ -29,6 +29,55 @@ export const auth = betterAuth({
       },
     },
   },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          try {
+            await prisma.bookmarkFolder.createMany({
+              data: [
+                {
+                  userId: user.id,
+                  name: 'Читаю',
+                  isSystem: true,
+                  systemType: 'READING',
+                },
+                {
+                  userId: user.id,
+                  name: 'Прочитано',
+                  isSystem: true,
+                  systemType: 'COMPLETED',
+                },
+                {
+                  userId: user.id,
+                  name: 'Відкладено',
+                  isSystem: true,
+                  systemType: 'ON_HOLD',
+                },
+                {
+                  userId: user.id,
+                  name: 'Покинуто',
+                  isSystem: true,
+                  systemType: 'DROPPED',
+                },
+                {
+                  userId: user.id,
+                  name: 'В планах',
+                  isSystem: true,
+                  systemType: 'PLAN_TO_READ',
+                },
+              ],
+            })
+          } catch (error) {
+            console.error(
+              'Помилка при створенні системних папок для користувача:',
+              error,
+            )
+          }
+        },
+      },
+    },
+  },
   plugins: [
     i18n({
       translations: {

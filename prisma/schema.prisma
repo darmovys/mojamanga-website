@@ -24,35 +24,27 @@ model User {
   sessions Session[]
   accounts Account[]
 
-  createdTeams     Team[]         @relation("TeamCreator")
-  teamMemberships  TeamMember[]
-  uploadedChapters Chapter[]
-  comments         Comment[]
-  likes            Like[]
-  dislikes         Dislike[]
-  ratings          Rating[]
-  bookmarks        Bookmark[]
-  news             News[] // Admin only
-  notifications    Notification[]
-  workProposals    WorkProposal[]
-  complaints       Complaint[]
+  createdTeams            Team[]                   @relation("TeamCreator")
+  teamMemberships         TeamMember[]
+  uploadedChapters        Chapter[]
+  comments                Comment[]
+  likes                   Like[]
+  dislikes                Dislike[]
+  ratings                 Rating[]
+  bookmarksFolders        BookmarkFolder[]
+  bookmarks               Bookmark[]
+  publishingSubscriptions PublishingSubscription[]
+  news                    News[]
+  notifications           Notification[]
+  workProposals           WorkProposal[]
+  workEditions            WorkVersion[]
+  complaints              Complaint[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([email])
   @@map("users")
-}
-
-enum UserRole {
-  USER
-  MODERATOR
-  ADMIN
-}
-
-enum UserStatus {
-  NORMAL
-  BANNED
 }
 
 model Session {
@@ -111,12 +103,12 @@ model Verification {
 model Team {
   id            String     @id @default(cuid(2))
   name          String
-  avatarUrl     String?
+  coverUrl      String?
   backgroundUrl String?
   description   String?
   status        TeamStatus @default(PENDING)
 
-  rejectionStatus String?
+  rejectionReason String?
 
   creatorId String
   creator   User   @relation("TeamCreator", fields: [creatorId], references: [id])
@@ -129,13 +121,6 @@ model Team {
   updatedAt DateTime @updatedAt
 
   @@map("teams")
-}
-
-enum TeamStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  BANNED
 }
 
 model TeamLink {
@@ -152,27 +137,16 @@ model TeamLink {
   @@map("team_links")
 }
 
-enum LinkType {
-  DISCORD
-  INSTAGRAM
-  TELEGRAM
-  TIKTOK
-  FACEBOOK
-  X
-  MONOBANK
-  BUYMEACOFFEE
-  DONATELLO
-  SITE
-}
-
 model TeamMember {
-  id         String     @id @default(cuid(2))
-  userId     String
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  teamId     String
-  team       Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  roles      TeamRole[] @default([TRANSLATOR])
-  canPublish Boolean    @default(false)
+  id                String     @id @default(cuid(2))
+  userId            String
+  user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamId            String
+  team              Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  roles             TeamRole[] @default([TRANSLATOR])
+  canPublish        Boolean    @default(false)
+  canEditTeamInfo   Boolean    @default(false)
+  canDeleteChapters Boolean    @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -181,41 +155,22 @@ model TeamMember {
   @@map("team_members")
 }
 
-enum TeamRole {
-  ADMIN
-  TRANSLATOR
-  CLEANER
-  TYPER
-}
-
 // ================= CONTENT: WORKS =================
 
 model Work {
-  id                String            @id @default(cuid(2))
-  ogName            String // Оригінальна назва
-  ukrName           String
-  enName            String?
-  description       String?           @db.Text
-  coverImage        String // URL картинки'
-  backgroundImage   String? // Якщо не вказано, на фронтенді показуватиметься обрізана збільшена версія coverImage
-  type              WorkType
-  moderationStatus  ModerationStatus  @default(IN_MODERATION)
-  workStatus        WorkStatus
-  translationStatus TranslationStatus
-  releaseYear       Int
-  ageRestriction    Int
-  isNSFW            Boolean           @default(false)
+  id             String             @id @default(cuid(2))
+  type           WorkType
+  approvalStatus WorkApprovalStatus @default(PENDING)
 
-  tags    Tag[]
-  genres  Genre[]
-  authors Author[]
-  artists Artist[]
+  currentVersionId String?       @unique
+  currentVersion   WorkVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+  versions         WorkVersion[] @relation("WorkHistory")
 
-  comments           Comment[]
-  publishingVersions PublishingVersion[]
-  ratings            Rating[]
-  bookmarks          Bookmark[]
-  proposals          WorkProposal[]
+  publishers PublishingVersion[]
+  comments   Comment[]
+  ratings    Rating[]
+  proposals  WorkProposal[]
+  bookmarks  Bookmark[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -223,33 +178,87 @@ model Work {
   @@map("works")
 }
 
-enum WorkType {
-  MANGA
-  MANHWA
-  MANHUA
-  MALOPUS
-  COMIC
-  WEBCOMIC
+model WorkVersion {
+  id     String @id @default(cuid(2))
+  workId String
+  work   Work   @relation("WorkHistory", fields: [workId], references: [id], onDelete: Cascade)
+
+  editorId String
+  editor   User   @relation(fields: [editorId], references: [id])
+
+  // Версіоновані поля
+  ukrName           String
+  enName            String?
+  ogName            String
+  description       String?
+  coverImage        String
+  backgroundImage   String?
+  releaseYear       Int
+  ageRestriction    Int
+  isNSFW            Boolean           @default(false)
+  workStatus        WorkStatus
+  translationStatus TranslationStatus
+
+  tags   Tag[]
+  genres Genre[]
+  people WorkVersionToPerson[]
+
+  changeReason String?
+
+  proposalId String?       @unique
+  proposal   WorkProposal? @relation(fields: [proposalId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  // Зворотний зв'язок
+  workAsCurrent Work? @relation("CurrentVersion")
+
+  @@map("work_versions")
 }
 
-enum WorkStatus {
-  ONGOING
-  ENDED
-  ANNOUNCEMENT
-  PAUSED
-  DISCONTINUED
+model WorkVersionToPerson {
+  versionId String
+  personId  String
+  role      PersonRole
+
+  version WorkVersion @relation(fields: [versionId], references: [id])
+  person  Person      @relation(fields: [personId], references: [id])
+
+  @@id([versionId, personId, role])
 }
 
-enum TranslationStatus {
-  ONGOING
-  ENDED
-  FREEZED
-  DROPPED
-}
+model WorkProposal {
+  id String @id @default(cuid(2))
 
-enum ModerationStatus {
-  IN_MODERATION
-  COMPLETED
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  workId String
+  work   Work   @relation(fields: [workId], references: [id])
+
+  status ProposalStatus @default(PENDING)
+
+  // --- Поля для зміни (Nullable) ---
+  // Якщо поле null - значить його змінювати не пропонують
+  suggestedUkrName         String?
+  suggestedEnName          String?
+  suggestedOgName          String?
+  suggestedDescription     String?  @db.Text
+  suggestedCoverImage      String?
+  suggestedBackgroundImage String?
+  suggestedReleaseYear     Int?
+  suggestedAgeRestriction  Int?
+  suggestedIsNSFW          Boolean?
+  suggestedTagsJson        Json?
+  suggestedGenresJson      Json?
+  suggestedAuthorsJson     Json?
+  suggestedArtistsJson     Json?
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  workVersion WorkVersion?
+
+  @@map("work_proposals")
 }
 
 // ================= METADATA (TAGS, AUTHORS...) =================
@@ -258,7 +267,7 @@ model Tag {
   id   String @id @default(cuid(2))
   name String @unique
 
-  works Work[]
+  workVersions WorkVersion[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -270,7 +279,7 @@ model Genre {
   id   String @id @default(cuid(2))
   name String @unique
 
-  works Work[]
+  workVersions WorkVersion[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -278,28 +287,10 @@ model Genre {
   @@map("genres")
 }
 
-model Author {
-  id   String @id @default(cuid(2))
-  name String @unique
-
-  works Work[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("authors")
-}
-
-model Artist {
-  id   String @id @default(cuid(2))
-  name String @unique
-
-  works Work[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("artists")
+model Person {
+  id    String                @id @default(cuid(2))
+  name  String                @unique
+  works WorkVersionToPerson[]
 }
 
 // ================= PUBLISHING & CHAPTERS =================
@@ -311,7 +302,8 @@ model PublishingVersion {
   workId String
   work   Work   @relation(fields: [workId], references: [id])
 
-  chapters Chapter[]
+  chapters                Chapter[]
+  publishingSubscriptions PublishingSubscription[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -321,10 +313,12 @@ model PublishingVersion {
 }
 
 model Chapter {
-  id         String  @id @default(cuid(2))
-  name       String?
-  volumeNum  Float
-  chapterNum Float
+  id              String             @id @default(cuid(2))
+  name            String?
+  volumeNum       Float
+  chapterNum      Float
+  approvalStatus  WorkApprovalStatus @default(PENDING)
+  rejectionReason String?
 
   publishingVersionId String
   publishingVersion   PublishingVersion @relation(fields: [publishingVersionId], references: [id])
@@ -353,47 +347,6 @@ model Page {
   comments Comment[]
 
   @@map("pages")
-}
-
-// ================= EDITS SYSTEM  =================
-
-model WorkProposal {
-  id String @id @default(cuid(2))
-
-  // Хто і що пропонує
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  workId String
-  work   Work   @relation(fields: [workId], references: [id])
-
-  status ProposalStatus @default(PENDING)
-
-  // --- Поля для зміни (Nullable) ---
-  // Якщо поле null - значить його змінювати не пропонують
-  suggestedUkrName         String?
-  suggestedEnName          String?
-  suggestedDescription     String?
-  suggestedCoverImage      String?
-  suggestedBackgroundImage String?
-
-  // --- Зміни зв'язків (JSON) ---
-  // Ми зберігаємо масиви ID: { addTags: ["id1"], removeTags: ["id2"] }
-  suggestedTagsJson    Json?
-  suggestedGenresJson  Json?
-  suggestedAuthorsJson Json?
-  suggestedArtistsJson Json?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("work_proposals")
-}
-
-enum ProposalStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
 }
 
 // ================= SOCIAL & INTERACTION =================
@@ -489,27 +442,64 @@ model Rating {
   @@map("ratings")
 }
 
+model BookmarkFolder {
+  id         String            @id @default(cuid(2))
+  name       String
+  isSystem   Boolean           @default(false)
+  systemType SystemFolderType?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  bookmarks Bookmark[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name])
+  @@map("bookmark_folders")
+}
+
 model Bookmark {
-  id   String @id @default(cuid(2))
-  type String // "reading", "planned", etc.
+  id String @id @default(cuid(2))
+
+  folderId String
+  folder   BookmarkFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
   workId String
-  work   Work   @relation(fields: [workId], references: [id])
+  work   Work   @relation(fields: [workId], references: [id], onDelete: Cascade)
 
   // Прогрес читання (остання глава)
   lastChapterId String?
-  lastChapter   Chapter? @relation(fields: [lastChapterId], references: [id])
-
-  shouldNotify Boolean @default(true)
+  lastChapter   Chapter? @relation(fields: [lastChapterId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, workId])
+  @@unique([folderId, workId])
   @@map("bookmarks")
+}
+
+// ================= SUBSCRIPTIONS (NOTIFICATIONS) =================
+
+model PublishingSubscription {
+  id String @id @default(cuid(2))
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Підписка йде на конкретний переклад конкретної команди
+  publishingVersionId String
+  publishingVersion   PublishingVersion @relation(fields: [publishingVersionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  // Захист від дублікатів підписок
+  @@unique([userId, publishingVersionId])
+  @@map("publishing_subscriptions")
 }
 
 model Notification {
@@ -530,16 +520,6 @@ model Notification {
   updatedAt DateTime @updatedAt
 
   @@map("notifications")
-}
-
-enum NotificationType {
-  NEW_CHAPTER
-  COMMENT_REPLY
-  WORK_APPROVED
-  WORK_REJECTED
-  PROPOSAL_ACCEPTED
-  PROPOSAL_REJECTED
-  USER_BANNED
 }
 
 // ================= MISC =================
@@ -575,6 +555,92 @@ model Complaint {
   @@map("complaints")
 }
 
+// ================= ENUMS =================
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum UserStatus {
+  NORMAL
+  RESTRICTED
+  BANNED
+}
+
+enum TeamStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  BANNED
+}
+
+enum LinkType {
+  DISCORD
+  INSTAGRAM
+  TELEGRAM
+  TIKTOK
+  FACEBOOK
+  X
+  MONOBANK
+  BUYMEACOFFEE
+  DONATELLO
+  SITE
+}
+
+enum TeamRole {
+  ADMIN
+  TRANSLATOR
+  CLEANER
+  TYPER
+}
+
+enum PersonRole {
+  AUTHOR
+  ARTIST
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum WorkType {
+  MANGA
+  MANHWA
+  MANHUA
+  MALOPUS
+  COMIC
+  WEBCOMIC
+}
+
+enum WorkStatus {
+  ONGOING
+  ENDED
+  ANNOUNCEMENT
+  PAUSED
+  DISCONTINUED
+}
+
+enum TranslationStatus {
+  ONGOING
+  ENDED
+  FREEZED
+  DROPPED
+}
+
+enum NotificationType {
+  NEW_CHAPTER
+  COMMENT_REPLY
+  WORK_APPROVED
+  WORK_REJECTED
+  PROPOSAL_ACCEPTED
+  PROPOSAL_REJECTED
+  USER_BANNED
+}
+
 enum ReportReason {
   USER_OFFENCE // Образи
   SPOILERS // Спойлери
@@ -584,4 +650,18 @@ enum ReportReason {
   CONFLICTS // Провокація конфліктів
   OFFTOPIC // Не по темі
   OTHER
+}
+
+enum WorkApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SystemFolderType {
+  READING
+  COMPLETED
+  ON_HOLD
+  DROPPED
+  PLAN_TO_READ
 }
