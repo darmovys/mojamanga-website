@@ -128,5 +128,5 @@ const helperInfos = defineCollection({
 })
 
 export default defineConfig({
-  collections: [news, helperInfos],
+  content: [news, helperInfos],
 })

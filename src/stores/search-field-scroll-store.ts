@@ -1,8 +1,7 @@
 import { create } from 'zustand'
-import variables from '@/styles/_variables.module.scss'
 
 const HEADER_HIDE_THRESHOLD = 60 // Має збігатися з висотою компонента GlobalSearchSection
-const WIDE_SCREEN_QUERY = `(min-width: ${variables.laptopMin})`
+const WIDE_SCREEN_QUERY = `(min-width: 68.75rem)` // Має збігатися з laptop breakpoint
 
 type ScrollStore = {
   isContentVisible: boolean
