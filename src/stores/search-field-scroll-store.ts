@@ -1,6 +1,8 @@
 import { create } from 'zustand'
+import variables from '@/styles/_variables.module.scss'
 
 const HEADER_HIDE_THRESHOLD = 60 // Має збігатися з висотою компонента GlobalSearchSection
+const WIDE_SCREEN_QUERY = `(min-width: ${variables.laptopMin})`
 
 type ScrollStore = {
   isContentVisible: boolean
@@ -13,9 +15,25 @@ export const useSearchFieldScrollStore = create<ScrollStore>((set) => ({
 }))
 
 if (typeof window !== 'undefined') {
+  const mediaQuery = window.matchMedia(WIDE_SCREEN_QUERY)
+
+  // Якщо широкий екран — завжди false
+  const handleMediaChange = (e: MediaQueryListEvent | MediaQueryList) => {
+    if (e.matches) {
+      useSearchFieldScrollStore.setState({ isContentVisible: false })
+    }
+  }
+
+  // Перевірка при ініціалізації
+  handleMediaChange(mediaQuery)
+  mediaQuery.addEventListener('change', handleMediaChange)
+
+  // Scroll-логіка — спрацьовує лише на вузьких екранах
   let previousScrollValue: number | undefined
 
   window.addEventListener('scroll', () => {
+    if (mediaQuery.matches) return // ігноруємо scroll на широких екранах
+
     const currentScroll = window.scrollY
 
     if (previousScrollValue === undefined) {
