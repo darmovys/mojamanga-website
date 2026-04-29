@@ -50,6 +50,7 @@
     "@upstash/redis": "^1.37.0",
     "better-auth": "^1.5.5",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "elysia": "^1.4.28",
     "immer": "^11.1.4",
     "lucide-react": "^1.7.0",
