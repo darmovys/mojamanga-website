@@ -112,3 +112,15 @@ const UKRAINIAN_TO_LATIN: Record<string, string> = {
 export function ukrainianToLatin(text: string): string {
   return [...text].map((char) => UKRAINIAN_TO_LATIN[char] ?? char).join('')
 }
+
+export function range(start: number, end?: number, step: number = 1): number[] {
+  let output: number[] = [];
+  if (typeof end === 'undefined') {
+    end = start;
+    start = 0;
+  }
+  for (let i = start; i < end; i += step) {
+    output.push(i);
+  }
+  return output;
+};
