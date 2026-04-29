@@ -6,6 +6,7 @@ import { createId } from '@paralleldrive/cuid2'
 import { S3 } from '@/lib/s3-client'
 import { CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { ukrainianToLatin } from '@/lib/utils'
+import z from 'zod'
 
 async function moveS3File(sourceKey: string, destinationKey: string) {
   try {
@@ -109,7 +110,7 @@ export const teamsRouter = new Elysia({
               id: teamId,
               name: trimmedTitle,
               description: body.description,
-              avatarUrl: newAvatarKey,
+              coverUrl: newAvatarKey,
               backgroundUrl: newBackgroundKey,
               status: 'PENDING',
               creatorId: user.id,
@@ -143,5 +144,43 @@ export const teamsRouter = new Elysia({
         authed: true,
         body: createTeamSchema,
       },
+    )
+    .get(
+      '/get-pending-teams',
+      async ({query, status}) => {
+        try {
+          const page = query.page ?? 1
+          const limit = 10
+          const skip = (page - 1) * limit
+
+          const [teams, total] = await Promise.all([
+            prisma.team.findMany({
+              where: {status: 'PENDING'},
+              include: {
+                creator: {select: {displayUsername: true}}
+              },
+              orderBy: {createdAt: 'desc'},
+              skip,
+              take: limit,
+            }),
+            prisma.team.count({where: {status: 'PENDING'}})
+          ])
+
+          return {
+            teams,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page
+          }
+        } catch (error) {
+          console.error('Помилка при отриманні заявок: ', error)
+          return status(500, 'Не вдалося завантажити список заявок')
+        }
+      },
+      {
+        query: z.object({
+          page: z.coerce.number().optional()
+        })
+      }
     )
   })

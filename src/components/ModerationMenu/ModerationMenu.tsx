@@ -9,9 +9,10 @@ import MotionButton from '../MotionButton'
 import { NavItems } from './NavItems'
 import ModerationMenuMobileDialog from './ModerationMenuMobileDialog'
 import { getRouteApi } from '@tanstack/react-router'
-import TeamsRequestsList from './TeamsRequestsList'
+import TeamsRequestsList, { TeamsRequestsSkeleton } from './TeamsRequestsList'
 import { useSearchFieldScrollStore } from '@/stores/search-field-scroll-store'
 import { motion } from 'motion/react'
+import { Suspense } from 'react'
 
 const routeAPi = getRouteApi('/moderation/')
 
@@ -56,7 +57,9 @@ function ModerationMenu() {
 
         <div className={styles.GridMainSectionItem}>
           {sectionType === 'teams' ? (
-            <TeamsRequestsList />
+            <Suspense fallback={<TeamsRequestsSkeleton />}>
+              <TeamsRequestsList />
+            </Suspense>
           ) : (
             <div className={styles.PlaceholderContent}>
               Оберіть категорію для модерації

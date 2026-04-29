@@ -95,6 +95,7 @@
 .GridMainSectionItem {
   composes: GridItem;
   margin-block-end: var(--12px);
+  min-block-size: var(--288px);
 }
 
 .GridNavItem {

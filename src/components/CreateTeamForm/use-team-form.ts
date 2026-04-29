@@ -18,6 +18,8 @@ import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { ActiveLink, activeLinkSchema } from '@/schemas/teams'
 import { api } from '@/lib/api-client'
 import { useNavigate } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
+import { teamsQueries } from '@/services/queries'
 
 type LinkMeta = {
   label: string
@@ -46,6 +48,7 @@ export function useTeamForm() {
     useState(false)
   const [isUploading, startUploadingTransition] = useTransition()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const form = useForm({
     defaultValues: {
@@ -151,6 +154,7 @@ export function useTeamForm() {
           }
           return
         }
+        await queryClient.invalidateQueries({queryKey: teamsQueries.all})
         navigate({ to: '/' })
         showTimedToast(
           {
