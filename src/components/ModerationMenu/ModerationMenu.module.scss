@@ -79,14 +79,22 @@
 }
 
 .GridItem {
+  --padding-block: var(--8px);
+  --padding-inline: var(--10px);
+  --grid-radius: var(--8px);
   background-color: var(--sys-surface-high);
   color: var(--sys-on-surface);
   box-shadow: var(--shadow-border);
-  padding: var(--8px) var(--10px);
+  padding: var(--padding-block) var(--padding-inline);
 
-  border-radius: var(--8px);
+  border-radius: var(--grid-radius);
   display: flex;
   flex-direction: column;
+}
+
+.GridMainSectionItem {
+  composes: GridItem;
+  margin-block-end: var(--12px);
 }
 
 .GridNavItem {
@@ -97,7 +105,6 @@
     display: flex;
     align-self: flex-start;
     position: sticky;
-
   }
 }
 

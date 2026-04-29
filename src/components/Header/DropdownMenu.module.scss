@@ -125,9 +125,8 @@
 }
 
 .Separator {
-  background-color: var(--sys-outline);
+  background-color: var(--sys-outline-variant);
   block-size: 1px;
-  // margin-inline: var(--14px);
   margin-block: var(--8px);
   margin-inline-start: var(--10px);
   margin-inline-end: var(--14px);

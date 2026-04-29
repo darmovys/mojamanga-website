@@ -18,7 +18,9 @@ const routeAPi = getRouteApi('/moderation/')
 function ModerationMenu() {
   const { handleGoBack } = useGoBack()
   const sectionType = routeAPi.useSearch().type
-  const isSearchFieldVisible = useSearchFieldScrollStore((s) => s.isContentVisible)
+  const isSearchFieldVisible = useSearchFieldScrollStore(
+    (s) => s.isContentVisible,
+  )
 
   return (
     <div className={styles.MaxWidthWrapper}>
@@ -52,13 +54,15 @@ function ModerationMenu() {
           <NavItems separator={'light'} />
         </motion.nav>
 
-        <div className={styles.GridItem}>{sectionType === 'teams' ? (
-          <TeamsRequestsList />
-        ) : (
-          <div className={styles.PlaceholderContent}>
-            Оберіть категорію для модерації
-          </div>
-        )}</div>
+        <div className={styles.GridMainSectionItem}>
+          {sectionType === 'teams' ? (
+            <TeamsRequestsList />
+          ) : (
+            <div className={styles.PlaceholderContent}>
+              Оберіть категорію для модерації
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

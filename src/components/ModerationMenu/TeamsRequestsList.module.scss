@@ -3,6 +3,7 @@
 .ListContainer {
   display: flex;
   flex-direction: column;
+  container-type: inline-size;
 }
 
 .ListHeading {
@@ -25,7 +26,6 @@
 
   &:focus-visible {
     outline: 2px solid var(--blue-400);
-
   }
 }
 
@@ -37,7 +37,9 @@
   background-color: var(--sys-surface-highest);
   box-shadow: var(--shadow-border);
   border-radius: var(--radius);
-  transition: box-shadow 0.2s var(--bg-animation), background-color 0.2s var(--bg-animation);
+  transition:
+    box-shadow 0.2s var(--bg-animation),
+    background-color 0.2s var(--bg-animation);
 
   @include up('tablet') {
     flex-direction: row;
@@ -46,11 +48,9 @@
   @media (hover: hover) {
     &:hover {
       background-color: var(--state-on-surface-opacity-variant-2);
-
     }
   }
 }
-
 
 .Content {
   display: flex;
@@ -98,4 +98,100 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.PaginationSection {
+  display: flex;
+  gap: var(--8px);
+  align-items: center;
+  flex-direction: column;
+
+  justify-content: space-between;
+  padding: var(--10px) var(--padding-inline);
+  position: sticky;
+  inset-block-end: 0;
+  border-block-start: 1px solid var(--sys-outline);
+  background-color: var(--sys-surface-high);
+  margin-inline: calc(var(--padding-inline) * -1);
+  margin-block: var(--12px) calc(var(--padding-block) * -1);
+  border-end-start-radius: var(--grid-radius);
+  border-end-end-radius: var(--grid-radius);
+
+  /* 470px */
+  @container (min-width: 29.375rem) {
+    flex-direction: row;
+  }
+}
+
+.PageControls {
+  display: flex;
+  gap: var(--6px);
+}
+
+.PageButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100vmax;
+  block-size: var(--32px);
+  inline-size: var(--32px);
+  background-color: var(--sys-surface-highest);
+  box-shadow: var(--shadow-border);
+  transition: background-color 0.2s var(--bg-animation);
+  position: relative; // for click target helper
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+  outline: none;
+  outline-offset: -2px;
+
+  @media (hover: hover) {
+    &:not(.Disabled):hover {
+      background-color: var(--state-primary-opacity-8);
+    }
+  }
+
+  &.Active {
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &.Disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  svg {
+    inline-size: var(--24px);
+    block-size: var(--24px);
+  }
+}
+
+.PagesDivider {
+  margin-inline: var(--4px);
+}
+
+.GoToSpecificPage {
+  display: flex;
+  align-items: center;
+  gap: var(--10px);
+}
+
+.PageInput {
+  background-color: var(--sys-surface-low);
+  border: none;
+  min-inline-size: 0;
+  max-inline-size: var(--45px);
+  inline-size: 100%;
+  border-radius: var(--4px);
+  padding: var(--4px) var(--8px);
+  color: var(--sys-on-surface-highest-variant);
+  box-shadow: var(--inset-shadow);
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    color: var(--sys-on-surface);
+  }
 }
