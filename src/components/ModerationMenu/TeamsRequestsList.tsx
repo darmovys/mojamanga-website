@@ -261,7 +261,7 @@ export function TeamsRequestsSkeleton() {
   return (
     <div className={styles.ListContainer}>
       <h2 className={styles.ListHeading}>Заявки команд (?)</h2>
-      <div className={styles.List}>
+      <div className={styles.List} style={{ alignSelf: 'stretch' }}>
         {range(10).map((el) => (
           <Skeleton key={el} height="135px" width="100%" borderRadius="12px" />
         ))}
