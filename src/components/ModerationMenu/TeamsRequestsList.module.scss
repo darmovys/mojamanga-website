@@ -111,8 +111,6 @@
 
   justify-content: space-between;
   padding: var(--10px) var(--padding-inline);
-  position: sticky;
-  inset-block-end: 0;
   border-block-start: 1px solid var(--sys-outline);
   background-color: var(--sys-surface-high);
   margin-inline: calc(var(--padding-inline) * -1);

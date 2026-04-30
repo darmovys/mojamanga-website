@@ -13,6 +13,7 @@ import TeamsRequestsList, { TeamsRequestsSkeleton } from './TeamsRequestsList'
 import { useSearchFieldScrollStore } from '@/stores/search-field-scroll-store'
 import { motion } from 'motion/react'
 import { Suspense } from 'react'
+import MobileNavigation from '../MobileNavigation'
 
 const routeAPi = getRouteApi('/moderation/')
 
@@ -24,50 +25,53 @@ function ModerationMenu() {
   )
 
   return (
-    <div className={styles.MaxWidthWrapper}>
-      <div className={styles.GoBackHeader}>
-        <Button onClick={handleGoBack} className={styles.GoBackHeaderButton}>
-          <ClickTargetHelper />
-          <ArrowLeft size={20} />
-          <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
-        </Button>
-        <h1 className={styles.GoBackHeading}>Модерація</h1>
-        <ModerationMenuMobileDialog
-          trigger={(openDialog) => (
-            <MotionButton
-              onClick={openDialog}
-              className={styles.MobileMenuButton}
-            >
-              <ClickTargetHelper />
+    <>
+      <div className={styles.MaxWidthWrapper}>
+        <div className={styles.GoBackHeader}>
+          <Button onClick={handleGoBack} className={styles.GoBackHeaderButton}>
+            <ClickTargetHelper />
+            <ArrowLeft size={20} />
+            <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
+          </Button>
+          <h1 className={styles.GoBackHeading}>Модерація</h1>
+          <ModerationMenuMobileDialog
+            trigger={(openDialog) => (
+              <MotionButton
+                onClick={openDialog}
+                className={styles.MobileMenuButton}
+              >
+                <ClickTargetHelper />
 
-              <Menu size={20} />
-              <VisuallyHidden>Меню</VisuallyHidden>
-            </MotionButton>
-          )}
-        />
-      </div>
-      <div className={styles.Grid}>
-        <motion.nav
-          className={styles.GridNavItem}
-          animate={{ top: isSearchFieldVisible ? '137px' : '80px' }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-        >
-          <NavItems separator={'light'} />
-        </motion.nav>
+                <Menu size={20} />
+                <VisuallyHidden>Меню</VisuallyHidden>
+              </MotionButton>
+            )}
+          />
+        </div>
+        <div className={styles.Grid}>
+          <motion.nav
+            className={styles.GridNavItem}
+            animate={{ top: isSearchFieldVisible ? '137px' : '80px' }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+          >
+            <NavItems separator={'light'} />
+          </motion.nav>
 
-        <div className={styles.GridMainSectionItem}>
-          {sectionType === 'teams' ? (
-            <Suspense fallback={<TeamsRequestsSkeleton />}>
-              <TeamsRequestsList />
-            </Suspense>
-          ) : (
-            <div className={styles.PlaceholderContent}>
-              Оберіть категорію для модерації
-            </div>
-          )}
+          <div className={styles.GridMainSectionItem}>
+            {sectionType === 'teams' ? (
+              <Suspense fallback={<TeamsRequestsSkeleton />}>
+                <TeamsRequestsList />
+              </Suspense>
+            ) : (
+              <div className={styles.PlaceholderContent}>
+                Оберіть категорію для модерації
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+      <MobileNavigation />
+    </>
   )
 }
 
