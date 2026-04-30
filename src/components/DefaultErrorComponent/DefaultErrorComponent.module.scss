@@ -1,0 +1,73 @@
+.Wrapper {
+  background-color: var(--sys-on-surface-highest);
+  color: var(--sys-on-surface);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--12px);
+  gap: var(--8px);
+}
+
+.Heading {
+  font-size: var(--18px);
+}
+
+.DevError {
+  font-size: var(--12px);
+  color: var(--danger);
+  background-color: var(--danger-background);
+  border-inline-start: 3px solid var(--danger);
+  padding: var(--8px) var(--12px);
+  border-radius: var(--4px);
+  white-space: pre-wrap;
+  word-break: break-word;
+  opacity: 0.8;
+}
+
+.ButtonsSection {
+  display: flex;
+  gap: var(--6px);
+  font-size: var(--14px);
+}
+
+.Button {
+  border-radius: 100vmax;
+  padding: var(--4px) var(--12px) var(--4px) var(--10px);
+  transition: background-color 0.2s var(--bg-animation);
+  box-shadow: var(--shadow-border);
+  gap: var(--4px);
+  transition: background-color 0.2s var(--bg-animation);
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.PrimaryButton {
+  composes: Button;
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+}
+
+.SecondaryButton {
+  composes: Button;
+  box-shadow: var(--shadow-border);
+  outline-offset: -2px;
+  outline: 2px solid var(--sys-primary);
+  color: var(--sys-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-8);
+    }
+  }
+
+  &:focus-visible {
+    background-color: var(--state-primary-opacity-8);
+  }
+}
