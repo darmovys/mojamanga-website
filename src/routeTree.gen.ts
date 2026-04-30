@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as ForbiddenRouteImport } from './routes/forbidden'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
@@ -26,6 +27,11 @@ import { Route as ModerationTeamReviewTeamIdRouteImport } from './routes/moderat
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForbiddenRoute = ForbiddenRouteImport.update({
+  id: '/forbidden',
+  path: '/forbidden',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogRoute = CatalogRouteImport.update({
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
+  '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
   '/moderation/': typeof ModerationIndexRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
+  '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
   '/moderation': typeof ModerationIndexRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
+  '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
   '/moderation/': typeof ModerationIndexRoute
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/bookmarks'
     | '/catalog'
+    | '/forbidden'
     | '/notifications'
     | '/api/$'
     | '/moderation/'
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/bookmarks'
     | '/catalog'
+    | '/forbidden'
     | '/notifications'
     | '/api/$'
     | '/moderation'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/bookmarks'
     | '/catalog'
+    | '/forbidden'
     | '/notifications'
     | '/api/$'
     | '/moderation/'
@@ -185,6 +197,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   BookmarksRoute: typeof BookmarksRoute
   CatalogRoute: typeof CatalogRoute
+  ForbiddenRoute: typeof ForbiddenRoute
   NotificationsRoute: typeof NotificationsRoute
   ApiSplatRoute: typeof ApiSplatRoute
   ModerationIndexRoute: typeof ModerationIndexRoute
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/notifications'
       preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forbidden': {
+      id: '/forbidden'
+      path: '/forbidden'
+      fullPath: '/forbidden'
+      preLoaderRoute: typeof ForbiddenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/catalog': {
@@ -309,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   BookmarksRoute: BookmarksRoute,
   CatalogRoute: CatalogRoute,
+  ForbiddenRoute: ForbiddenRoute,
   NotificationsRoute: NotificationsRoute,
   ApiSplatRoute: ApiSplatRoute,
   ModerationIndexRoute: ModerationIndexRoute,
