@@ -180,7 +180,8 @@ export const teamsRouter = new Elysia({
       {
         query: z.object({
           page: z.coerce.number().optional()
-        })
+        }),
+        moderator: true,
       }
     )
   })

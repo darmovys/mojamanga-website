@@ -1,7 +1,6 @@
 import { auth } from '@/lib/auth'
 import { Elysia } from 'elysia'
 import { cors } from '@elysiajs/cors'
-import { redirect } from '@tanstack/react-router'
 import { getRequestHeaders } from '@tanstack/react-start/server'
 
 export const betterAuthPlugin = new Elysia({
@@ -31,6 +30,24 @@ export const betterAuthPlugin = new Elysia({
         }
       },
     },
+    moderator: {
+      async resolve({ status }) {
+        const headers = getRequestHeaders()
+        const session = await auth.api.getSession({ headers })
+
+        if (!session) return status(401, 'Необхідна авторизація')
+
+        const { role } = session.user
+        if (role !== 'ADMIN' && role !== 'MODERATOR') {
+          return status(403, 'Доступ заборонено: потрібні права модератора або адміна')
+        }
+
+        return {
+          user: session.user,
+          session: session.session,
+        }
+      },
+    },
   })
   .get('/user_session', async () => {
     const headers = getRequestHeaders()
@@ -51,17 +68,6 @@ export const betterAuthPlugin = new Elysia({
       session: undefined,
     }
   })
-  .get(
-    '/is-moderator',
-    ({ session, user }) => {
-      if (user.role !== 'ADMIN' && user.role !== 'MODERATOR') {
-        if (!session) throw redirect({ to: '/' })
-      }
-    },
-    {
-      authed: true,
-    },
-  )
 
 let _schema: ReturnType<typeof auth.api.generateOpenAPISchema>
 const getSchema = async () => (_schema ??= auth.api.generateOpenAPISchema())
