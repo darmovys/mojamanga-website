@@ -1,4 +1,6 @@
-import ModerationMenu from '@/components/ModerationMenu'
+import ModerationMenu, {
+  ModerationMenuSkeleton,
+} from '@/components/ModerationMenu'
 import { moderationMenuSchema } from '@/schemas/moderation'
 import { teamsQueries } from '@/services/queries'
 import { createFileRoute } from '@tanstack/react-router'
@@ -15,8 +17,11 @@ export const Route = createFileRoute('/moderation/')({
   loader: async ({ context, deps: { search } }) => {
     if (search.type === 'teams') {
       const page = search.page || 1
-      context.queryClient.prefetchQuery(teamsQueries.pendingTeams(page))
+      await context.queryClient.ensureQueryData(teamsQueries.pendingTeams(page))
     }
+  },
+  pendingComponent: () => {
+    return <ModerationMenuSkeleton />
   },
 })
 

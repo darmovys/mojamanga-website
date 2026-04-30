@@ -12,14 +12,12 @@ import { getRouteApi } from '@tanstack/react-router'
 import TeamsRequestsList, { TeamsRequestsSkeleton } from './TeamsRequestsList'
 import { useSearchFieldScrollStore } from '@/stores/search-field-scroll-store'
 import { motion } from 'motion/react'
-import { Suspense } from 'react'
 import MobileNavigation from '../MobileNavigation'
 
-const routeAPi = getRouteApi('/moderation/')
+const routeApi = getRouteApi('/moderation/')
 
-function ModerationMenu() {
+function ModerationMenuLayout({ children }: { children: React.ReactNode }) {
   const { handleGoBack } = useGoBack()
-  const sectionType = routeAPi.useSearch().type
   const isSearchFieldVisible = useSearchFieldScrollStore(
     (s) => s.isContentVisible,
   )
@@ -41,7 +39,6 @@ function ModerationMenu() {
                 className={styles.MobileMenuButton}
               >
                 <ClickTargetHelper />
-
                 <Menu size={20} />
                 <VisuallyHidden>Меню</VisuallyHidden>
               </MotionButton>
@@ -56,22 +53,43 @@ function ModerationMenu() {
           >
             <NavItems separator={'light'} />
           </motion.nav>
-
-          <div className={styles.GridMainSectionItem}>
-            {sectionType === 'teams' ? (
-              <Suspense fallback={<TeamsRequestsSkeleton />}>
-                <TeamsRequestsList />
-              </Suspense>
-            ) : (
-              <div className={styles.PlaceholderContent}>
-                Оберіть категорію для модерації
-              </div>
-            )}
-          </div>
+          <div className={styles.GridMainSectionItem}>{children}</div>
         </div>
       </div>
       <MobileNavigation />
     </>
+  )
+}
+
+function ModerationMenu() {
+  const sectionType = routeApi.useSearch({ select: ({ type }) => type })
+
+  return (
+    <ModerationMenuLayout>
+      {sectionType === 'teams' ? (
+        <TeamsRequestsList />
+      ) : (
+        <div className={styles.PlaceholderContent}>
+          Оберіть категорію для модерації
+        </div>
+      )}
+    </ModerationMenuLayout>
+  )
+}
+
+export function ModerationMenuSkeleton() {
+  const sectionType = routeApi.useSearch({ select: ({ type }) => type })
+
+  return (
+    <ModerationMenuLayout>
+      {sectionType === 'teams' ? (
+        <TeamsRequestsSkeleton />
+      ) : (
+        <div className={styles.PlaceholderContent}>
+          Оберіть категорію для модерації
+        </div>
+      )}
+    </ModerationMenuLayout>
   )
 }
 
