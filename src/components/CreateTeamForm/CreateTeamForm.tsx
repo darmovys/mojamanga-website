@@ -15,7 +15,6 @@ import VisuallyHidden from '../VisuallyHidden'
 import { AnimatePresence, motion } from 'motion/react'
 import CropImageDialog from '../CropImageDialog'
 import { showTimedToast } from '@/lib/toast'
-import styles from './CreateTeamForm.module.scss'
 import { Tooltip } from './Tooltip'
 import clsx from 'clsx'
 import { LinkType } from '@/generated/prisma/enums'
@@ -24,10 +23,12 @@ import MobileNavigation from '../MobileNavigation'
 import { produce } from 'immer'
 import { createId } from '@paralleldrive/cuid2'
 import { LinkInputField } from './LinkInputField'
-import { LINK_META, useTeamForm } from './use-team-form'
+import { useTeamForm } from './use-team-form'
 import HelperDialog from '../HelperDialog'
 import { useHelperDialog } from './use-helper-dialog'
 import { useGoBack } from '@/hooks/use-go-back'
+import { LINK_META } from '@/lib/constants'
+import styles from './CreateTeamForm.module.scss'
 
 const MAX_DESCRIPTION_LENGTH = 500
 
@@ -58,7 +59,6 @@ function CreateTeamForm() {
           <ClickTargetHelper />
           <ArrowLeft size={20} />
           <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
-
         </Button>
         <h1 className={styles.GoBackHeading}>Створення команди</h1>
         <HelperDialog

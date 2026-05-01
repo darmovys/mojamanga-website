@@ -6,7 +6,7 @@ import { tapAnimation } from '../MotionButton'
 import VisuallyHidden from '../VisuallyHidden'
 import { Check, ChevronDown, CircleQuestionMark } from 'lucide-react'
 import ClickTargetHelper from '../ClickTargetHelper'
-import { LINK_META } from './use-team-form'
+import { LINK_META } from '@/lib/constants'
 import styles from './CreateTeamForm.module.scss'
 
 interface LinkSelectorProps {
