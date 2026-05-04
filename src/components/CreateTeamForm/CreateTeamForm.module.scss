@@ -273,7 +273,7 @@
 .Popup {
   background-color: var(--sys-surface-high);
   color: var(--sys-on-surface);
-  outline: 1px solid var (--sys-outline-variant);
+  outline: 1px solid var(--sys-outline-variant);
   box-shadow: var(--shadow-border);
   border-radius: var(--8px);
   overflow: clip; // to trim off popup corners
