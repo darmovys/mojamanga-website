@@ -29,11 +29,8 @@
 .HomeButton {
   border-radius: 100vmax;
   padding: var(--6px) var(--12px) var(--6px) var(--10px);
-  transition: background-color 0.2s var(--bg-animation);
   box-shadow: var(--shadow-border);
   gap: var(--4px);
-  transition: background-color 0.2s var(--bg-animation);
-  box-shadow: var(--shadow-border);
   outline-offset: -2px;
   outline: 2px solid var(--sys-primary);
   color: var(--sys-primary);

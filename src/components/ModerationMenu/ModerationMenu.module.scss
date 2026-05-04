@@ -34,7 +34,6 @@
 }
 
 .GoBackButtonBase {
-  transition: background-color 0.2s var(--bg-animation);
   block-size: var(--32px);
   inline-size: var(--32px);
   position: relative; // for click target helper
@@ -151,7 +150,6 @@
   align-items: center;
   padding: var(--4px) var(--10px);
   border-radius: var(--radius);
-  transition: background-color 0.2s var(--bg-animation);
 
   @media (hover: hover) {
     &:hover {

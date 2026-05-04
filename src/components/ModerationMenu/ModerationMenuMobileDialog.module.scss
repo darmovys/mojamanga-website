@@ -30,7 +30,6 @@
 .CloseButton {
   --border-radius: 100vmax;
   border-radius: var(--border-radius);
-  transition: background-color 0.2s var(--bg-animation);
   color: inherit;
   outline: 2px solid var(--sys-primary);
   outline-offset: -2px;

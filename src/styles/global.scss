@@ -97,14 +97,6 @@ button {
 
 /* GLOBAL STYLES */
 
-// BUTTON STYLES
-
-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 // FONT FACES
 
 /* Main font */
@@ -445,6 +437,15 @@ html.dark img {
   to {
     mask-size: 200vmax;
   }
+}
+
+// BASIC BUTTON STYLES
+
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s var(--bg-animation);
 }
 
 // REUSED CLASSES
