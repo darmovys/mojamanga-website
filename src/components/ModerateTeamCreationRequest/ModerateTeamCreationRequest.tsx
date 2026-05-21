@@ -17,6 +17,7 @@ import ShiftBy from '../ShiftBy/ShiftBy'
 import HelperDialog from '../HelperDialog'
 import { useHelperDialog } from './use-helper-dialog'
 import { ConfirmDialog } from './ConfirmDialog'
+import { useReviewRequest } from './use-review-request'
 
 const routeApi = getRouteApi('/moderation/team-review/$teamId')
 
@@ -28,17 +29,15 @@ function ModerateTeamCreationRequest() {
   const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
     useHelperDialog()
 
-  function handleApprove() {
-    // todo
-  }
-
-  function handleRevise(message: string) {
-    // todo
-  }
-
-  function handleDecline(message: string) {
-    // todo
-  }
+  const {
+    isPending,
+    handleApprove,
+    handleRevise,
+    handleDecline,
+    approveMutation,
+    reviseMutation,
+    declineMutation,
+  } = useReviewRequest(teamId)
 
   return (
     <div className={styles.MaxWidthWrapper}>
@@ -208,10 +207,13 @@ function ModerateTeamCreationRequest() {
             <ConfirmDialog
               trigger={(openDialog) => (
                 <MotionButton
-                  className={clsx(styles.ApproveButton, 'Gradient')}
+                  className={clsx(styles.ApproveButton, 'Gradient', {
+                    [styles.Pending]: isPending,
+                  })}
                   onClick={openDialog}
+                  disabled={isPending}
                 >
-                  Схвалити
+                  {approveMutation.isPending ? 'Обробка...' : 'Схвалити'}
                 </MotionButton>
               )}
               type="approve"
@@ -220,10 +222,13 @@ function ModerateTeamCreationRequest() {
             <ConfirmDialog
               trigger={(openDialog) => (
                 <MotionButton
-                  className={clsx(styles.RejectButton, 'Gradient')}
+                  className={clsx(styles.RejectButton, 'Gradient', {
+                    [styles.Pending]: isPending,
+                  })}
                   onClick={openDialog}
+                  disabled={isPending}
                 >
-                  Доопрацювати
+                  {reviseMutation.isPending ? 'Обробка...' : 'Доопрацювати'}
                 </MotionButton>
               )}
               type="revise"
@@ -232,10 +237,13 @@ function ModerateTeamCreationRequest() {
             <ConfirmDialog
               trigger={(openDialog) => (
                 <MotionButton
-                  className={styles.HardRejectButton}
+                  className={clsx(styles.HardRejectButton, {
+                    [styles.Pending]: isPending,
+                  })}
                   onClick={openDialog}
+                  disabled={isPending}
                 >
-                  Відхилити
+                  {declineMutation.isPending ? 'Обробка...' : 'Відхилити'}
                 </MotionButton>
               )}
               type="decline"

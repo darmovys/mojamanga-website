@@ -31,6 +31,15 @@ async function moveS3File(sourceKey: string, destinationKey: string) {
   }
 }
 
+async function getTeamOrFail(id: string) {
+  const team = await prisma.team.findUnique({ where: { id } })
+
+  if (!team) return 'NOT_FOUND' as const
+  if (team.status !== 'PENDING') return 'NOT_PENDING' as const
+
+  return team
+}
+
 export const teamsRouter = new Elysia({
   name: 'teams-router',
   tags: ['Teams'],
@@ -208,6 +217,91 @@ export const teamsRouter = new Elysia({
         {
           params: z.object({
             id: z.string(),
+          }),
+        },
+      )
+      .patch(
+        '/approve-team-request',
+        async ({ status, body }) => {
+          try {
+            const team = await getTeamOrFail(body.id)
+            if (team === 'NOT_FOUND') return status(404, 'Команду не знайдено')
+            if (team === 'NOT_PENDING')
+              return status(409, 'Запит вже оброблено')
+
+            await prisma.team.update({
+              where: { id: body.id },
+              data: { status: 'APPROVED' },
+            })
+
+            return { message: 'Запит виконано' }
+          } catch (dbError) {
+            console.error('Помилка БД: ', dbError)
+            return status(500, 'Помилка при збереженні даних')
+          }
+        },
+        {
+          moderator: true,
+          body: z.object({ id: z.string() }),
+        },
+      )
+      .patch(
+        '/revise-team-request',
+        async ({ status, body }) => {
+          try {
+            const team = await getTeamOrFail(body.id)
+            if (team === 'NOT_FOUND') return status(404, 'Команду не знайдено')
+            if (team === 'NOT_PENDING')
+              return status(409, 'Запит вже оброблено')
+
+            await prisma.team.update({
+              where: { id: body.id },
+              data: {
+                status: 'REJECTED',
+                ...(body.message.length && { rejectionReason: body.message }),
+              },
+            })
+
+            return {
+              message: 'Запит виконано',
+            }
+          } catch (dbError) {
+            console.error('Помилка БД: ', dbError)
+            return status(500, 'Помилка при збереженні даних')
+          }
+        },
+        {
+          moderator: true,
+          body: z.object({
+            id: z.string(),
+            message: z.string(),
+          }),
+        },
+      )
+      .delete(
+        '/decline-team-request',
+        async ({ status, body }) => {
+          try {
+            const team = await getTeamOrFail(body.id)
+            if (team === 'NOT_FOUND') return status(404, 'Команду не знайдено')
+            if (team === 'NOT_PENDING')
+              return status(409, 'Запит вже оброблено')
+
+            await prisma.team.delete({
+              where: { id: body.id },
+            })
+
+            return { message: 'Запит виконано' }
+          } catch (dbError) {
+            console.error('Помилка БД: ', dbError)
+            return status(500, 'Помилка при збереженні даних')
+          }
+        },
+        {
+          moderator: true,
+          body: z.object({
+            id: z.string(),
+            message: z.string(),
           }),
         },
       )

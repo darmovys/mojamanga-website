@@ -249,9 +249,9 @@
     border-radius: var(--8px) !important;
   }
 
-  &.Loading {
+  &.Pending {
     opacity: 0.7;
-    pointer-events: none;
+    cursor: not-allowed;
   }
 }
 
