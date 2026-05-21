@@ -10,6 +10,9 @@ type LinkProps = Children & {
   to: string
 }
 
+type WarningProps = Children & {
+  title: string
+}
 export const mdxComponents = {
   Body({ children }: Children) {
     return <div className={styles.Body}>{children}</div>
@@ -26,6 +29,14 @@ export const mdxComponents = {
         {children}
         <ExternalLink className={styles.LinkIcon} size={14} />
       </ClientLink>
+    )
+  },
+  Warning({ children, title }: WarningProps) {
+    return (
+      <aside className={styles.Warning}>
+        <h2 className={styles.WarningTitle}>{title}</h2>
+        {children}
+      </aside>
     )
   },
 }

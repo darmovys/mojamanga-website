@@ -38,3 +38,17 @@
   display: inline-block;
   margin-inline-start: var(--2px);
 }
+
+.Warning {
+  margin-block-start: var(--14px);
+  margin-block-end: var(--8px);
+  background-color: var(--danger-background);
+  border-radius: var(--2px);
+  padding: var(--6px);
+  border-inline-start: 3.5px solid var(--danger);
+  padding-inline-start: var(--12px);
+}
+
+.WarningTitle {
+  font-size: var(--20px);
+}
