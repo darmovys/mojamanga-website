@@ -74,7 +74,7 @@ export default function TeamsRequestsList() {
             <TeamRequestCard key={team.id} team={team} />
           ))
         ) : (
-          <p className={styles.EmptyList}>Усі заявки розглянуті 👍</p>
+          <p className={styles.EmptyList}>Усі запити розглянуті 👍</p>
         )}
       </div>
 
