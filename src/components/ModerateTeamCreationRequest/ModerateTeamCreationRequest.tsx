@@ -10,7 +10,6 @@ import clsx from 'clsx'
 import VisuallyHidden from '../VisuallyHidden'
 import { Image } from '@unpic/react'
 import { LINK_META } from '@/lib/constants'
-import styles from './ModerateTeamCreationRequest.module.scss'
 import { useTheme } from '@/lib/theme-provider'
 import { format } from 'date-fns'
 import ShiftBy from '../ShiftBy/ShiftBy'
@@ -18,6 +17,8 @@ import HelperDialog from '../HelperDialog'
 import { useHelperDialog } from './use-helper-dialog'
 import { ConfirmDialog } from './ConfirmDialog'
 import { useReviewRequest } from './use-review-request'
+import Skeleton from '../Skeleton'
+import styles from './ModerateTeamCreationRequest.module.scss'
 
 const routeApi = getRouteApi('/moderation/team-review/$teamId')
 
@@ -251,6 +252,105 @@ function ModerateTeamCreationRequest() {
             />
           </div>
         </footer>
+      </main>
+    </div>
+  )
+}
+
+export function ModerateTeamCreationRequestSkeleton() {
+  return (
+    <div className={styles.MaxWidthWrapper}>
+      <div className={styles.GoBackHeader}>
+        <Button className={styles.GoBackHeaderButton} disabled>
+          <ClickTargetHelper />
+          <ArrowLeft size={20} />
+        </Button>
+        <h1 className={styles.GoBackHeading}>Розгляд нової команди</h1>
+        <Button className={styles.InfoButton} disabled>
+          <ClickTargetHelper />
+          <Info size={20} />
+        </Button>
+      </div>
+
+      <main className={styles.Content}>
+        <div className={clsx(styles.Card, styles.NavCard)}>
+          <ol className={styles.Breadcrumbs}>
+            <li className={styles.Crumb}>
+              <Link
+                className={styles.CrumbLink}
+                to="/moderation"
+                search={{ type: 'teams' }}
+              >
+                Запити на стоврення нової команди
+              </Link>
+            </li>
+            <li className={clsx(styles.Crumb, styles.Current)}>
+              Розгляд нової команди
+            </li>
+          </ol>
+          <Button className={styles.HelperButton} disabled>
+            <Info size={16} />
+            <span>Довідка</span>
+          </Button>
+        </div>
+
+        <div className={clsx(styles.Card, styles.Creator)}>
+          <div className={styles.UserInfo}>
+            <span>Запит від</span>
+            <div className={styles.CreatorPlaceholder}>
+              <Skeleton width="20px" height="20px" borderRadius="100vmax" />
+              <Skeleton width="120px" height="16px" borderRadius="4px" />
+            </div>
+          </div>
+
+          <div className={styles.MetaInfo}>
+            <span className={styles.Dot}>•</span>
+            <ShiftBy y={1}>
+              <Skeleton width="140px" height="16px" borderRadius="4px" />
+            </ShiftBy>
+          </div>
+        </div>
+
+        <div className={styles.Card}>
+          <div
+            className={styles.ImageWrapper}
+            style={{ '--aspect-ratio': '1450 / 540' } as React.CSSProperties}
+          >
+            <Skeleton width="100%" height="100%" />
+            <h2 className={styles.ImageHeading}>Задній фон</h2>
+          </div>
+        </div>
+
+        <div className={styles.Card}>
+          <div
+            className={clsx(styles.ImageWrapper, styles.Cover)}
+            style={{ '--aspect-ratio': '375 / 525' } as React.CSSProperties}
+          >
+            <Skeleton width="100%" height="100%" />
+            <h2 className={styles.ImageHeading}>Обкладинка</h2>
+          </div>
+        </div>
+
+        <div className={styles.Card}>
+          <h2 className={styles.CardTitle}>Назва</h2>
+          <Skeleton width="60%" height="28px" borderRadius="4px" />
+        </div>
+
+        <div className={styles.Card}>
+          <h2 className={styles.CardTitle}>Опис</h2>
+          <div className={styles.DescriptionLines}>
+            <Skeleton width="100%" height="16px" borderRadius="4px" />
+            <Skeleton width="90%" height="16px" borderRadius="4px" />
+            <Skeleton width="40%" height="16px" borderRadius="4px" />
+          </div>
+        </div>
+
+        <div className={styles.Card}>
+          <h2 className={styles.CardTitle}>Посилання</h2>
+          <div className={styles.LinkSkeleton}>
+            <Skeleton width="100%" height="40px" borderRadius="4px" />
+          </div>
+        </div>
       </main>
     </div>
   )

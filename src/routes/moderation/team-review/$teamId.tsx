@@ -1,4 +1,6 @@
-import ModerateTeamCreationRequest from '@/components/ModerateTeamCreationRequest'
+import ModerateTeamCreationRequest, {
+  ModerateTeamCreationRequestSkeleton,
+} from '@/components/ModerateTeamCreationRequest'
 import { teamsQueries } from '@/services/queries'
 import { createFileRoute } from '@tanstack/react-router'
 import { allHelperInfos } from 'content-collections'
@@ -17,7 +19,7 @@ export const Route = createFileRoute('/moderation/team-review/$teamId')({
     return helperInfo
   },
   pendingComponent: () => {
-    return <div>Завантажуємо дані команди... Ось ось зараз буде</div>
+    return <ModerateTeamCreationRequestSkeleton />
   },
 })
 
