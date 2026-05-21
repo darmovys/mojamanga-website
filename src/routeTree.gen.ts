@@ -14,6 +14,7 @@ import { Route as ForbiddenRouteImport } from './routes/forbidden'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ModerationRouteRouteImport } from './routes/moderation/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TeamIndexRouteImport } from './routes/team/index'
@@ -49,6 +50,11 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ModerationRouteRoute = ModerationRouteRouteImport.update({
+  id: '/moderation',
+  path: '/moderation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
@@ -64,9 +70,9 @@ const TeamIndexRoute = TeamIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ModerationIndexRoute = ModerationIndexRouteImport.update({
-  id: '/moderation/',
-  path: '/moderation/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => ModerationRouteRoute,
 } as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
@@ -90,13 +96,14 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
 } as any)
 const ModerationTeamReviewTeamIdRoute =
   ModerationTeamReviewTeamIdRouteImport.update({
-    id: '/moderation/team-review/$teamId',
-    path: '/moderation/team-review/$teamId',
-    getParentRoute: () => rootRouteImport,
+    id: '/team-review/$teamId',
+    path: '/team-review/$teamId',
+    getParentRoute: () => ModerationRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/moderation': typeof ModerationRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
@@ -129,6 +136,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
+  '/moderation': typeof ModerationRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
@@ -146,6 +154,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/moderation'
     | '/about'
     | '/bookmarks'
     | '/catalog'
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_auth'
+    | '/moderation'
     | '/about'
     | '/bookmarks'
     | '/catalog'
@@ -194,15 +204,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  ModerationRouteRoute: typeof ModerationRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   BookmarksRoute: typeof BookmarksRoute
   CatalogRoute: typeof CatalogRoute
   ForbiddenRoute: typeof ForbiddenRoute
   NotificationsRoute: typeof NotificationsRoute
   ApiSplatRoute: typeof ApiSplatRoute
-  ModerationIndexRoute: typeof ModerationIndexRoute
   TeamIndexRoute: typeof TeamIndexRoute
-  ModerationTeamReviewTeamIdRoute: typeof ModerationTeamReviewTeamIdRoute
   TeamCreateIndexRoute: typeof TeamCreateIndexRoute
 }
 
@@ -243,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/moderation': {
+      id: '/moderation'
+      path: '/moderation'
+      fullPath: '/moderation'
+      preLoaderRoute: typeof ModerationRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_auth': {
       id: '/_auth'
       path: ''
@@ -266,10 +282,10 @@ declare module '@tanstack/react-router' {
     }
     '/moderation/': {
       id: '/moderation/'
-      path: '/moderation'
+      path: '/'
       fullPath: '/moderation/'
       preLoaderRoute: typeof ModerationIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ModerationRouteRoute
     }
     '/api/$': {
       id: '/api/$'
@@ -301,10 +317,10 @@ declare module '@tanstack/react-router' {
     }
     '/moderation/team-review/$teamId': {
       id: '/moderation/team-review/$teamId'
-      path: '/moderation/team-review/$teamId'
+      path: '/team-review/$teamId'
       fullPath: '/moderation/team-review/$teamId'
       preLoaderRoute: typeof ModerationTeamReviewTeamIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ModerationRouteRoute
     }
   }
 }
@@ -323,18 +339,31 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
+interface ModerationRouteRouteChildren {
+  ModerationIndexRoute: typeof ModerationIndexRoute
+  ModerationTeamReviewTeamIdRoute: typeof ModerationTeamReviewTeamIdRoute
+}
+
+const ModerationRouteRouteChildren: ModerationRouteRouteChildren = {
+  ModerationIndexRoute: ModerationIndexRoute,
+  ModerationTeamReviewTeamIdRoute: ModerationTeamReviewTeamIdRoute,
+}
+
+const ModerationRouteRouteWithChildren = ModerationRouteRoute._addFileChildren(
+  ModerationRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
+  ModerationRouteRoute: ModerationRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   BookmarksRoute: BookmarksRoute,
   CatalogRoute: CatalogRoute,
   ForbiddenRoute: ForbiddenRoute,
   NotificationsRoute: NotificationsRoute,
   ApiSplatRoute: ApiSplatRoute,
-  ModerationIndexRoute: ModerationIndexRoute,
   TeamIndexRoute: TeamIndexRoute,
-  ModerationTeamReviewTeamIdRoute: ModerationTeamReviewTeamIdRoute,
   TeamCreateIndexRoute: TeamCreateIndexRoute,
 }
 export const routeTree = rootRouteImport

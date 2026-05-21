@@ -1,0 +1,211 @@
+import { teamsQueries } from '@/services/queries'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { getRouteApi, Link } from '@tanstack/react-router'
+import { useGoBack } from '@/hooks/use-go-back'
+import { Button } from '@base-ui/react'
+import ClickTargetHelper from '../ClickTargetHelper'
+import { ArrowLeft, ImageOff, Info } from 'lucide-react'
+import MotionButton from '../MotionButton'
+import clsx from 'clsx'
+import VisuallyHidden from '../VisuallyHidden'
+import { Image } from '@unpic/react'
+import { LINK_META } from '@/lib/constants'
+import styles from './ModerateTeamCreationRequest.module.scss'
+import { useTheme } from '@/lib/theme-provider'
+import { format } from 'date-fns'
+import ShiftBy from '../ShiftBy/ShiftBy'
+import HelperDialog from '../HelperDialog'
+import { useHelperDialog } from './use-helper-dialog'
+
+const routeApi = getRouteApi('/moderation/team-review/$teamId')
+
+function ModerateTeamCreationRequest() {
+  const { teamId } = routeApi.useParams()
+  const { data } = useSuspenseQuery(teamsQueries.getTeamRequest(teamId))
+  const { handleGoBack } = useGoBack()
+  const { theme } = useTheme()
+  const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
+    useHelperDialog()
+
+  return (
+    <div className={styles.MaxWidthWrapper}>
+      <div className={styles.GoBackHeader}>
+        <Button onClick={handleGoBack} className={styles.GoBackHeaderButton}>
+          <ClickTargetHelper />
+          <ArrowLeft size={20} />
+          <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
+        </Button>
+        <h1 className={styles.GoBackHeading}>Розгляд нової команди</h1>
+        <HelperDialog
+          title={title}
+          content={content}
+          mdast={mdast}
+          open={isHelperOpen}
+          onOpenChange={handleHelperOpenChange}
+          trigger={(openDialog) => (
+            <Button onClick={openDialog} className={styles.InfoButton}>
+              <ClickTargetHelper />
+              <Info size={20} />
+              <VisuallyHidden>Довідка</VisuallyHidden>
+            </Button>
+          )}
+        />
+      </div>
+      <main className={styles.Content}>
+        <div className={clsx(styles.Card, styles.NavCard)}>
+          <ol className={styles.Breadcrumbs}>
+            <li className={styles.Crumb}>
+              <Link
+                className={styles.CrumbLink}
+                to="/moderation"
+                search={{ type: 'teams' }}
+              >
+                Запити на стоврення нової команди
+              </Link>
+            </li>
+            <li className={clsx(styles.Crumb, styles.Current)}>
+              Розгляд нової команди
+            </li>
+          </ol>
+          <HelperDialog
+            title={title}
+            content={content}
+            mdast={mdast}
+            open={isHelperOpen}
+            onOpenChange={handleHelperOpenChange}
+            trigger={(openDialog) => (
+              <Button onClick={openDialog} className={styles.HelperButton}>
+                <Info size={16} />
+                <span>Довідка</span>
+              </Button>
+            )}
+          />
+        </div>
+        <div className={clsx(styles.Card, styles.Creator)}>
+          <div className={styles.UserInfo}>
+            <span>Запит від</span>
+            <Link to="/about" className={styles.CreatorLink}>
+              <Image
+                layout="fullWidth"
+                src={
+                  data.creator.image
+                    ? import.meta.env.VITE_STORAGE_URL + '' + data.creator.image
+                    : `https://api.dicebear.com/9.x/glass/svg?seed=${data.creator.displayUsername}`
+                }
+                className={styles.UserImage}
+              />
+              <span>{data.creator.displayUsername}</span>
+            </Link>
+          </div>
+
+          <div className={styles.MetaInfo}>
+            <span className={styles.Dot}>•</span>
+            <ShiftBy y={1}>
+              {format(data.createdAt, 'dd.MM.yyyy HH:mm:ss')}
+            </ShiftBy>
+          </div>
+        </div>
+        <div className={styles.Card}>
+          <div
+            className={styles.ImageWrapper}
+            style={{ '--aspect-ratio': '1450 / 540' } as React.CSSProperties}
+          >
+            {data.backgroundUrl ? (
+              <Image
+                layout="fullWidth"
+                src={`${import.meta.env.VITE_STORAGE_URL}${data.backgroundUrl}`}
+                alt="Задній фон команди"
+                className={styles.Image}
+                loading="lazy"
+              />
+            ) : (
+              <div className={styles.NoImage}>
+                <ImageOff size={24} />
+                <span>Не задано</span>
+              </div>
+            )}
+            <h2 className={styles.ImageHeading}>Задній фон</h2>
+          </div>
+        </div>
+        <div className={styles.Card}>
+          <div
+            className={clsx(styles.ImageWrapper, styles.Cover)}
+            style={
+              {
+                '--aspect-ratio': '375 / 525',
+              } as React.CSSProperties
+            }
+          >
+            {data.coverUrl ? (
+              <Image
+                layout="fullWidth"
+                src={`${import.meta.env.VITE_STORAGE_URL}${data.coverUrl}`}
+                alt="Обкладинка команди"
+                className={styles.Image}
+                loading="lazy"
+              />
+            ) : (
+              <div className={styles.NoImage}>
+                <ImageOff size={24} />
+                <span>Не задано</span>
+              </div>
+            )}
+            <h2 className={styles.ImageHeading}>Обкладинка</h2>
+          </div>
+        </div>
+        <div className={styles.Card}>
+          <h2 className={styles.CardTitle}>Назва</h2>
+          <div className={styles.TextField}>{data.name}</div>
+        </div>
+        <div className={styles.Card}>
+          <h2 className={styles.CardTitle}>Опис</h2>
+          <div className={styles.TextField}>
+            {data.description || 'Опису немає'}
+          </div>
+        </div>
+        <div className={styles.Card}>
+          <h2 className={styles.CardTitle}>Посилання</h2>
+          {data.links.length > 0 ? (
+            data.links.map((link) => {
+              const { icon: Icon, tone, toneDark } = LINK_META[link.type]
+
+              return (
+                <div key={link.id} className={styles.LinkField}>
+                  <div
+                    className={styles.IconWrapper}
+                    style={
+                      {
+                        '--tone':
+                          theme === 'dark' && toneDark ? toneDark : tone,
+                      } as React.CSSProperties
+                    }
+                  >
+                    <Icon />
+                  </div>
+                  <span className={styles.LinkUrl}>{link.url}</span>
+                </div>
+              )
+            })
+          ) : (
+            <div className={styles.TextField}>Посилань немає</div>
+          )}
+        </div>
+        <footer className={clsx(styles.Card, styles.Footer)}>
+          <div className={styles.Actions}>
+            <MotionButton className={clsx(styles.ApproveButton, 'Gradient')}>
+              Схвалити
+            </MotionButton>
+            <MotionButton className={clsx(styles.RejectButton, 'Gradient')}>
+              Доопрацювати
+            </MotionButton>
+            <MotionButton className={styles.HardRejectButton}>
+              Відхилити
+            </MotionButton>
+          </div>
+        </footer>
+      </main>
+    </div>
+  )
+}
+
+export default ModerateTeamCreationRequest
