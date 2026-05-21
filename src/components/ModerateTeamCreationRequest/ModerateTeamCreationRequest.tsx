@@ -16,6 +16,7 @@ import { format } from 'date-fns'
 import ShiftBy from '../ShiftBy/ShiftBy'
 import HelperDialog from '../HelperDialog'
 import { useHelperDialog } from './use-helper-dialog'
+import { ConfirmDialog } from './ConfirmDialog'
 
 const routeApi = getRouteApi('/moderation/team-review/$teamId')
 
@@ -26,6 +27,18 @@ function ModerateTeamCreationRequest() {
   const { theme } = useTheme()
   const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
     useHelperDialog()
+
+  function handleApprove() {
+    // todo
+  }
+
+  function handleRevise(message: string) {
+    // todo
+  }
+
+  function handleDecline(message: string) {
+    // todo
+  }
 
   return (
     <div className={styles.MaxWidthWrapper}>
@@ -192,15 +205,42 @@ function ModerateTeamCreationRequest() {
         </div>
         <footer className={clsx(styles.Card, styles.Footer)}>
           <div className={styles.Actions}>
-            <MotionButton className={clsx(styles.ApproveButton, 'Gradient')}>
-              Схвалити
-            </MotionButton>
-            <MotionButton className={clsx(styles.RejectButton, 'Gradient')}>
-              Доопрацювати
-            </MotionButton>
-            <MotionButton className={styles.HardRejectButton}>
-              Відхилити
-            </MotionButton>
+            <ConfirmDialog
+              trigger={(openDialog) => (
+                <MotionButton
+                  className={clsx(styles.ApproveButton, 'Gradient')}
+                  onClick={openDialog}
+                >
+                  Схвалити
+                </MotionButton>
+              )}
+              type="approve"
+              onConfirm={() => handleApprove()}
+            />
+            <ConfirmDialog
+              trigger={(openDialog) => (
+                <MotionButton
+                  className={clsx(styles.RejectButton, 'Gradient')}
+                  onClick={openDialog}
+                >
+                  Доопрацювати
+                </MotionButton>
+              )}
+              type="revise"
+              onConfirm={(message) => handleRevise(message)}
+            />
+            <ConfirmDialog
+              trigger={(openDialog) => (
+                <MotionButton
+                  className={styles.HardRejectButton}
+                  onClick={openDialog}
+                >
+                  Відхилити
+                </MotionButton>
+              )}
+              type="decline"
+              onConfirm={(message) => handleDecline(message)}
+            />
           </div>
         </footer>
       </main>

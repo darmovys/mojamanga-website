@@ -1,0 +1,91 @@
+.Overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--default-overlay-color);
+}
+
+.Popup {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  block-size: fit-content;
+  inline-size: var(--320px);
+  background: var(--sys-surface-highest);
+  border-radius: var(--12px);
+  padding: var(--16px) var(--24px);
+}
+
+.Heading {
+  font-size: var(--24px);
+  color: var(--sys-primary);
+}
+
+.ActionsSection {
+  display: flex;
+  margin-block-start: var(--8px);
+  gap: var(--8px);
+}
+
+.Button {
+  --border-radius: 100vmax;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  padding: var(--4px) var(--12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  outline: 2px solid var(--sys-primary);
+  outline-offset: -2px;
+  background-color: transparent;
+
+  &:focus-visible,
+  &:hover {
+    outline: none;
+  }
+}
+
+.CancelButton {
+  composes: Button;
+  color: var(--sys-primary);
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-8);
+    }
+  }
+
+  &:focus-visible {
+    background-color: var(--state-primary-opacity-8);
+  }
+}
+
+.ConfirmButton {
+  composes: Button;
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+}
+
+.Description {
+  color: var(--sys-on-surface-variant);
+}
+
+.MessageField {
+  inline-size: 100%;
+  min-block-size: var(--128px);
+  resize: vertical;
+  border: none;
+  outline: none;
+  border-radius: var(--4px);
+  padding: var(--8px) var(--12px);
+  margin-block-start: var(--6px);
+  background-color: var(--sys-surface-low);
+  color: var(--sys-on-surface-highest-variant);
+  box-shadow: var(--inset-shadow);
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    color: var(--sys-on-surface);
+  }
+}
