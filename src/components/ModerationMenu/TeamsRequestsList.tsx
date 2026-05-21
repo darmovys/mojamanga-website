@@ -65,7 +65,9 @@ export default function TeamsRequestsList() {
 
   return (
     <div className={styles.ListContainer}>
-      <h2 className={styles.ListHeading}>Заявки команд ({totalItems})</h2>
+      <h2 className={styles.ListHeading}>
+        Запити на створення команди ({totalItems})
+      </h2>
       <div className={styles.List}>
         {currentItems.length > 0 ? (
           currentItems.map((team) => (
@@ -243,7 +245,7 @@ function TeamRequestCard({ team }: { team: PendingTeam }) {
               {team.name}
             </h3>
             <div className={styles.MetaInfo}>
-              <span>Засновник: @{team.creator.displayUsername}</span>
+              <span>Запит від: {team.creator.displayUsername}</span>
               <span className={styles.Dot}>•</span>
               <span>{formattedDate}</span>
             </div>
