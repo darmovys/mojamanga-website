@@ -6,6 +6,7 @@ declare global {
     readonly VITE_FAKE_TURNSTILE_SITEKEY: string
     readonly VITE_TURNSTILE_SITEKEY: string
     readonly VITE_SITE_URL: string
+    readonly VITE_STORAGE_URL: string
   }
 
   interface ImportMeta {
