@@ -15,7 +15,6 @@ import VisuallyHidden from '../VisuallyHidden'
 import { AnimatePresence, motion } from 'motion/react'
 import CropImageDialog from '../CropImageDialog'
 import { showTimedToast } from '@/lib/toast'
-import { Tooltip } from './Tooltip'
 import clsx from 'clsx'
 import { LinkType } from '@/generated/prisma/enums'
 import MotionButton, { tapAnimation } from '../MotionButton'
@@ -29,6 +28,7 @@ import { useHelperDialog } from './use-helper-dialog'
 import { useGoBack } from '@/hooks/use-go-back'
 import { LINK_META } from '@/lib/constants'
 import styles from './CreateTeamForm.module.scss'
+import Tooltip from '../Tooltip'
 
 const MAX_DESCRIPTION_LENGTH = 500
 
@@ -106,7 +106,7 @@ function CreateTeamForm() {
               <div>
                 <span className={styles.Label}>
                   Обкладинка
-                  <Tooltip text="Обов'язкове поле" />
+                  <Tooltip text="Обов'язкове поле" align="start" />
                 </span>
                 <div className={styles.UploadAvatarWrapper}>
                   {!avatar.fileState && (
@@ -340,7 +340,7 @@ function CreateTeamForm() {
             <div>
               <label htmlFor="title" className={styles.Label}>
                 Назва
-                <Tooltip text="Обов'язкове поле" />
+                <Tooltip text="Обов'язкове поле" align="start" />
               </label>
               <form.Field
                 name="title"
@@ -448,7 +448,11 @@ function CreateTeamForm() {
                     <div className={styles.LinksHeader}>
                       <span className={styles.Label}>
                         Посилання
-                        <Tooltip text="Наполегливо просимо надати принаймні одне посилання на групу чи сайт команди" />
+                        <Tooltip
+                          text="Наполегливо просимо надати принаймні одне посилання на групу чи сайт команди"
+                          color="yellow"
+                          align="start"
+                        />
                       </span>
                       <AnimatePresence>
                         {activeLinks.length > 1 && (

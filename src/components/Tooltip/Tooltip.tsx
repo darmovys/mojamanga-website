@@ -4,7 +4,13 @@ import { Asterisk } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import ClickTargetHelper from '../ClickTargetHelper'
 
-function Tooltip({ text }: { text: string }) {
+interface TooltipProps {
+  text: string
+  color?: 'red' | 'yellow'
+  align?: 'start' | 'end' | 'center'
+}
+
+function Tooltip({ text, color = 'red', align = 'center' }: TooltipProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isCoarse, setIsCoarse] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -50,6 +56,11 @@ function Tooltip({ text }: { text: string }) {
       >
         <BaseUITooltip.Trigger
           ref={triggerRef}
+          style={
+            {
+              '--color': color === 'red' ? 'var(--danger)' : 'var(--warning)',
+            } as React.CSSProperties
+          }
           className={styles.Button}
           render={<Button />}
           onClick={() => {
@@ -63,7 +74,7 @@ function Tooltip({ text }: { text: string }) {
         </BaseUITooltip.Trigger>
 
         <BaseUITooltip.Portal>
-          <BaseUITooltip.Positioner align="start" sideOffset={5}>
+          <BaseUITooltip.Positioner align={align} sideOffset={5}>
             <BaseUITooltip.Popup className={styles.Popup}>
               <BaseUITooltip.Arrow className={styles.Arrow}>
                 <ArrowSvg />
