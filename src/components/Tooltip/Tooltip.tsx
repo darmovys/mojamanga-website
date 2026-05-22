@@ -4,7 +4,7 @@ import { Asterisk } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import ClickTargetHelper from '../ClickTargetHelper'
 
-export function Tooltip({ text }: { text: string }) {
+function Tooltip({ text }: { text: string }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isCoarse, setIsCoarse] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -95,3 +95,5 @@ function ArrowSvg(props: React.ComponentProps<'svg'>) {
     </svg>
   )
 }
+
+export default Tooltip
