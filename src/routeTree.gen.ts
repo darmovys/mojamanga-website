@@ -17,9 +17,11 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as ModerationRouteRouteImport } from './routes/moderation/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorkIndexRouteImport } from './routes/work/index'
 import { Route as TeamIndexRouteImport } from './routes/team/index'
 import { Route as ModerationIndexRouteImport } from './routes/moderation/index'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as WorkCreateIndexRouteImport } from './routes/work/create/index'
 import { Route as TeamCreateIndexRouteImport } from './routes/team/create/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
@@ -64,6 +66,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkIndexRoute = WorkIndexRouteImport.update({
+  id: '/work/',
+  path: '/work/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TeamIndexRoute = TeamIndexRouteImport.update({
   id: '/team/',
   path: '/team/',
@@ -77,6 +84,11 @@ const ModerationIndexRoute = ModerationIndexRouteImport.update({
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkCreateIndexRoute = WorkCreateIndexRouteImport.update({
+  id: '/work/create/',
+  path: '/work/create/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamCreateIndexRoute = TeamCreateIndexRouteImport.update({
@@ -112,10 +124,12 @@ export interface FileRoutesByFullPath {
   '/api/$': typeof ApiSplatRoute
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
+  '/work/': typeof WorkIndexRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
   '/team/create/': typeof TeamCreateIndexRoute
+  '/work/create/': typeof WorkCreateIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -127,10 +141,12 @@ export interface FileRoutesByTo {
   '/api/$': typeof ApiSplatRoute
   '/moderation': typeof ModerationIndexRoute
   '/team': typeof TeamIndexRoute
+  '/work': typeof WorkIndexRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
   '/team/create': typeof TeamCreateIndexRoute
+  '/work/create': typeof WorkCreateIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -145,10 +161,12 @@ export interface FileRoutesById {
   '/api/$': typeof ApiSplatRoute
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
+  '/work/': typeof WorkIndexRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
   '/team/create/': typeof TeamCreateIndexRoute
+  '/work/create/': typeof WorkCreateIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -163,10 +181,12 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/moderation/'
     | '/team/'
+    | '/work/'
     | '/moderation/team-review/$teamId'
     | '/login/'
     | '/signup/'
     | '/team/create/'
+    | '/work/create/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -178,10 +198,12 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/moderation'
     | '/team'
+    | '/work'
     | '/moderation/team-review/$teamId'
     | '/login'
     | '/signup'
     | '/team/create'
+    | '/work/create'
   id:
     | '__root__'
     | '/'
@@ -195,10 +217,12 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/moderation/'
     | '/team/'
+    | '/work/'
     | '/moderation/team-review/$teamId'
     | '/_auth/login/'
     | '/_auth/signup/'
     | '/team/create/'
+    | '/work/create/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -212,7 +236,9 @@ export interface RootRouteChildren {
   NotificationsRoute: typeof NotificationsRoute
   ApiSplatRoute: typeof ApiSplatRoute
   TeamIndexRoute: typeof TeamIndexRoute
+  WorkIndexRoute: typeof WorkIndexRoute
   TeamCreateIndexRoute: typeof TeamCreateIndexRoute
+  WorkCreateIndexRoute: typeof WorkCreateIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -273,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/work/': {
+      id: '/work/'
+      path: '/work'
+      fullPath: '/work/'
+      preLoaderRoute: typeof WorkIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/team/': {
       id: '/team/'
       path: '/team'
@@ -292,6 +325,13 @@ declare module '@tanstack/react-router' {
       path: '/api/$'
       fullPath: '/api/$'
       preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/work/create/': {
+      id: '/work/create/'
+      path: '/work/create'
+      fullPath: '/work/create/'
+      preLoaderRoute: typeof WorkCreateIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/team/create/': {
@@ -364,7 +404,9 @@ const rootRouteChildren: RootRouteChildren = {
   NotificationsRoute: NotificationsRoute,
   ApiSplatRoute: ApiSplatRoute,
   TeamIndexRoute: TeamIndexRoute,
+  WorkIndexRoute: WorkIndexRoute,
   TeamCreateIndexRoute: TeamCreateIndexRoute,
+  WorkCreateIndexRoute: WorkCreateIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

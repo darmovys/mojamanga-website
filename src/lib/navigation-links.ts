@@ -93,13 +93,13 @@ export const addContentLinks = linkOptions([
   {
     title: 'Додати твір',
     icon: BookPlus,
-    to: '/about',
+    to: '/work/create',
     activeOptions: {
       exact: true,
     },
   },
   {
-    title: 'Створити команду',
+    title: 'Додати команду',
     icon: Users,
     to: '/team/create',
     activeOptions: {
@@ -145,6 +145,7 @@ export const userLinks = linkOptions([
     title: 'Модераторска',
     icon: Shield,
     to: '/moderation',
+    search: { type: 'teams' },
     activeOptions: {
       exact: true,
     },

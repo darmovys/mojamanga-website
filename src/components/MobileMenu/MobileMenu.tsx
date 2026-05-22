@@ -31,7 +31,12 @@ import VisuallyHidden from '../VisuallyHidden'
 import { Image } from '@unpic/react'
 import { authClient } from '@/lib/auth-client'
 import { showTimedToast } from '@/lib/toast'
-import { catalogLinks, otherLinks, workTypeLinks } from '@/lib/navigation-links'
+import {
+  addContentLinks,
+  catalogLinks,
+  otherLinks,
+  workTypeLinks,
+} from '@/lib/navigation-links'
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { authQueries } from '@/services/queries'
 import styles from './MobileMenu.module.scss'
@@ -398,6 +403,34 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                             </AnimatePresence>
                           </Accordion.Panel>
                         </Accordion.Item>
+
+                        <Accordion.Item className={styles.AccordionItem}>
+                          <Accordion.Header>
+                            <Accordion.Trigger
+                              className={styles.AccordionTrigger}
+                            >
+                              Додавання контенту
+                              <ChevronDown
+                                className={styles.ChevronDown}
+                                size={24}
+                              />
+                            </Accordion.Trigger>
+                          </Accordion.Header>
+                          <Accordion.Panel className={styles.AccordionPanel}>
+                            {addContentLinks.map((item) => (
+                              <Link
+                                activeProps={{ className: styles.Active }}
+                                to={item.to}
+                                className={styles.AccordionLink}
+                                key={item.title}
+                              >
+                                <item.icon size={16} />
+                                <span>{item.title}</span>
+                              </Link>
+                            ))}
+                          </Accordion.Panel>
+                        </Accordion.Item>
+
                         <Accordion.Item className={styles.AccordionItem}>
                           <Accordion.Header>
                             <Accordion.Trigger
