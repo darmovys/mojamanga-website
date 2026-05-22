@@ -448,7 +448,7 @@ function CreateTeamForm() {
                     <div className={styles.LinksHeader}>
                       <span className={styles.Label}>
                         Посилання
-                        <Tooltip text="Наполегливо просимо надати принаймні одне посилання на групу чи сайт команди для більш ймовірного схвалення" />
+                        <Tooltip text="Наполегливо просимо надати принаймні одне посилання на групу чи сайт команди" />
                       </span>
                       <AnimatePresence>
                         {activeLinks.length > 1 && (

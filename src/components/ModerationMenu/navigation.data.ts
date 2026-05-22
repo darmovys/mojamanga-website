@@ -15,10 +15,10 @@ export const NAVIGATION_SECTIONS: NavSectionData[] = [
   {
     heading: 'Контент',
     items: [
-      { label: 'Твори', requests: 87, type: 'works' },
-      { label: 'Пропозиції', requests: 34, type: 'suggestions' },
-      { label: 'Розділи', requests: 112, type: 'chapters' },
-      { label: 'Команди', requests: 5, type: 'teams' },
+      { label: 'Додавання твору', requests: 87, type: 'works' },
+      { label: 'Редагування твору', requests: 34, type: 'suggestions' },
+      { label: 'Додавання розділу', requests: 112, type: 'chapters' },
+      { label: 'Створення команди', requests: 5, type: 'teams' },
     ],
   },
   {

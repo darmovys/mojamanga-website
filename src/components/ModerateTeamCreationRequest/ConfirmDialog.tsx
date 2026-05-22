@@ -9,15 +9,12 @@ import styles from './ConfirmDialog.module.scss'
 const options = {
   approve: {
     description: 'Ви точно хочете схвалити запит?',
-    button: 'Схвалити',
   },
   revise: {
     description: 'Ви точно хочете відправити запит на доопрацювання?',
-    button: 'Доопрацювати',
   },
   decline: {
     description: 'Ви точно хочете відхилити запит?',
-    button: 'Відхилити',
   },
 } as const
 
@@ -94,7 +91,7 @@ export function ConfirmDialog({
                   onClick={handleConfirm}
                 >
                   <ClickTargetHelper />
-                  {options[type].button}
+                  Підтвердити
                 </Button>
                 <Button
                   className={clsx(styles.CancelButton, 'Gradient')}
