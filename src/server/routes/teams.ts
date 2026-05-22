@@ -83,6 +83,11 @@ export const teamsRouter = new Elysia({
               403,
               'У вас вже є запит на перевірці. Дочекайтеся його результату',
             )
+          if (userTeams.some((m) => m.team.status === 'REJECTED'))
+            return status(
+              403,
+              'У вас є відхилені запити. Переробіть їх або скасуйте повністю на сторінці профілю',
+            )
           if (userTeams.length >= 3) {
             return status(403, 'Не можна бути учасником більше ніж 3 команд')
           }
