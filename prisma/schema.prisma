@@ -188,8 +188,8 @@ model WorkVersion {
 
   // Версіоновані поля
   ukrName           String
-  enName            String?
-  ogName            String
+  enName            String
+  alternativeNames  AlternativeName[]
   description       String?
   coverImage        String
   backgroundImage   String?
@@ -216,6 +216,16 @@ model WorkVersion {
   @@map("work_versions")
 }
 
+model AlternativeName {
+  id            String      @id @default(cuid(2))
+  name          String
+  workVersionId String
+  workVersion   WorkVersion @relation(fields: [workVersionId], references: [id], onDelete: Cascade)
+
+  @@index([name])
+  @@map("alternative_names")
+}
+
 model WorkVersionToPerson {
   versionId String
   personId  String
@@ -240,19 +250,19 @@ model WorkProposal {
 
   // --- Поля для зміни (Nullable) ---
   // Якщо поле null - значить його змінювати не пропонують
-  suggestedUkrName         String?
-  suggestedEnName          String?
-  suggestedOgName          String?
-  suggestedDescription     String?  @db.Text
-  suggestedCoverImage      String?
-  suggestedBackgroundImage String?
-  suggestedReleaseYear     Int?
-  suggestedAgeRestriction  Int?
-  suggestedIsNSFW          Boolean?
-  suggestedTagsJson        Json?
-  suggestedGenresJson      Json?
-  suggestedAuthorsJson     Json?
-  suggestedArtistsJson     Json?
+  suggestedUkrName              String?
+  suggestedEnName               String?
+  suggestedAlternativeNamesJson Json?
+  suggestedDescription          String?  @db.Text
+  suggestedCoverImage           String?
+  suggestedBackgroundImage      String?
+  suggestedReleaseYear          Int?
+  suggestedAgeRestriction       Int?
+  suggestedIsNSFW               Boolean?
+  suggestedTagsJson             Json?
+  suggestedGenresJson           Json?
+  suggestedAuthorsJson          Json?
+  suggestedArtistsJson          Json?
 
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
