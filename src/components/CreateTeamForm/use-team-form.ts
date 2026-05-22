@@ -1,6 +1,6 @@
 import { useForm } from '@tanstack/react-form-start'
 import { useState, useTransition } from 'react'
-import { useImageUpload } from './use-image-upload'
+import { useImageUpload } from '../../hooks/use-image-upload'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { ActiveLink, activeLinkSchema } from '@/schemas/teams'
 import { api } from '@/lib/api-client'
