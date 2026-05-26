@@ -300,7 +300,7 @@ model Genre {
 model Person {
   id                       String                   @id @default(cuid(2))
   nameUkr                  String
-  nameEng                  String
+  nameLat                  String
   description              String?
   personVerificationStatus PersonVerificationStatus @default(PENDING)
   works                    WorkVersionToPerson[]
