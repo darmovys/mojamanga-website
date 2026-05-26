@@ -1,0 +1,231 @@
+.Wrapper {
+  background-color: var(--sys-surface-low);
+  color: var(--sys-on-surface-highest-variant);
+  box-shadow: var(--inset-shadow);
+  border-radius: var(--4px);
+  padding: var(--8px) var(--12px) var(--8px) var(--8px);
+  font-size: var(--14px);
+}
+
+.ChipGroup {
+  --buttons-radius: var(--6px);
+  --buttons-size: var(--28px);
+  --buttons-color: var(--sys-primary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--6px);
+}
+
+.AddButton {
+  padding: var(--4px) var(--12px) var(--4px) var(--8px);
+  background-color: var(--sys-surface-highest);
+  color: var(--buttons-color);
+  box-shadow: var(--shadow-border);
+  border-radius: var(--buttons-radius);
+  font-weight: 500;
+  font-size: inherit;
+  transition: color 0.2s var(--bg-animation);
+  block-size: var(--buttons-size);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--blue-400);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    outline-offset: 2px;
+  }
+}
+
+.AddButtonFront {
+  display: flex;
+  align-items: center;
+  gap: var(--4px);
+}
+
+.HorizontalSeparator {
+  inline-size: 1.5px;
+  background-color: var(--sys-outline);
+  margin-block: var(--6px);
+}
+
+.Chip {
+  display: flex;
+  align-items: center;
+  gap: var(--6px);
+  padding: var(--4px) var(--10px);
+  border-radius: var(--buttons-radius);
+  background-color: var(--sys-surface-highest);
+  color: var(--buttons-color);
+  font-size: inherit;
+  block-size: var(--buttons-size);
+  white-space: nowrap;
+}
+
+.RemoveBtn {
+  position: relative; // for click target helper
+  color: var(--buttons-color);
+  transition: color 0.2s var(--bg-animation);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--danger);
+    }
+  }
+}
+
+.Popup {
+  --outer-radius: var(--8px);
+  --padding: var(--6px);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--sys-on-surface-highest);
+  color: var(--sys-on-surface);
+  outline: 1px solid var(--sys-outline-variant);
+  box-shadow: var(--shadow-border);
+  border-radius: var(--outer-radius);
+  overflow: clip; // to trim off popup corners
+  will-change: transform, opacity, filter;
+  filter: blur(0px);
+  padding: var(--padding);
+
+  transform-origin: var(--transform-origin);
+  transition:
+    transform 150ms var(--emulate-spring),
+    opacity 150ms var(--emulate-spring),
+    filter 150ms var(--emulate-spring);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    filter: blur(4px);
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.SearchWrapper {
+  position: relative;
+  color: var(--sys-on-surface-highest-variant);
+
+  &:focus-within {
+    color: var(--sys-on-surface);
+  }
+}
+
+.VerticalSeparator {
+  block-size: 1.5px;
+  background-color: var(--sys-outline-variant);
+  margin-block-start: var(--8px);
+  margin-block-end: var(--6px);
+  margin-inline: calc(var(--padding) * -1);
+}
+
+.Input {
+  background-color: var(--sys-surface-low);
+  box-shadow: var(--inset-shadow);
+  color: inherit;
+  border-radius: var(--6px);
+  border: none;
+  font-weight: 500;
+  padding: var(--4px) var(--8px) var(--4px) var(--28px);
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  inline-size: 100%;
+  min-width: 0;
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    outline-offset: 2px;
+  }
+}
+
+.SearchIcon {
+  position: absolute;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  inset-inline-start: var(--6px);
+  color: inherit;
+}
+
+.List {
+  max-block-size: var(--320px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--4px);
+}
+
+.Empty {
+  text-align: center;
+  color: var(--sys-on-surface-variant);
+
+  .Popup[data-empty] & {
+    padding: var(--4px) var(--8px);
+  }
+}
+
+.Item {
+  cursor: pointer;
+  padding: var(--4px) var(--8px) var(--4px) var(--8px);
+  margin-inline: var(--4px);
+  border-radius: calc(var(--outer-radius) - var(--padding));
+  outline: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s var(--bg-animation);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-8);
+    }
+
+    &[data-selected]:hover {
+      background-color: var(--state-primary-opacity-16);
+    }
+  }
+
+  &[data-highlighted] {
+    background-color: var(--state-primary-opacity-8);
+
+    &[data-selected] {
+      background-color: var(--state-primary-opacity-16);
+    }
+  }
+
+  &[data-selected] {
+    background-color: var(--state-primary-opacity-12);
+    color: var(--blue-400);
+  }
+}
+
+.Scrollbar {
+  display: flex;
+  justify-content: center;
+  background-color: transparent;
+  inline-size: var(--10px);
+  margin-inline: -4.4px;
+  opacity: 0;
+  transition: opacity 150ms;
+  pointer-events: none;
+  padding-inline-start: var(--4px);
+
+  &[data-scrolling] {
+    transition-duration: 0ms;
+  }
+
+  &[data-hovering],
+  &[data-scrolling] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.Thumb {
+  inline-size: 100%;
+  background-color: var(--scrollbar-color);
+  border-radius: 100vmax;
+}
