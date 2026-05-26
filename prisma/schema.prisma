@@ -39,6 +39,7 @@ model User {
   workProposals           WorkProposal[]
   workEditions            WorkVersion[]
   complaints              Complaint[]
+  suggestedPeople         Person[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -187,8 +188,8 @@ model WorkVersion {
   editor   User   @relation(fields: [editorId], references: [id])
 
   // Версіоновані поля
-  ukrName           String
-  enName            String
+  nameUkr           String
+  nameEng           String
   alternativeNames  AlternativeName[]
   description       String?
   coverImage        String
@@ -249,8 +250,8 @@ model WorkProposal {
 
   // --- Поля для зміни (Nullable) ---
   // Якщо поле null - значить його змінювати не пропонують
-  suggestedUkrName              String?
-  suggestedEnName               String?
+  suggestedNameUkr              String?
+  suggestedNameEng              String?
   suggestedAlternativeNamesJson Json?
   suggestedDescription          String?         @db.Text
   suggestedCoverImage           String?
@@ -297,9 +298,19 @@ model Genre {
 }
 
 model Person {
-  id    String                @id @default(cuid(2))
-  name  String                @unique
-  works WorkVersionToPerson[]
+  id                       String                   @id @default(cuid(2))
+  nameUkr                  String
+  nameEng                  String
+  description              String?
+  personVerificationStatus PersonVerificationStatus @default(PENDING)
+  works                    WorkVersionToPerson[]
+  suggestedByUserId        String?
+  suggestedByUser          User?                    @relation(fields: [suggestedByUserId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([suggestedByUserId])
 }
 
 // ================= PUBLISHING & CHAPTERS =================
@@ -681,4 +692,9 @@ enum SystemFolderType {
   ON_HOLD
   DROPPED
   PLAN_TO_READ
+}
+
+enum PersonVerificationStatus {
+  PENDING
+  APPROVED
 }
