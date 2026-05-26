@@ -4,7 +4,7 @@ import { Select } from '@base-ui/react'
 import { motion } from 'motion/react'
 import { tapAnimation } from '../MotionButton'
 import VisuallyHidden from '../VisuallyHidden'
-import { Check, ChevronDown, CircleQuestionMark } from 'lucide-react'
+import { ChevronDown, CircleQuestionMark } from 'lucide-react'
 import ClickTargetHelper from '../ClickTargetHelper'
 import { LINK_META } from '@/lib/constants'
 import styles from './CreateTeamForm.module.scss'
@@ -73,9 +73,6 @@ export function LinkSelector({
                       <ItemIcon style={{ width: 24, height: 24 }} />
                     </Select.ItemText>
                     <div className={styles.ItemText}>{label}</div>
-                    <Select.ItemIndicator className={styles.ItemIndicator}>
-                      <Check size={18} />
-                    </Select.ItemIndicator>
                   </Select.Item>
                 )
               })}
