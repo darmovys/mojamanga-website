@@ -194,8 +194,7 @@ model WorkVersion {
   coverImage        String
   backgroundImage   String?
   releaseYear       Int
-  ageRestriction    Int
-  isNSFW            Boolean           @default(false)
+  ageRestriction    AgeRestriction
   workStatus        WorkStatus
   translationStatus TranslationStatus
 
@@ -253,11 +252,11 @@ model WorkProposal {
   suggestedUkrName              String?
   suggestedEnName               String?
   suggestedAlternativeNamesJson Json?
-  suggestedDescription          String?  @db.Text
+  suggestedDescription          String?         @db.Text
   suggestedCoverImage           String?
   suggestedBackgroundImage      String?
   suggestedReleaseYear          Int?
-  suggestedAgeRestriction       Int?
+  suggestedAgeRestriction       AgeRestriction?
   suggestedIsNSFW               Boolean?
   suggestedTagsJson             Json?
   suggestedGenresJson           Json?
@@ -629,9 +628,9 @@ enum WorkType {
 enum WorkStatus {
   ONGOING
   ENDED
-  ANNOUNCEMENT
   PAUSED
-  DISCONTINUED
+  LICENSED
+  ANNOUNCEMENT
 }
 
 enum TranslationStatus {
@@ -639,6 +638,14 @@ enum TranslationStatus {
   ENDED
   FREEZED
   DROPPED
+}
+
+enum AgeRestriction {
+  NO_RESTRICTION
+  SIX_PLUS
+  TWELVE_PLUS
+  SIXTEEN_PLUS
+  EIGHTEEN_PLUS
 }
 
 enum NotificationType {
