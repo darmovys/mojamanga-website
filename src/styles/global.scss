@@ -71,8 +71,8 @@ h6 {
 }
 
 /*
-    10. Create a root stacking context
-  */
+  10. Create a root stacking context
+*/
 #root {
   isolation: isolate;
   display: flex;
@@ -81,7 +81,17 @@ h6 {
   min-block-size: 100dvh;
 }
 
-/* Reset button styles */
+/*
+  11. Remove text selecton from interactive elements
+*/
+button,
+[role='button'],
+label,
+select {
+  user-select: none;
+}
+
+/* 12. Reset button styles */
 button {
   appearance: none;
   -webkit-appearance: none;
@@ -98,7 +108,6 @@ button {
 /* GLOBAL STYLES */
 
 // FONT FACES
-
 /* Main font */
 @font-face {
   font-family: 'FixelText';
@@ -159,7 +168,6 @@ button {
 }
 
 // BODY STYLES
-
 body {
   scrollbar-gutter: stable;
   overflow-y: auto;
@@ -185,7 +193,6 @@ body {
 }
 
 // TOKENS
-
 html {
   // color tokens
   --blue-50: oklch(96.85% 0.015 260.73);
@@ -217,6 +224,7 @@ html {
   --success: oklch(63.226% 0.20525 143.97);
   --warning: oklch(86.563% 0.17261 92.311);
   --danger-background: oklch(from var(--danger) l c h / 0.12);
+  --warning-background: oklch(from var(--warning) l c h / 0.35);
   --danger-background-active: oklch(from var(--danger) l c h / 0.2);
 
   --default-overlay-color: oklch(0% 0 0 / 0.5);
@@ -274,6 +282,10 @@ html {
 
   --skeleton-bg: oklch(57.534% 0.0122 285.939 / 0.17);
 
+  --scrollbar-color: var(--tone-11);
+  --scrollbar-thumb-color: var(--tone-15);
+  --scrollbar-thumb-hover-color: var(--tone-8);
+
   // dark theme
   &.dark {
     --bigscreen-bg: #000000;
@@ -303,6 +315,10 @@ html {
     --input-hover-border: oklch(32.492% 0.00994 61.039);
 
     --skeleton-bg: oklch(57.534% 0.0122 285.939 / 0.34);
+
+    --scrollbar-color: var(--tone-4);
+    --scrollbar-thumb-color: var(--tone-5);
+    --scrollbar-thumb-hover-color: var(--tone-7);
   }
 
   // sizing tokens
@@ -336,8 +352,8 @@ html {
   --200px: 12.5rem;
   --220px: 13.75rem;
   --256px: 16rem;
-  --320px: 20rem;
   --288px: 18rem;
+  --320px: 20rem;
   --432px: 27rem;
   --512px: 32rem;
   --650px: 40.625rem;
@@ -403,7 +419,6 @@ html {
 }
 
 // IMG STYLES
-
 img {
   outline: 1px solid rgba(0, 0, 0, 0.1);
   outline-offset: -1px;
@@ -414,8 +429,43 @@ html.dark img {
   outline-offset: -1px;
 }
 
-// THEME ANIMATION
+// SCROLLBAR STYLES
+@media (pointer: fine) {
+  /* 
+    Newer implementation. 
+    Dicabled, because scrollbar-color property 
+    doesn't support custom hover colors.
+    Can be changed in the future
+  */
+  // html {
+  //   scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-color);
+  // }
 
+  ::-webkit-scrollbar {
+    background-color: var(--scrollbar-color);
+    inline-size: 13px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 100vmax;
+    background-color: var(--scrollbar-thumb-color);
+    border: 3px solid var(--scrollbar-color);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover-color);
+  }
+
+  // BASIC BUTTON STYLES
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s var(--bg-animation);
+  }
+}
+
+// THEME ANIMATION
 ::view-transition-new(root) {
   mask: url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWtlYTYwc2p6amZtcWIyeDBjMmRyY3F6cmhzZHBxeDFzbmx6ZWF6ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/i2tLw5ZyikSFdkeGHT/giphy.gif')
     center / 0 no-repeat;
@@ -440,17 +490,7 @@ html.dark img {
   }
 }
 
-// BASIC BUTTON STYLES
-
-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: background-color 0.2s var(--bg-animation);
-}
-
 // REUSED CLASSES
-
 .Gradient {
   position: relative;
 
