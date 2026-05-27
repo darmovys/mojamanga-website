@@ -67,9 +67,10 @@
 }
 
 .Content {
+  --card-spacing: var(--16px);
   display: flex;
   flex-direction: column;
-  gap: var(--16px);
+  gap: var(--card-spacing);
   padding-inline: var(--16px);
 
   @include up('tablet') {
@@ -133,6 +134,34 @@
   }
 }
 
+.CardGroup {
+  display: grid;
+  grid-template-areas:
+    'cover'
+    'title'
+    'description';
+  gap: var(--card-spacing);
+
+  @include up('tablet') {
+    grid-template-columns: 200px 1fr;
+    grid-template-areas:
+      'cover title'
+      'cover description';
+  }
+}
+
+.Card.Cover {
+  grid-area: cover;
+}
+
+.Card.Title {
+  grid-area: title;
+}
+
+.Card.Description {
+  grid-area: description;
+}
+
 .CardTitle {
   font-weight: 550;
   margin-block-end: var(--6px);
@@ -144,10 +173,6 @@
   aspect-ratio: var(--aspect-ratio);
   overflow: hidden; // Щоб обрізати кути зображення
   position: relative; // Для того, щоб текст зображення розмістивсь поверх ноьго
-}
-
-.ImageWrapper.Cover {
-  inline-size: 50%;
 }
 
 .Image {

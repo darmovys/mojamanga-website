@@ -118,6 +118,45 @@ function ModerateTeamCreationRequest() {
             </ShiftBy>
           </div>
         </div>
+        <div className={styles.CardGroup}>
+          <div className={clsx(styles.Card, styles.Cover)}>
+            <div
+              className={styles.ImageWrapper}
+              style={
+                {
+                  '--aspect-ratio': '375 / 525',
+                } as React.CSSProperties
+              }
+            >
+              {data.coverUrl ? (
+                <Image
+                  layout="fullWidth"
+                  src={`${import.meta.env.VITE_STORAGE_URL}${data.coverUrl}`}
+                  alt="Обкладинка команди"
+                  className={styles.Image}
+                  loading="lazy"
+                />
+              ) : (
+                <div className={styles.NoImage}>
+                  <ImageOff size={24} />
+                  <span>Не задано</span>
+                </div>
+              )}
+              <h2 className={styles.ImageHeading}>Обкладинка</h2>
+            </div>
+          </div>
+          <div className={clsx(styles.Card, styles.Title)}>
+            <h2 className={styles.CardTitle}>Назва</h2>
+            <div className={styles.TextField}>{data.name}</div>
+          </div>
+          <div className={clsx(styles.Card, styles.Description)}>
+            <h2 className={styles.CardTitle}>Опис</h2>
+            <div className={styles.TextField}>
+              {data.description || 'Опису немає'}
+            </div>
+          </div>
+        </div>
+
         <div className={styles.Card}>
           <div
             className={styles.ImageWrapper}
@@ -140,42 +179,7 @@ function ModerateTeamCreationRequest() {
             <h2 className={styles.ImageHeading}>Задній фон</h2>
           </div>
         </div>
-        <div className={styles.Card}>
-          <div
-            className={clsx(styles.ImageWrapper, styles.Cover)}
-            style={
-              {
-                '--aspect-ratio': '375 / 525',
-              } as React.CSSProperties
-            }
-          >
-            {data.coverUrl ? (
-              <Image
-                layout="fullWidth"
-                src={`${import.meta.env.VITE_STORAGE_URL}${data.coverUrl}`}
-                alt="Обкладинка команди"
-                className={styles.Image}
-                loading="lazy"
-              />
-            ) : (
-              <div className={styles.NoImage}>
-                <ImageOff size={24} />
-                <span>Не задано</span>
-              </div>
-            )}
-            <h2 className={styles.ImageHeading}>Обкладинка</h2>
-          </div>
-        </div>
-        <div className={styles.Card}>
-          <h2 className={styles.CardTitle}>Назва</h2>
-          <div className={styles.TextField}>{data.name}</div>
-        </div>
-        <div className={styles.Card}>
-          <h2 className={styles.CardTitle}>Опис</h2>
-          <div className={styles.TextField}>
-            {data.description || 'Опису немає'}
-          </div>
-        </div>
+
         <div className={styles.Card}>
           <h2 className={styles.CardTitle}>Посилання</h2>
           {data.links.length > 0 ? (
