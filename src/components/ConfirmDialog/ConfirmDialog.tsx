@@ -29,11 +29,7 @@ interface ConfirmDialogProps {
 const MotionBackdrop = motion.create(Dialog.Backdrop)
 const MotionPopup = motion.create(Dialog.Popup)
 
-export function ConfirmDialog({
-  type,
-  trigger,
-  onConfirm,
-}: ConfirmDialogProps) {
+function ConfirmDialog({ type, trigger, onConfirm }: ConfirmDialogProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -108,3 +104,5 @@ export function ConfirmDialog({
     </Dialog.Root>
   )
 }
+
+export default ConfirmDialog

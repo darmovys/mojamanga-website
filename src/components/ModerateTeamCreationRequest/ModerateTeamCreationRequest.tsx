@@ -14,21 +14,23 @@ import { useTheme } from '@/lib/theme-provider'
 import { format } from 'date-fns'
 import ShiftBy from '../ShiftBy/ShiftBy'
 import HelperDialog from '../HelperDialog'
-import { useHelperDialog } from './use-helper-dialog'
-import { ConfirmDialog } from './ConfirmDialog'
 import { useReviewRequest } from './use-review-request'
 import Skeleton from '../Skeleton'
+import ConfirmDialog from '../ConfirmDialog'
 import styles from './ModerateTeamCreationRequest.module.scss'
+import { useHelperDialog } from '@/hooks/use-helper-dialog'
 
 const routeApi = getRouteApi('/moderation/team-review/$teamId')
 
 function ModerateTeamCreationRequest() {
   const { teamId } = routeApi.useParams()
+  const loaderData = routeApi.useLoaderData()
   const { data } = useSuspenseQuery(teamsQueries.getTeamRequest(teamId))
+
   const { handleGoBack } = useGoBack()
   const { theme } = useTheme()
   const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
-    useHelperDialog()
+    useHelperDialog('seen_create_team_request_moderation_rules', loaderData)
 
   const {
     isPending,

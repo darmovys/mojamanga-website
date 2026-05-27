@@ -24,13 +24,16 @@ import { createId } from '@paralleldrive/cuid2'
 import { LinkInputField } from './LinkInputField'
 import { useTeamForm } from './use-team-form'
 import HelperDialog from '../HelperDialog'
-import { useHelperDialog } from './use-helper-dialog'
+import { useHelperDialog } from '@/hooks/use-helper-dialog'
 import { useGoBack } from '@/hooks/use-go-back'
 import { LINK_META } from '@/lib/constants'
 import styles from './CreateTeamForm.module.scss'
 import Tooltip from '../Tooltip'
+import { getRouteApi } from '@tanstack/react-router'
 
 const MAX_DESCRIPTION_LENGTH = 500
+
+const routeApi = getRouteApi('/team/create/')
 
 function CreateTeamForm() {
   const {
@@ -47,8 +50,10 @@ function CreateTeamForm() {
     isUploading,
   } = useTeamForm()
 
+  const loaderData = routeApi.useLoaderData()
+
   const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
-    useHelperDialog()
+    useHelperDialog('seen_create_team_rules', loaderData)
 
   const { handleGoBack } = useGoBack()
 
