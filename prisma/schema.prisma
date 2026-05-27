@@ -302,6 +302,7 @@ model Person {
   nameUkr                  String
   nameLat                  String
   description              String?
+  coverUrl                 String?
   personVerificationStatus PersonVerificationStatus @default(PENDING)
   works                    WorkVersionToPerson[]
   suggestedByUserId        String?
@@ -311,6 +312,7 @@ model Person {
   updatedAt DateTime @updatedAt
 
   @@index([suggestedByUserId])
+  @@map("people")
 }
 
 // ================= PUBLISHING & CHAPTERS =================
