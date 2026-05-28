@@ -91,6 +91,54 @@ export const peopleRouter = new Elysia({
         },
       )
       .get(
+        '/people-to-attach',
+        async ({ query, status }) => {
+          try {
+            const { search } = query
+
+            if (!search || search.trim() === '') {
+              return []
+            }
+
+            const people = await prisma.person.findMany({
+              where: {
+                personVerificationStatus: 'APPROVED',
+                OR: [
+                  {
+                    nameUkr: {
+                      contains: search,
+                      mode: 'insensitive',
+                    },
+                  },
+                  {
+                    nameLat: {
+                      contains: search,
+                      mode: 'insensitive',
+                    },
+                  },
+                ],
+              },
+              take: 20,
+              select: {
+                id: true,
+                nameUkr: true,
+                nameLat: true,
+              },
+            })
+
+            return people
+          } catch (error) {
+            console.error('Помилка при пошуку персон: ', error)
+            return status(500, 'Помилка при пошуку персон')
+          }
+        },
+        {
+          query: z.object({
+            search: z.string(),
+          }),
+        },
+      )
+      .get(
         '/get-pending-people',
         async ({ query, status }) => {
           try {
