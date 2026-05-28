@@ -1,3 +1,6 @@
+import { S3 } from '@/lib/s3-client'
+import { CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
+
 export const getImageDimensions = (
   file: File,
 ): Promise<{ width: number; height: number }> => {
@@ -114,13 +117,36 @@ export function ukrainianToLatin(text: string): string {
 }
 
 export function range(start: number, end?: number, step: number = 1): number[] {
-  let output: number[] = [];
+  let output: number[] = []
   if (typeof end === 'undefined') {
-    end = start;
-    start = 0;
+    end = start
+    start = 0
   }
   for (let i = start; i < end; i += step) {
-    output.push(i);
+    output.push(i)
   }
-  return output;
-};
+  return output
+}
+
+export async function moveS3File(sourceKey: string, destinationKey: string) {
+  try {
+    await S3.send(
+      new CopyObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        CopySource: `${process.env.S3_BUCKET_NAME}/${sourceKey}`,
+        Key: destinationKey,
+      }),
+    )
+
+    await S3.send(
+      new DeleteObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: sourceKey,
+      }),
+    )
+    return true
+  } catch (error) {
+    console.error('Помилка переміщення файлу в S3: error')
+    return false
+  }
+}

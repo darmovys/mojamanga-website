@@ -3,33 +3,8 @@ import { betterAuthPlugin } from '../plugins/auth'
 import { createTeamSchema } from '@/schemas/teams'
 import { prisma } from '@/db'
 import { createId } from '@paralleldrive/cuid2'
-import { S3 } from '@/lib/s3-client'
-import { CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
-import { ukrainianToLatin } from '@/lib/utils'
+import { moveS3File, ukrainianToLatin } from '@/lib/utils'
 import z from 'zod'
-
-async function moveS3File(sourceKey: string, destinationKey: string) {
-  try {
-    await S3.send(
-      new CopyObjectCommand({
-        Bucket: process.env.S3_BUCKET_NAME,
-        CopySource: `${process.env.S3_BUCKET_NAME}/${sourceKey}`,
-        Key: destinationKey,
-      }),
-    )
-
-    await S3.send(
-      new DeleteObjectCommand({
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: sourceKey,
-      }),
-    )
-    return true
-  } catch (error) {
-    console.error('Помилка переміщення файлу в S3: error')
-    return false
-  }
-}
 
 async function getTeamOrFail(id: string) {
   const team = await prisma.team.findUnique({ where: { id } })
