@@ -27,6 +27,7 @@ import { Route as PeopleCreateIndexRouteImport } from './routes/people/create/in
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
 import { Route as ModerationTeamReviewTeamIdRouteImport } from './routes/moderation/team-review/$teamId'
+import { Route as ModerationPersonReviewPersonIdRouteImport } from './routes/moderation/person-review/$personId'
 
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
@@ -118,6 +119,12 @@ const ModerationTeamReviewTeamIdRoute =
     path: '/team-review/$teamId',
     getParentRoute: () => ModerationRouteRoute,
   } as any)
+const ModerationPersonReviewPersonIdRoute =
+  ModerationPersonReviewPersonIdRouteImport.update({
+    id: '/person-review/$personId',
+    path: '/person-review/$personId',
+    getParentRoute: () => ModerationRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
   '/work/': typeof WorkIndexRoute
+  '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
@@ -149,6 +157,7 @@ export interface FileRoutesByTo {
   '/moderation': typeof ModerationIndexRoute
   '/team': typeof TeamIndexRoute
   '/work': typeof WorkIndexRoute
+  '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
@@ -170,6 +179,7 @@ export interface FileRoutesById {
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
   '/work/': typeof WorkIndexRoute
+  '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/moderation/'
     | '/team/'
     | '/work/'
+    | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/login/'
     | '/signup/'
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/moderation'
     | '/team'
     | '/work'
+    | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/login'
     | '/signup'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
     | '/moderation/'
     | '/team/'
     | '/work/'
+    | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/_auth/login/'
     | '/_auth/signup/'
@@ -382,6 +395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModerationTeamReviewTeamIdRouteImport
       parentRoute: typeof ModerationRouteRoute
     }
+    '/moderation/person-review/$personId': {
+      id: '/moderation/person-review/$personId'
+      path: '/person-review/$personId'
+      fullPath: '/moderation/person-review/$personId'
+      preLoaderRoute: typeof ModerationPersonReviewPersonIdRouteImport
+      parentRoute: typeof ModerationRouteRoute
+    }
   }
 }
 
@@ -401,11 +421,13 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface ModerationRouteRouteChildren {
   ModerationIndexRoute: typeof ModerationIndexRoute
+  ModerationPersonReviewPersonIdRoute: typeof ModerationPersonReviewPersonIdRoute
   ModerationTeamReviewTeamIdRoute: typeof ModerationTeamReviewTeamIdRoute
 }
 
 const ModerationRouteRouteChildren: ModerationRouteRouteChildren = {
   ModerationIndexRoute: ModerationIndexRoute,
+  ModerationPersonReviewPersonIdRoute: ModerationPersonReviewPersonIdRoute,
   ModerationTeamReviewTeamIdRoute: ModerationTeamReviewTeamIdRoute,
 }
 

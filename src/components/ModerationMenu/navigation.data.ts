@@ -19,6 +19,7 @@ export const NAVIGATION_SECTIONS: NavSectionData[] = [
       { label: 'Редагування твору', requests: 34, type: 'suggestions' },
       { label: 'Додавання розділу', requests: 112, type: 'chapters' },
       { label: 'Створення команди', requests: 5, type: 'teams' },
+      { label: 'Додавання персон', requests: 1, type: 'people' },
     ],
   },
   {

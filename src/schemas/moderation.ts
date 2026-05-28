@@ -5,13 +5,14 @@ export const moderationMenuTypes = [
   'suggestions',
   'chapters',
   'teams',
+  'people',
   'comment-complaints',
   'users-management',
 ] as const
 
 export const moderationMenuSchema = z.object({
   type: z.enum(moderationMenuTypes).catch('teams'),
-  
+
   page: z.coerce
     .number()
     .int()

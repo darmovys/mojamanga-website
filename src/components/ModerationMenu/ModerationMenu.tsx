@@ -13,6 +13,9 @@ import TeamsRequestsList, { TeamsRequestsSkeleton } from './TeamsRequestsList'
 import { useSearchFieldScrollStore } from '@/stores/search-field-scroll-store'
 import { motion } from 'motion/react'
 import MobileNavigation from '../MobileNavigation'
+import PeopleRequestsList, {
+  PeopleRequestsSkeleton,
+} from './PeopleRequestsList'
 
 const routeApi = getRouteApi('/moderation/')
 
@@ -66,13 +69,8 @@ function ModerationMenu() {
 
   return (
     <ModerationMenuLayout>
-      {sectionType === 'teams' ? (
-        <TeamsRequestsList />
-      ) : (
-        <div className={styles.PlaceholderContent}>
-          Оберіть категорію для модерації
-        </div>
-      )}
+      {sectionType === 'teams' && <TeamsRequestsList />}
+      {sectionType === 'people' && <PeopleRequestsList />}
     </ModerationMenuLayout>
   )
 }
@@ -82,13 +80,8 @@ export function ModerationMenuSkeleton() {
 
   return (
     <ModerationMenuLayout>
-      {sectionType === 'teams' ? (
-        <TeamsRequestsSkeleton />
-      ) : (
-        <div className={styles.PlaceholderContent}>
-          Оберіть категорію для модерації
-        </div>
-      )}
+      {sectionType === 'teams' && <TeamsRequestsSkeleton />}
+      {sectionType === 'people' && <PeopleRequestsSkeleton />}
     </ModerationMenuLayout>
   )
 }
