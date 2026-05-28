@@ -20,6 +20,7 @@
   gap: var(--16px);
   align-self: center;
   flex: 1;
+  inline-size: 100%;
 }
 
 .Link {
@@ -199,4 +200,5 @@
   font-weight: 500;
   color: var(--sys-on-surface-variant);
   margin-block: auto;
+  text-align: center;
 }

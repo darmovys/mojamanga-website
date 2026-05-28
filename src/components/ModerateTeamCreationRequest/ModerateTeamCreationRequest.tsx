@@ -317,6 +317,34 @@ export function ModerateTeamCreationRequestSkeleton() {
           </div>
         </div>
 
+        <div className={styles.CardGroup}>
+          <div className={clsx(styles.Card, styles.Cover)}>
+            <div
+              className={styles.ImageWrapper}
+              style={
+                {
+                  '--aspect-ratio': '375 / 525',
+                } as React.CSSProperties
+              }
+            >
+              <Skeleton width="100%" height="100%" />
+              <h2 className={styles.ImageHeading}>Обкладинка</h2>
+            </div>
+          </div>
+          <div className={clsx(styles.Card, styles.Title)}>
+            <h2 className={styles.CardTitle}>Назва</h2>
+            <Skeleton width="60%" height="28px" borderRadius="4px" />
+          </div>
+          <div className={clsx(styles.Card, styles.Description)}>
+            <h2 className={styles.CardTitle}>Опис</h2>
+            <div className={styles.DescriptionLines}>
+              <Skeleton width="100%" height="16px" borderRadius="4px" />
+              <Skeleton width="90%" height="16px" borderRadius="4px" />
+              <Skeleton width="40%" height="16px" borderRadius="4px" />
+            </div>
+          </div>
+        </div>
+
         <div className={styles.Card}>
           <div
             className={styles.ImageWrapper}
@@ -324,30 +352,6 @@ export function ModerateTeamCreationRequestSkeleton() {
           >
             <Skeleton width="100%" height="100%" />
             <h2 className={styles.ImageHeading}>Задній фон</h2>
-          </div>
-        </div>
-
-        <div className={styles.Card}>
-          <div
-            className={clsx(styles.ImageWrapper, styles.Cover)}
-            style={{ '--aspect-ratio': '375 / 525' } as React.CSSProperties}
-          >
-            <Skeleton width="100%" height="100%" />
-            <h2 className={styles.ImageHeading}>Обкладинка</h2>
-          </div>
-        </div>
-
-        <div className={styles.Card}>
-          <h2 className={styles.CardTitle}>Назва</h2>
-          <Skeleton width="60%" height="28px" borderRadius="4px" />
-        </div>
-
-        <div className={styles.Card}>
-          <h2 className={styles.CardTitle}>Опис</h2>
-          <div className={styles.DescriptionLines}>
-            <Skeleton width="100%" height="16px" borderRadius="4px" />
-            <Skeleton width="90%" height="16px" borderRadius="4px" />
-            <Skeleton width="40%" height="16px" borderRadius="4px" />
           </div>
         </div>
 

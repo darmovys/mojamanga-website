@@ -144,6 +144,7 @@
 
   @include up('tablet') {
     grid-template-columns: 200px 1fr;
+    grid-template-rows: auto 1fr;
     grid-template-areas:
       'cover title'
       'cover description';
@@ -211,8 +212,6 @@
 }
 
 .TextField {
-  box-shadow: var(--shadow-border);
-  padding: var(--4px) var(--8px);
   border-radius: var(--4px);
   overflow-wrap: break-word;
   hyphens: auto;
@@ -220,6 +219,8 @@
 
 .LinkField {
   composes: TextField;
+  box-shadow: var(--shadow-border);
+  padding: var(--4px) var(--8px);
   display: flex;
   align-items: center;
   gap: var(--6px);
