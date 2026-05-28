@@ -29,3 +29,25 @@ export const teamsMutations = {
     },
   }),
 }
+
+export const peopleMutations = {
+  approve: () => ({
+    mutationFn: async (id: string) => {
+      const response = await api().people['approve-person-request'].patch({
+        id,
+      })
+      if (response.error) throw response.error
+      return response.data
+    },
+  }),
+  decline: () => ({
+    mutationFn: async ({ id, message }: { id: string; message: string }) => {
+      const response = await api().people['decline-person-request'].delete({
+        id,
+        message,
+      })
+      if (response.error) throw response.error
+      return response.data
+    },
+  }),
+}

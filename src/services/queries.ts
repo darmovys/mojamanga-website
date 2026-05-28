@@ -58,3 +58,43 @@ export const teamsQueries = {
       },
     }),
 }
+
+export type PendingPerson = NonNullable<
+  Awaited<ReturnType<typeof fetchPendingPeople>>
+>['people'][number]
+
+const fetchPendingPeople = async (page: number) => {
+  const response = await api().people['get-pending-people'].get({
+    query: { page },
+  })
+  if (response.error) throw response.error
+  return response.data
+}
+
+export const peopleQueries = {
+  all: ['people'] as const,
+  lists: () => [...peopleQueries.all, 'lists'] as const,
+  pendingPeople: (page: number) =>
+    queryOptions({
+      queryKey: [...peopleQueries.lists(), 'pending', page] as const,
+      queryFn: () => fetchPendingPeople(page),
+    }),
+  getPersonRequest: (id: string) =>
+    queryOptions({
+      queryKey: [...peopleQueries.all, id] as const,
+      queryFn: async () => {
+        const response = await api()
+          .people['person-adding-request']({ id: id })
+          .get()
+        const { error } = response
+        if (error) {
+          if (error.status === 404) {
+            throw notFound()
+          } else {
+            throw error
+          }
+        }
+        return response.data
+      },
+    }),
+}
