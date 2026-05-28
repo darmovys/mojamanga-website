@@ -23,6 +23,7 @@ import { Route as ModerationIndexRouteImport } from './routes/moderation/index'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as WorkCreateIndexRouteImport } from './routes/work/create/index'
 import { Route as TeamCreateIndexRouteImport } from './routes/team/create/index'
+import { Route as PeopleCreateIndexRouteImport } from './routes/people/create/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
 import { Route as ModerationTeamReviewTeamIdRouteImport } from './routes/moderation/team-review/$teamId'
@@ -96,6 +97,11 @@ const TeamCreateIndexRoute = TeamCreateIndexRouteImport.update({
   path: '/team/create/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PeopleCreateIndexRoute = PeopleCreateIndexRouteImport.update({
+  id: '/people/create/',
+  path: '/people/create/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthSignupIndexRoute = AuthSignupIndexRouteImport.update({
   id: '/signup/',
   path: '/signup/',
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
+  '/people/create/': typeof PeopleCreateIndexRoute
   '/team/create/': typeof TeamCreateIndexRoute
   '/work/create/': typeof WorkCreateIndexRoute
 }
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
+  '/people/create': typeof PeopleCreateIndexRoute
   '/team/create': typeof TeamCreateIndexRoute
   '/work/create': typeof WorkCreateIndexRoute
 }
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
+  '/people/create/': typeof PeopleCreateIndexRoute
   '/team/create/': typeof TeamCreateIndexRoute
   '/work/create/': typeof WorkCreateIndexRoute
 }
@@ -185,6 +194,7 @@ export interface FileRouteTypes {
     | '/moderation/team-review/$teamId'
     | '/login/'
     | '/signup/'
+    | '/people/create/'
     | '/team/create/'
     | '/work/create/'
   fileRoutesByTo: FileRoutesByTo
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/moderation/team-review/$teamId'
     | '/login'
     | '/signup'
+    | '/people/create'
     | '/team/create'
     | '/work/create'
   id:
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/moderation/team-review/$teamId'
     | '/_auth/login/'
     | '/_auth/signup/'
+    | '/people/create/'
     | '/team/create/'
     | '/work/create/'
   fileRoutesById: FileRoutesById
@@ -237,6 +249,7 @@ export interface RootRouteChildren {
   ApiSplatRoute: typeof ApiSplatRoute
   TeamIndexRoute: typeof TeamIndexRoute
   WorkIndexRoute: typeof WorkIndexRoute
+  PeopleCreateIndexRoute: typeof PeopleCreateIndexRoute
   TeamCreateIndexRoute: typeof TeamCreateIndexRoute
   WorkCreateIndexRoute: typeof WorkCreateIndexRoute
 }
@@ -341,6 +354,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamCreateIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/people/create/': {
+      id: '/people/create/'
+      path: '/people/create'
+      fullPath: '/people/create/'
+      preLoaderRoute: typeof PeopleCreateIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_auth/signup/': {
       id: '/_auth/signup/'
       path: '/signup'
@@ -405,6 +425,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSplatRoute: ApiSplatRoute,
   TeamIndexRoute: TeamIndexRoute,
   WorkIndexRoute: WorkIndexRoute,
+  PeopleCreateIndexRoute: PeopleCreateIndexRoute,
   TeamCreateIndexRoute: TeamCreateIndexRoute,
   WorkCreateIndexRoute: WorkCreateIndexRoute,
 }

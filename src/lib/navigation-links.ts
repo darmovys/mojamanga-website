@@ -107,9 +107,9 @@ export const addContentLinks = linkOptions([
     },
   },
   {
-    title: 'Додати людину',
+    title: 'Додати персону',
     icon: UserRound,
-    to: '/about',
+    to: '/people/create',
     activeOptions: {
       exact: true,
     },
