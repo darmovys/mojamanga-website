@@ -1,3 +1,4 @@
+import CreateWorkForm from '@/components/CreateWorkForm'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/work/create/')({
@@ -5,9 +6,5 @@ export const Route = createFileRoute('/work/create/')({
 })
 
 function RouteComponent() {
-  return (
-    <div style={{ color: 'var(--sys-on-surface)' }}>
-      Вітаємо на сторінці додавання твора!
-    </div>
-  )
+  return <CreateWorkForm />
 }
