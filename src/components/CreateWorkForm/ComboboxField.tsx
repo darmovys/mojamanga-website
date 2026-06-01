@@ -56,8 +56,10 @@ export function ComboboxField({ items, value, onChange }: ComboboxFieldProps) {
                 {...triggerAnimation}
                 key={isOpen ? 'open' : 'close'}
               >
-                {isOpen ? <XIcon size={16} /> : <Plus size={16} />}
-                {isOpen ? 'Закрити' : 'Додати'}
+                <>
+                  {isOpen ? <XIcon size={16} /> : <Plus size={16} />}
+                  {isOpen ? 'Закрити' : 'Додати'}
+                </>
               </motion.div>
             </AnimatePresence>
           </Combobox.Trigger>
