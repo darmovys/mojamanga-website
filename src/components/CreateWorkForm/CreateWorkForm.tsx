@@ -1,5 +1,4 @@
 import { Button } from '@base-ui/react'
-import styles from './CreateWorkForm.module.scss'
 import { useGoBack } from '@/hooks/use-go-back'
 import ClickTargetHelper from '../ClickTargetHelper'
 import {
@@ -37,6 +36,13 @@ import {
 import { useState } from 'react'
 import ShiftBy from '../ShiftBy/ShiftBy'
 import { ComboboxField } from './ComboboxField'
+import { PersonComboboxField } from './PersonComboboxField'
+import { Treaty } from '@elysiajs/eden'
+import { Api } from '@/lib/api-client'
+import { Link } from '@tanstack/react-router'
+import styles from './CreateWorkForm.module.scss'
+
+type Person = Treaty.Data<Api['people']['people-to-attach']['get']>[number]
 
 const MAX_DESCRIPTION_LENGTH = 1000
 
@@ -53,6 +59,8 @@ function CreateWorkForm() {
   const [releaseYear, setReleaseYear] = useState('')
   const [genres, setGenres] = useState<string[]>([])
   const [tags, setTags] = useState<string[]>([])
+  const [authors, setAuthors] = useState<Person[]>([])
+  const [artists, setArtists] = useState<Person[]>([])
 
   return (
     <div className={styles.MaxWidthWrapper}>
@@ -526,6 +534,32 @@ function CreateWorkForm() {
             <div>
               <span className={styles.Label}>Теги</span>
               <ComboboxField items={TAGS} value={tags} onChange={setTags} />
+            </div>
+
+            <div>
+              <div className={styles.LabelBox}>
+                <span className={styles.Label}>Автори</span>
+                <Link className={styles.Link} to="/people/create">
+                  Створити нового автора
+                </Link>
+              </div>
+              <PersonComboboxField
+                selectedPeople={authors}
+                onChange={setAuthors}
+              />
+            </div>
+
+            <div>
+              <div className={styles.LabelBox}>
+                <span className={styles.Label}>Художники</span>
+                <Link className={styles.Link} to="/people/create">
+                  Створити нового художника
+                </Link>
+              </div>
+              <PersonComboboxField
+                selectedPeople={artists}
+                onChange={setArtists}
+              />
             </div>
 
             {/* <form.Field

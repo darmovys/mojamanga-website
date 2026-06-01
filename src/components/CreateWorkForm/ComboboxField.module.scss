@@ -156,6 +156,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--4px);
+
+  &.Loading {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
 }
 
 .Empty {
@@ -176,6 +182,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   transition: background-color 0.2s var(--bg-animation);
 
   @media (hover: hover) {
@@ -200,6 +207,16 @@
     background-color: var(--state-primary-opacity-12);
     color: var(--blue-400);
   }
+}
+
+.ItemNameGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.ItemSubtitle {
+  color: var(--sys-on-surface-variant);
+  font-size: var(--12px);
 }
 
 .Scrollbar {
@@ -228,4 +245,20 @@
   inline-size: 100%;
   background-color: var(--scrollbar-color);
   border-radius: 100vmax;
+}
+
+.Status {
+  display: flex;
+  justify-content: center;
+  color: var(--sys-on-surface-variant);
+}
+
+.Spinner {
+  animation: spin 550ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
