@@ -38,15 +38,19 @@ export const peopleRouter = new Elysia({
               'Обмежені в доступі користувачі не можуть виконати цю дію',
             )
 
-          const userSuggestedPeople = dbUser.suggestedPeople
-          if (
-            userSuggestedPeople.some(
-              (m) => m.personVerificationStatus === 'PENDING',
-            )
-          )
+          let pendingCount = 0
+
+          for (const person of dbUser.suggestedPeople) {
+            if (person.personVerificationStatus === 'PENDING') {
+              pendingCount++
+            }
+            if (pendingCount >= 3) break
+          }
+
+          if (pendingCount >= 3)
             return status(
               403,
-              'У вас вже є запит на перевірці. Дочекайтеся його результату',
+              'У вас вже є запити на перевірці. Дочекайтеся їх результатів',
             )
 
           const personId = createId()
