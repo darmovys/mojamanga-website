@@ -23,9 +23,12 @@ export function UserTeamsCheckboxList({
   onChange,
 }: UserTeamsCheckboxListProps) {
   const id = useId()
-  const { data: userTeamsData, isLoading } = useQuery(
-    teamsQueries.getUserTeams(),
-  )
+  const {
+    data: userTeamsData,
+    isLoading,
+    error: queryError,
+  } = useQuery(teamsQueries.getUserTeams())
+
   const shouldReduceMotion = useReducedMotion()
   const triggerAnimation = shouldReduceMotion
     ? {}
@@ -40,7 +43,24 @@ export function UserTeamsCheckboxList({
         } as const,
       }
 
-  const userTeams: Team[] = userTeamsData?.data ?? []
+  const userTeams: Team[] = Array.isArray(userTeamsData?.data)
+    ? userTeamsData.data
+    : []
+  const hasError = !!queryError || (userTeamsData && userTeamsData.error)
+
+  if (isLoading) return <SkeletonList />
+
+  if (hasError) {
+    return (
+      <span className={styles.ErrorMessage}>
+        Помилка завантаження команд. Спробуйте оновити сторінку.
+      </span>
+    )
+  }
+
+  if (userTeams.length === 0)
+    return <span>Ви не належите до жодної команди</span>
+
   const selectedIds = selectedTeams.map((team) => team.id)
   const allTeamIds = userTeams.map((team) => team.id)
 
@@ -50,49 +70,6 @@ export function UserTeamsCheckboxList({
     )
     onChange(nextSelectedTeams)
   }
-
-  if (isLoading)
-    return (
-      <div className={styles.CheckboxGroup}>
-        <div style={{ display: 'flex', gap: 'var(--8px)' }}>
-          <Skeleton
-            height="var(--24px)"
-            width="var(--24px)"
-            borderRadius="var(--4px)"
-          />
-          <Skeleton
-            height="var(--24px)"
-            width="var(--128px)"
-            borderRadius="var(--4px)"
-          />
-        </div>
-        {range(2).map((index) => (
-          <div
-            key={index}
-            style={{
-              display: 'flex',
-              gap: 'var(--8px)',
-              marginBlockStart: 'var(--8px)',
-              marginInlineStart: 'var(--28px)',
-            }}
-          >
-            <Skeleton
-              height="var(--24px)"
-              width="var(--24px)"
-              borderRadius="var(--4px)"
-            />
-            <Skeleton
-              height="var(--24px)"
-              width="var(--128px)"
-              borderRadius="var(--4px)"
-            />
-          </div>
-        ))}
-      </div>
-    )
-
-  if (userTeams.length === 0)
-    return <span>Ви не належите до жодної команди</span>
 
   const isMultipleTeams = userTeams.length > 1
 
@@ -153,5 +130,46 @@ export function UserTeamsCheckboxList({
         ))}
       </div>
     </CheckboxGroup>
+  )
+}
+
+function SkeletonList() {
+  return (
+    <div className={styles.CheckboxGroup}>
+      <div style={{ display: 'flex', gap: 'var(--8px)' }}>
+        <Skeleton
+          height="var(--24px)"
+          width="var(--24px)"
+          borderRadius="var(--4px)"
+        />
+        <Skeleton
+          height="var(--24px)"
+          width="var(--128px)"
+          borderRadius="var(--4px)"
+        />
+      </div>
+      {range(2).map((index) => (
+        <div
+          key={index}
+          style={{
+            display: 'flex',
+            gap: 'var(--8px)',
+            marginBlockStart: 'var(--8px)',
+            marginInlineStart: 'var(--28px)',
+          }}
+        >
+          <Skeleton
+            height="var(--24px)"
+            width="var(--24px)"
+            borderRadius="var(--4px)"
+          />
+          <Skeleton
+            height="var(--24px)"
+            width="var(--128px)"
+            borderRadius="var(--4px)"
+          />
+        </div>
+      ))}
+    </div>
   )
 }
