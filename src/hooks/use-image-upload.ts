@@ -67,20 +67,20 @@ export function useImageUpload(config: ImageUploadConfig) {
         .delete()
 
       if (error !== null) {
-        if (error.value === 'Необхідна авторизація') {
+        if (error.status === 401) {
           showAuthToast()
-        } else if (error.status !== 422) {
-          showTimedToast(
-            { type: 'error', title: 'Помилка', description: error.value },
-            3000,
-          )
-        } else {
+        } else if (error.status === 422) {
           showTimedToast(
             {
               type: 'error',
               title: 'Помилка',
               description: error.value.message,
             },
+            3000,
+          )
+        } else {
+          showTimedToast(
+            { type: 'error', title: 'Помилка', description: error.value },
             3000,
           )
         }
@@ -132,7 +132,7 @@ export function useImageUpload(config: ImageUploadConfig) {
       })
 
       if (error !== null) {
-        if (error.value === 'Необхідна авторизація') {
+        if (error.status === 401) {
           showAuthToast()
         } else if (error.status === 422) {
           showTimedToast(

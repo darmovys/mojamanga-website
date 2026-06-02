@@ -30,28 +30,33 @@ export const filesRouter = new Elysia({
         return app
           .post(
             '/upload',
-            async ({ body, user }) => {
+            async ({ body, status, user }) => {
               const { contentType, fileName, size } = body
 
               const uniqueKey = `uploads/temp/${user.id}/${createId()}-${fileName.replace(/\s+/g, '_')}`
 
-              const command = new PutObjectCommand({
-                Bucket: process.env.S3_BUCKET_NAME,
-                Key: uniqueKey,
-                ContentType: contentType,
-                ContentLength: size,
-              })
+              try {
+                const command = new PutObjectCommand({
+                  Bucket: process.env.S3_BUCKET_NAME,
+                  Key: uniqueKey,
+                  ContentType: contentType,
+                  ContentLength: size,
+                })
 
-              const presignedUrl = await getSignedUrl(S3, command, {
-                expiresIn: 360,
-              })
+                const presignedUrl = await getSignedUrl(S3, command, {
+                  expiresIn: 360,
+                })
 
-              const response = {
-                presignedUrl,
-                key: uniqueKey,
+                const response = {
+                  presignedUrl,
+                  key: uniqueKey,
+                }
+
+                return { response }
+              } catch (error) {
+                console.error('Помилка сервера: ', error)
+                return status(500, 'Помилка при спробі завантажити зображення')
               }
-
-              return { response }
             },
             {
               body: uploadRequestSchema,
@@ -82,14 +87,18 @@ export const filesRouter = new Elysia({
                 )
               }
 
-              const command = new DeleteObjectCommand({
-                Bucket: process.env.S3_BUCKET_NAME,
-                Key: key,
-              })
+              try {
+                const command = new DeleteObjectCommand({
+                  Bucket: process.env.S3_BUCKET_NAME,
+                  Key: key,
+                })
 
-              await S3.send(command)
-
-              return { message: 'Зображення видалено' }
+                await S3.send(command)
+                return { message: 'Зображення видалено' }
+              } catch (error) {
+                console.error('Помилка сервера: ', error)
+                return status(500, 'Помилка при спробі видалити зображення')
+              }
             },
             {
               authed: true,
