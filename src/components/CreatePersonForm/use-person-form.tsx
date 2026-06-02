@@ -4,15 +4,13 @@ import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { peopleQueries } from '@/services/queries'
 import { useForm } from '@tanstack/react-form-start'
 import { useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
+
 import { useTransition } from 'react'
 
 export function usePersonForm() {
   const cover = useImageUpload({ width: 375, height: 525 })
   const [isUploading, startUploadingTransition] = useTransition()
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
-
   const form = useForm({
     defaultValues: {
       nameUkr: '',
@@ -74,7 +72,6 @@ export function usePersonForm() {
           return
         }
         await queryClient.invalidateQueries({ queryKey: peopleQueries.all })
-        navigate({ to: '/' })
         showTimedToast(
           {
             type: 'success',
@@ -83,6 +80,8 @@ export function usePersonForm() {
           },
           4000,
         )
+        form.reset()
+        cover.clearFile()
       })
     },
   })

@@ -50,6 +50,13 @@ export function useImageUpload(config: ImageUploadConfig) {
     }
   }, [fileState?.objectUrl])
 
+  function clearFile() {
+    if (!fileState) return
+
+    if (fileState.objectUrl) URL.revokeObjectURL(fileState.objectUrl)
+    setFileState(null)
+  }
+
   async function removeFile() {
     if (!fileState) return
 
@@ -328,6 +335,7 @@ export function useImageUpload(config: ImageUploadConfig) {
     isDragActive,
     cropFile,
     removeFile,
+    clearFile,
     uploadFile,
     imageToCrop,
     setImageToCrop,
