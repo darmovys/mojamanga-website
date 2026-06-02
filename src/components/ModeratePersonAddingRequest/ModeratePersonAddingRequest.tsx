@@ -1,5 +1,3 @@
-import { peopleQueries } from '@/services/queries'
-import { useSuspenseQuery } from '@tanstack/react-query'
 import { getRouteApi, Link } from '@tanstack/react-router'
 import { useGoBack } from '@/hooks/use-go-back'
 import { Button } from '@base-ui/react'
@@ -23,12 +21,12 @@ const routeApi = getRouteApi('/moderation/person-review/$personId')
 function ModeratePersonAddingRequest() {
   const { personId } = routeApi.useParams()
   const loaderData = routeApi.useLoaderData()
-  const { data } = useSuspenseQuery(peopleQueries.getPersonRequest(personId))
   const { handleGoBack } = useGoBack()
   const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
     useHelperDialog('seen_add_person_request_moderation_rules', loaderData)
 
   const {
+    data,
     isPending,
     handleApprove,
     handleDecline,

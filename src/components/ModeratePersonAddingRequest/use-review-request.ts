@@ -3,7 +3,11 @@ import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { peopleMutations } from '@/services/mutations'
 import { peopleQueries } from '@/services/queries'
 import { Treaty } from '@elysiajs/eden'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 
 type AnyEndpointError = Treaty.Error<
@@ -11,7 +15,8 @@ type AnyEndpointError = Treaty.Error<
   | Api['people']['decline-person-request']['delete']
 >
 
-export function useReviewRequest(teamId: string) {
+export function useReviewRequest(personId: string) {
+  const { data } = useSuspenseQuery(peopleQueries.getPersonRequest(personId))
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
@@ -26,6 +31,9 @@ export function useReviewRequest(teamId: string) {
 
   function handleMutationError(error: AnyEndpointError) {
     switch (error.status) {
+      case 401:
+        showAuthToast()
+        break
       case 422:
         showTimedToast(
           {
@@ -35,9 +43,6 @@ export function useReviewRequest(teamId: string) {
           },
           4000,
         )
-        break
-      case 401:
-        showAuthToast()
         break
       default:
         showTimedToast(
@@ -66,14 +71,15 @@ export function useReviewRequest(teamId: string) {
   const isPending = approveMutation.isPending || declineMutation.isPending
 
   function handleApprove() {
-    approveMutation.mutate(teamId)
+    approveMutation.mutate(personId)
   }
 
   function handleDecline(message: string) {
-    declineMutation.mutate({ id: teamId, message })
+    declineMutation.mutate({ id: personId, message, coverUrl: data.coverUrl })
   }
 
   return {
+    data,
     isPending,
     handleApprove,
     handleDecline,

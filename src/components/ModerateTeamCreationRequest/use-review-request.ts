@@ -3,7 +3,11 @@ import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { teamsMutations } from '@/services/mutations'
 import { teamsQueries } from '@/services/queries'
 import { Treaty } from '@elysiajs/eden'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 
 type AnyEndpointError = Treaty.Error<
@@ -13,6 +17,7 @@ type AnyEndpointError = Treaty.Error<
 >
 
 export function useReviewRequest(teamId: string) {
+  const { data } = useSuspenseQuery(teamsQueries.getTeamRequest(teamId))
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
@@ -84,10 +89,16 @@ export function useReviewRequest(teamId: string) {
   }
 
   function handleDecline(message: string) {
-    declineMutation.mutate({ id: teamId, message })
+    declineMutation.mutate({
+      id: teamId,
+      message,
+      coverUrl: data.coverUrl,
+      backgroundUrl: data.backgroundUrl,
+    })
   }
 
   return {
+    data,
     isPending,
     handleApprove,
     handleRevise,

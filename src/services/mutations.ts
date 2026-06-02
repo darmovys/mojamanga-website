@@ -19,10 +19,22 @@ export const teamsMutations = {
     },
   }),
   decline: () => ({
-    mutationFn: async ({ id, message }: { id: string; message: string }) => {
+    mutationFn: async ({
+      id,
+      message,
+      coverUrl,
+      backgroundUrl,
+    }: {
+      id: string
+      message: string
+      coverUrl: string | null
+      backgroundUrl: string | null
+    }) => {
       const response = await api().teams['decline-team-request'].delete({
         id,
         message,
+        coverUrl,
+        backgroundUrl,
       })
       if (response.error) throw response.error
       return response.data
@@ -41,10 +53,19 @@ export const peopleMutations = {
     },
   }),
   decline: () => ({
-    mutationFn: async ({ id, message }: { id: string; message: string }) => {
+    mutationFn: async ({
+      id,
+      message,
+      coverUrl,
+    }: {
+      id: string
+      message: string
+      coverUrl: string | null
+    }) => {
       const response = await api().people['decline-person-request'].delete({
         id,
         message,
+        coverUrl,
       })
       if (response.error) throw response.error
       return response.data

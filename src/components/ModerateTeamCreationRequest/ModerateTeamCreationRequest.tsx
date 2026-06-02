@@ -1,5 +1,3 @@
-import { teamsQueries } from '@/services/queries'
-import { useSuspenseQuery } from '@tanstack/react-query'
 import { getRouteApi, Link } from '@tanstack/react-router'
 import { useGoBack } from '@/hooks/use-go-back'
 import { Button } from '@base-ui/react'
@@ -25,7 +23,6 @@ const routeApi = getRouteApi('/moderation/team-review/$teamId')
 function ModerateTeamCreationRequest() {
   const { teamId } = routeApi.useParams()
   const loaderData = routeApi.useLoaderData()
-  const { data } = useSuspenseQuery(teamsQueries.getTeamRequest(teamId))
 
   const { handleGoBack } = useGoBack()
   const { theme } = useTheme()
@@ -33,6 +30,7 @@ function ModerateTeamCreationRequest() {
     useHelperDialog('seen_create_team_request_moderation_rules', loaderData)
 
   const {
+    data,
     isPending,
     handleApprove,
     handleRevise,

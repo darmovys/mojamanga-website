@@ -5,6 +5,8 @@ import { prisma } from '@/db'
 import { createId } from '@paralleldrive/cuid2'
 import { moveS3File, ukrainianToLatin } from '@/lib/utils'
 import z from 'zod'
+import { DeleteObjectsCommand } from '@aws-sdk/client-s3'
+import { S3 } from '@/lib/s3-client'
 
 async function getTeamOrFail(id: string) {
   const team = await prisma.team.findUnique({ where: { id } })
@@ -290,20 +292,44 @@ export const teamsRouter = new Elysia({
       .delete(
         '/decline-team-request',
         async ({ status, body }) => {
-          try {
-            const team = await getTeamOrFail(body.id)
-            if (team === 'NOT_FOUND') return status(404, 'Команду не знайдено')
-            if (team === 'NOT_PENDING')
-              return status(409, 'Запит вже оброблено')
+          const team = await getTeamOrFail(body.id)
+          if (team === 'NOT_FOUND') return status(404, 'Команду не знайдено')
+          if (team === 'NOT_PENDING') return status(409, 'Запит вже оброблено')
 
+          try {
             await prisma.team.delete({
               where: { id: body.id },
             })
-
-            return { message: 'Запит виконано' }
           } catch (dbError) {
             console.error('Помилка БД: ', dbError)
             return status(500, 'Помилка при збереженні даних')
+          }
+
+          try {
+            const rawKeys = [body.coverUrl, body.backgroundUrl]
+            const validKeys = rawKeys.filter(
+              (key): key is string =>
+                typeof key === 'string' && key.trim() !== '',
+            )
+
+            if (validKeys.length > 0) {
+              const objectsPayload = validKeys.map((key) => ({ Key: key }))
+
+              const command = new DeleteObjectsCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Delete: {
+                  Objects: objectsPayload,
+                  Quiet: true,
+                },
+              })
+
+              await S3.send(command)
+            }
+
+            return { message: 'Запит виконано' }
+          } catch (s3Error) {
+            console.error('Помилка S3 (файли могли залишитися): ', s3Error)
+            return status(500, 'Помилка при спробі видалити зображення')
           }
         },
         {
@@ -311,6 +337,8 @@ export const teamsRouter = new Elysia({
           body: z.object({
             id: z.string(),
             message: z.string(),
+            coverUrl: z.string().nullable(),
+            backgroundUrl: z.string().nullable(),
           }),
         },
       )
