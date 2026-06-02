@@ -139,6 +139,35 @@ export const teamsRouter = new Elysia({
         },
       )
       .get(
+        '/teams-to-attach',
+        async ({ status, user }) => {
+          try {
+            const userTeams = await prisma.team.findMany({
+              where: {
+                status: 'APPROVED',
+                members: {
+                  some: {
+                    userId: user.id,
+                  },
+                },
+              },
+              select: {
+                id: true,
+                name: true,
+              },
+            })
+
+            return userTeams
+          } catch (error) {
+            console.error('Помилка при отриманні команд: ', error)
+            return status(500, 'Помилка при отриманні команд')
+          }
+        },
+        {
+          authed: true,
+        },
+      )
+      .get(
         '/get-pending-teams',
         async ({ query, status }) => {
           try {

@@ -40,9 +40,11 @@ import { PersonComboboxField } from './PersonComboboxField'
 import { Treaty } from '@elysiajs/eden'
 import { Api } from '@/lib/api-client'
 import { Link } from '@tanstack/react-router'
+import { UserTeamsCheckboxList } from './UserTeamsCheckboxList'
 import styles from './CreateWorkForm.module.scss'
 
 type Person = Treaty.Data<Api['people']['people-to-attach']['get']>[number]
+type Team = Treaty.Data<Api['teams']['teams-to-attach']['get']>[number]
 
 const MAX_DESCRIPTION_LENGTH = 1000
 
@@ -61,6 +63,7 @@ function CreateWorkForm() {
   const [tags, setTags] = useState<string[]>([])
   const [authors, setAuthors] = useState<Person[]>([])
   const [artists, setArtists] = useState<Person[]>([])
+  const [teams, setTeams] = useState<Team[]>([])
 
   return (
     <div className={styles.MaxWidthWrapper}>
@@ -523,7 +526,7 @@ function CreateWorkForm() {
             </div>
 
             <div>
-              <span className={styles.Label}>Жанри</span>
+              <label className={styles.Label}>Жанри</label>
               <ComboboxField
                 items={GENRES}
                 value={genres}
@@ -532,13 +535,16 @@ function CreateWorkForm() {
             </div>
 
             <div>
-              <span className={styles.Label}>Теги</span>
+              <label className={styles.Label}>Теги</label>
               <ComboboxField items={TAGS} value={tags} onChange={setTags} />
             </div>
 
             <div>
               <div className={styles.LabelBox}>
-                <span className={styles.Label}>Автори</span>
+                <label className={styles.Label}>
+                  Автори
+                  <Tooltip text="Обов'язкове поле" align="start" />
+                </label>
                 <Link className={styles.Link} to="/people/create">
                   Створити нового автора
                 </Link>
@@ -551,7 +557,10 @@ function CreateWorkForm() {
 
             <div>
               <div className={styles.LabelBox}>
-                <span className={styles.Label}>Художники</span>
+                <label className={styles.Label}>
+                  Художники
+                  <Tooltip text="Обов'язкове поле" align="start" />
+                </label>
                 <Link className={styles.Link} to="/people/create">
                   Створити нового художника
                 </Link>
@@ -562,175 +571,25 @@ function CreateWorkForm() {
               />
             </div>
 
-            {/* <form.Field
-              name="links"
-              children={(field) => {
-                const activeLinks = field.state.value
-                const selectedLinkTypes = activeLinks
-                  .map((link) => link.type)
-                  .filter(Boolean) as LinkType[]
-                const maxLinksReached =
-                  activeLinks.length >= Object.keys(LINK_META).length
+            <div>
+              <div className={styles.LabelBox}>
+                <label className={styles.Label}>
+                  Команди
+                  <Tooltip
+                    text="Повинна бути обрана хоча б одна команда"
+                    align="start"
+                  />
+                </label>
+                <Link className={styles.Link} to="/team/create">
+                  Створити нову команду
+                </Link>
+              </div>
 
-                function handleAddLink() {
-                  field.handleChange(
-                    produce((draft) => {
-                      draft.push({
-                        id: createId(),
-                        type: null,
-                        url: '',
-                      })
-                    }),
-                  )
-                }
-
-                function handleRemoveLink(id: string) {
-                  field.handleChange(
-                    produce((draft) => {
-                      const index = draft.findIndex((link) => link.id === id)
-                      if (index !== -1) draft.splice(index, 1)
-                    }),
-                  )
-                }
-
-                function handleChangeLinkType(id: string, newType: LinkType) {
-                  field.handleChange(
-                    produce((draft) => {
-                      const link = draft.find((link) => link.id === id)
-                      if (link) link.type = newType
-                    }),
-                  )
-                }
-
-                function handleChangeLinkUrl(id: string, newUrl: string) {
-                  field.handleChange(
-                    produce((draft) => {
-                      const link = draft.find((link) => link.id === id)
-                      if (link) link.url = newUrl
-                    }),
-                  )
-                }
-
-                return (
-                  <div>
-                    <div className={styles.LinksHeader}>
-                      <span className={styles.Label}>
-                        Посилання
-                        <Tooltip text="Наполегливо просимо надати принаймні одне посилання на групу чи сайт команди" align='start' />
-                      </span>
-                      <AnimatePresence>
-                        {activeLinks.length > 1 && (
-                          <MotionButton
-                            type="button"
-                            initial={{ opacity: 0, filter: 'blur(4px)' }}
-                            animate={{ opacity: 1, filter: 'blur(0px)' }}
-                            exit={{ opacity: 0, filter: 'blur(4px)' }}
-                            transition={{
-                              type: 'spring',
-                              duration: 0.25,
-                              bounce: 0,
-                            }}
-                            className={styles.HideLinksButton}
-                            onClick={(e) => {
-                              e.preventDefault()
-                              handleLinksPresence()
-                            }}
-                          >
-                            <ClickTargetHelper />
-                            <motion.div
-                              initial={false}
-                              animate={{
-                                rotate: isLinksSectionShown ? '180deg' : '0deg',
-                              }}
-                              transition={{
-                                type: 'spring',
-                                duration: 0.4,
-                                bounce: 0,
-                              }}
-                            >
-                              <ChevronUp size={18} />
-                            </motion.div>
-                          </MotionButton>
-                        )}
-                      </AnimatePresence>
-                    </div>
-
-                    <Accordion.Root
-                      value={isLinksSectionShown ? ['links'] : []}
-                      onValueChange={(values) =>
-                        setIsLinksSectionShown(values.length > 0)
-                      }
-                    >
-                      <Accordion.Item value="links">
-                        <Accordion.Header style={{ display: 'none' }}>
-                          <Accordion.Trigger />
-                        </Accordion.Header>
-                        <Accordion.Panel
-                          style={{
-                            overflow: isOverflowVisible ? 'visible' : 'clip',
-                          }}
-                          className={styles.AccordionPanel}
-                          onTransitionEnd={() =>
-                            setHasAccordionAnimationFinished(true)
-                          }
-                        >
-                          <div
-                            className={clsx(styles.LinksList, {
-                              [styles.MarginEnd]:
-                                activeLinks.length > 0 && !maxLinksReached,
-                            })}
-                          >
-                            <AnimatePresence>
-                              {activeLinks.map((link) => {
-                                const availableTypes = (
-                                  Object.keys(LINK_META) as LinkType[]
-                                ).filter(
-                                  (type) =>
-                                    !selectedLinkTypes.includes(type) ||
-                                    type === link.type,
-                                )
-
-                                return (
-                                  <LinkInputField
-                                    key={link.id}
-                                    link={link}
-                                    availableTypes={availableTypes}
-                                    onChangeLinkType={(id, newType) =>
-                                      handleChangeLinkType(id, newType)
-                                    }
-                                    onChangeLinkUrl={(id, value) =>
-                                      handleChangeLinkUrl(id, value)
-                                    }
-                                    onRemoveLink={(id) => handleRemoveLink(id)}
-                                    hasAccordionAnimationFinished={
-                                      hasAccordionAnimationFinished
-                                    }
-                                  />
-                                )
-                              })}
-                            </AnimatePresence>
-                          </div>
-
-                          {!maxLinksReached && (
-                            <MotionButton
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault()
-                                handleAddLink()
-                              }}
-                              className={styles.AddLinkButton}
-                            >
-                              <span>Додати посилання</span>
-                              <Link size={12} />
-                            </MotionButton>
-                          )}
-                        </Accordion.Panel>
-                      </Accordion.Item>
-                    </Accordion.Root>
-                  </div>
-                )
-              }}
-            /> */}
+              <UserTeamsCheckboxList
+                selectedTeams={teams}
+                onChange={setTeams}
+              />
+            </div>
           </form>
         </div>
         <footer className={styles.FooterMenu}>

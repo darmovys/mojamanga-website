@@ -39,6 +39,11 @@ export const teamsQueries = {
       queryKey: [...teamsQueries.lists(), 'pending', page] as const,
       queryFn: () => fetchPendingTeams(page),
     }),
+  getUserTeams: () =>
+    queryOptions({
+      queryKey: [...teamsQueries.lists(), 'user_teams'] as const,
+      queryFn: () => api().teams['teams-to-attach'].get(),
+    }),
   getTeamRequest: (id: string) =>
     queryOptions({
       queryKey: [...teamsQueries.all, id] as const,
