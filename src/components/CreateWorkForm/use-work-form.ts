@@ -1,7 +1,67 @@
+import {
+  AgeRestriction,
+  TranslationStatus,
+  WorkStatus,
+  WorkType,
+} from '@/generated/prisma/enums'
 import { useImageUpload } from '@/hooks/use-image-upload'
+import { Api } from '@/lib/api-client'
 import { showTimedToast } from '@/lib/toast'
+import { Treaty } from '@elysiajs/eden'
 import { useForm } from '@tanstack/react-form-start'
 import { useTransition } from 'react'
+import z from 'zod'
+
+type Person = Treaty.Data<Api['people']['people-to-attach']['get']>[number]
+type Team = Treaty.Data<Api['teams']['teams-to-attach']['get']>[number]
+
+const workFormSchema = z.object({
+  ukrName: z.string().min(1, { error: "Назва українською обов'язкова" }),
+  enName: z.string().min(1, { error: "Назва англійською обов'язкова" }),
+  alternativeNames: z
+    .string()
+    .refine((val) => val === '' || /^[^/]+( \/ [^/]+)*$/.test(val), {
+      error: 'Дотримуйтесь формату: Назва 1 / Назва 2 (з пробілами)',
+    }),
+  type: z
+    .enum(WorkType, { error: 'Оберіть тип твору' })
+    .nullable()
+    .refine((val) => val !== null, { error: 'Оберіть тип твору' }),
+  workStatus: z
+    .enum(WorkStatus, { error: 'Оберіть статус твору' })
+    .nullable()
+    .refine((val) => val !== null, { error: 'Оберіть статус твору' }),
+  translationStatus: z
+    .enum(TranslationStatus, { error: 'Оберіть статус перекладу' })
+    .nullable()
+    .refine((val) => val !== null, { error: 'Оберіть статус перекладу' }),
+  ageRestriction: z
+    .enum(AgeRestriction, { error: 'Вкажіть вікове обмеження' })
+    .nullable()
+    .refine((val) => val !== null, { error: 'Вкажіть вікове обмеження' }),
+  releaseYear: z
+    .string()
+    .min(1, { error: 'Вкажіть рік випуску' })
+    .regex(/^\d{4}$/, { error: 'Рік випуску має складатися з 4 цифр' })
+    .refine(
+      (val) => {
+        const year = parseInt(val)
+        return year >= 1900 && year <= new Date().getFullYear() + 10
+      },
+      { error: 'Вкажіть коректний рік випуску' },
+    ),
+  genres: z.array(z.string()),
+  tags: z.array(z.string()),
+  authors: z
+    .array(z.custom<Person>())
+    .min(1, { error: 'Додайте хоча б одного автора' }),
+  artists: z
+    .array(z.custom<Person>())
+    .min(1, { error: 'Додайте хоча б одного художника' }),
+  teams: z
+    .array(z.custom<Team>())
+    .min(1, { error: 'Оберіть хоча б одну команду' }),
+})
 
 export function useWorkForm() {
   const cover = useImageUpload({ width: 375, height: 525 })
@@ -14,16 +74,19 @@ export function useWorkForm() {
       enName: '',
       alternativeNames: '',
       description: '',
-      type: '',
-      ageRestriction: '',
+      type: null as WorkType | null,
+      workStatus: null as WorkStatus | null,
+      translationStatus: null as TranslationStatus | null,
+      ageRestriction: null as AgeRestriction | null,
       releaseYear: '',
-      workStatus: '',
-      translationStatus: '',
-      genres: [],
-      tags: [],
+      genres: [] as string[],
+      tags: [] as string[],
+      authors: [] as Person[],
+      artists: [] as Person[],
+      teams: [] as Team[],
     },
-    onSubmit: async ({ value }) => {
-      if (cover.fileState === null || cover.fileState.key === undefined) {
+    onSubmit: async ({ value: formValues }) => {
+      if (!cover.fileState?.key) {
         showTimedToast(
           {
             type: 'warning',
@@ -34,77 +97,19 @@ export function useWorkForm() {
         )
         return
       }
-      if (value.ukrName.trim() === '' || value.enName.trim() === '') {
-        showTimedToast(
-          {
-            type: 'warning',
-            title: 'Попередження',
-            description: "Заповніть усі обов'язкові поля",
-          },
-          4000,
-        )
+
+      const result = workFormSchema.safeParse(formValues)
+
+      if (!result.success) {
+        showTimedToast({
+          type: 'warning',
+          title: 'Попередження',
+          description: result.error.issues[0].message,
+        })
         return
       }
 
-      // const safeCoverKey = cover.fileState.key
-      console.log('Значення: ', value)
-
-      // startUploadingTransition(async () => {
-      //   const { error, data } = await api().teams['create-team'].post({
-      //     title: value.title,
-      //     description: value.description,
-      //     avatarKey: safeAvatarKey,
-      //     backgroundKey: background.fileState?.key,
-      //     links: value.links,
-      //   })
-      //   if (error) {
-      //     if (error.status === 401) {
-      //       showAuthToast()
-      //     } else if (error.status === 422) {
-      //       showTimedToast(
-      //         {
-      //           type: 'warning',
-      //           title: 'Попередження',
-      //           description: error.value.message,
-      //         },
-      //         4000,
-      //       )
-      //     } else if (
-      //       error.status === 500 ||
-      //       error.status === 404 ||
-      //       error.status === 409
-      //     ) {
-      //       showTimedToast(
-      //         {
-      //           type: 'error',
-      //           title: 'Помилка',
-      //           description: error.value,
-      //         },
-      //         4000,
-      //       )
-      //     } else {
-      //       showTimedToast(
-      //         {
-      //           type: 'warning',
-      //           title: 'Попередження',
-      //           description: error.value,
-      //         },
-      //         4000,
-      //       )
-      //     }
-      //     return
-      //   }
-      //   await queryClient.invalidateQueries({ queryKey: teamsQueries.all })
-      //   navigate({ to: '/' })
-      //   showTimedToast(
-      //     {
-      //       type: 'success',
-      //       title: 'Успіх',
-      //       description: data.message,
-      //     },
-      //     4000,
-      //   )
-      // })
+      console.log('Дані форми готової до відправки:', formValues)
     },
   })
 

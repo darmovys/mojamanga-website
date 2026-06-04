@@ -1,13 +1,6 @@
-import { Button } from '@base-ui/react'
+import { Button, Field } from '@base-ui/react'
 import { useGoBack } from '@/hooks/use-go-back'
 import ClickTargetHelper from '../ClickTargetHelper'
-import {
-  ArrowLeft,
-  CircleAlert,
-  LoaderCircle,
-  Trash2,
-  UploadCloud,
-} from 'lucide-react'
 import VisuallyHidden from '../VisuallyHidden'
 import Tooltip from '../Tooltip'
 import { AnimatePresence, motion } from 'motion/react'
@@ -19,6 +12,18 @@ import { useWorkForm } from './use-work-form'
 import CropImageDialog from '../CropImageDialog'
 import { showTimedToast } from '@/lib/toast'
 import { SelectField } from './SelectField'
+import ShiftBy from '../ShiftBy/ShiftBy'
+import { ComboboxField } from './ComboboxField'
+import { PersonComboboxField } from './PersonComboboxField'
+import { Link } from '@tanstack/react-router'
+import { UserTeamsCheckboxList } from './UserTeamsCheckboxList'
+import {
+  ArrowLeft,
+  CircleAlert,
+  LoaderCircle,
+  Trash2,
+  UploadCloud,
+} from 'lucide-react'
 import {
   AgeRestriction,
   TranslationStatus,
@@ -33,37 +38,13 @@ import {
   WORK_STATUS_LABELS,
   WORK_TYPE_LABELS,
 } from '@/lib/constants'
-import { useState } from 'react'
-import ShiftBy from '../ShiftBy/ShiftBy'
-import { ComboboxField } from './ComboboxField'
-import { PersonComboboxField } from './PersonComboboxField'
-import { Treaty } from '@elysiajs/eden'
-import { Api } from '@/lib/api-client'
-import { Link } from '@tanstack/react-router'
-import { UserTeamsCheckboxList } from './UserTeamsCheckboxList'
 import styles from './CreateWorkForm.module.scss'
-
-type Person = Treaty.Data<Api['people']['people-to-attach']['get']>[number]
-type Team = Treaty.Data<Api['teams']['teams-to-attach']['get']>[number]
 
 const MAX_DESCRIPTION_LENGTH = 1000
 
 function CreateWorkForm() {
   const { handleGoBack } = useGoBack()
   const { form, cover, background, isUploading } = useWorkForm()
-  const [workType, setWorkType] = useState<WorkType | null>(null)
-  const [workStatus, setWorkStatus] = useState<WorkStatus | null>(null)
-  const [translationStatus, setTranslationStatus] =
-    useState<TranslationStatus | null>(null)
-  const [ageRestriction, setAgeRestriction] = useState<AgeRestriction | null>(
-    null,
-  )
-  const [releaseYear, setReleaseYear] = useState('')
-  const [genres, setGenres] = useState<string[]>([])
-  const [tags, setTags] = useState<string[]>([])
-  const [authors, setAuthors] = useState<Person[]>([])
-  const [artists, setArtists] = useState<Person[]>([])
-  const [teams, setTeams] = useState<Team[]>([])
 
   return (
     <div className={styles.MaxWidthWrapper}>
@@ -117,10 +98,10 @@ function CreateWorkForm() {
           >
             <div className={styles.CoversWrapper}>
               <div>
-                <span className={styles.Label}>
+                <label className={styles.Label}>
                   Обкладинка
                   <Tooltip text="Обов'язкове поле" align="start" />
-                </span>
+                </label>
                 <div className={styles.UploadAvatarWrapper}>
                   {!cover.fileState && (
                     <motion.div
@@ -233,7 +214,7 @@ function CreateWorkForm() {
               </div>
 
               <div>
-                <span className={styles.Label}>Задній фон</span>
+                <label className={styles.Label}>Задній фон</label>
                 <div className={styles.UploadBackgroundWrapper}>
                   {!background.fileState && (
                     <motion.div
@@ -348,15 +329,20 @@ function CreateWorkForm() {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="ukrName" className={styles.Label}>
-                Назва українською
-                <Tooltip text="Обов'язкове поле" align="start" />
-              </label>
-              <form.Field
-                name="ukrName"
-                children={(field) => (
-                  <input
+            <form.Field
+              name="ukrName"
+              children={(field) => (
+                <Field.Root
+                  name={field.name}
+                  invalid={!field.state.meta.isValid}
+                  dirty={field.state.meta.isDirty}
+                  touched={field.state.meta.isTouched}
+                >
+                  <Field.Label htmlFor="ukrName" className={styles.Label}>
+                    Назва українською
+                    <Tooltip text="Обов'язкове поле" align="start" />
+                  </Field.Label>
+                  <Field.Control
                     id="ukrName"
                     name={field.name}
                     type="text"
@@ -366,19 +352,24 @@ function CreateWorkForm() {
                     autoComplete="off"
                     className={styles.FieldInput}
                   />
-                )}
-              />
-            </div>
+                </Field.Root>
+              )}
+            />
 
-            <div>
-              <label htmlFor="enName" className={styles.Label}>
-                Назва англійською
-                <Tooltip text="Обов'язкове поле" align="start" />
-              </label>
-              <form.Field
-                name="enName"
-                children={(field) => (
-                  <input
+            <form.Field
+              name="enName"
+              children={(field) => (
+                <Field.Root
+                  name={field.name}
+                  invalid={!field.state.meta.isValid}
+                  dirty={field.state.meta.isDirty}
+                  touched={field.state.meta.isTouched}
+                >
+                  <Field.Label htmlFor="enName" className={styles.Label}>
+                    Назва англійською
+                    <Tooltip text="Обов'язкове поле" align="start" />
+                  </Field.Label>
+                  <Field.Control
                     id="enName"
                     name={field.name}
                     type="text"
@@ -388,24 +379,31 @@ function CreateWorkForm() {
                     autoComplete="off"
                     className={styles.FieldInput}
                   />
-                )}
-              />
-            </div>
+                </Field.Root>
+              )}
+            />
 
-            <div>
-              <label htmlFor="alternativeNames" className={styles.Label}>
-                Альтернативні назви
-                <Tooltip
-                  color="yellow"
-                  text='Назви вказуйте за допомогою роздільника "/" через пробіл (назва 1 / назва 2 / назва 3)'
-                  align="start"
-                />
-              </label>
-
-              <form.Field
-                name="alternativeNames"
-                children={(field) => (
-                  <input
+            <form.Field
+              name="alternativeNames"
+              children={(field) => (
+                <Field.Root
+                  name={field.name}
+                  invalid={!field.state.meta.isValid}
+                  dirty={field.state.meta.isDirty}
+                  touched={field.state.meta.isTouched}
+                >
+                  <Field.Label
+                    htmlFor="alternativeNames"
+                    className={styles.Label}
+                  >
+                    Альтернативні назви
+                    <Tooltip
+                      color="yellow"
+                      text='Назви вказуйте за допомогою роздільника "/" через пробіл (назва 1 / назва 2 / назва 3)'
+                      align="start"
+                    />
+                  </Field.Label>
+                  <Field.Control
                     id="alternativeNames"
                     name={field.name}
                     type="text"
@@ -415,44 +413,48 @@ function CreateWorkForm() {
                     autoComplete="off"
                     className={styles.FieldInput}
                   />
-                )}
-              />
-            </div>
+                </Field.Root>
+              )}
+            />
 
-            <div>
-              <label htmlFor="description" className={styles.Label}>
-                Опис
-              </label>
-              <form.Field
-                name="description"
-                children={(field) => {
-                  const remainingSymbols =
-                    MAX_DESCRIPTION_LENGTH - field.state.value.length
+            <form.Field
+              name="description"
+              children={(field) => {
+                const remainingSymbols =
+                  MAX_DESCRIPTION_LENGTH - field.state.value.length
 
-                  return (
-                    <>
-                      <textarea
-                        id="description"
-                        name={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => {
-                          if (e.target.value.length <= MAX_DESCRIPTION_LENGTH) {
-                            field.handleChange(e.target.value)
-                          }
-                        }}
-                        autoComplete="off"
-                        className={styles.FieldInput}
-                        style={{ resize: 'vertical', height: 'var(--160px)' }}
-                      />
-                      <span className={styles.MaxDescriptionLength}>
-                        {remainingSymbols}/{MAX_DESCRIPTION_LENGTH}
-                      </span>
-                    </>
-                  )
-                }}
-              />
-            </div>
+                return (
+                  <Field.Root
+                    name={field.name}
+                    invalid={!field.state.meta.isValid}
+                    dirty={field.state.meta.isDirty}
+                    touched={field.state.meta.isTouched}
+                  >
+                    <Field.Label htmlFor="description" className={styles.Label}>
+                      Опис
+                    </Field.Label>
+                    <Field.Control
+                      render={<textarea />}
+                      id="description"
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => {
+                        if (e.target.value.length <= MAX_DESCRIPTION_LENGTH) {
+                          field.handleChange(e.target.value)
+                        }
+                      }}
+                      autoComplete="off"
+                      className={styles.FieldInput}
+                      style={{ resize: 'vertical', height: 'var(--160px)' }}
+                    />
+                    <span className={styles.MaxDescriptionLength}>
+                      {remainingSymbols}/{MAX_DESCRIPTION_LENGTH}
+                    </span>
+                  </Field.Root>
+                )
+              }}
+            />
 
             <div className={styles.MetadataWrapper}>
               <h3 className={styles.MetadataHeading}>
@@ -461,135 +463,250 @@ function CreateWorkForm() {
                   <Tooltip text="Усі поля обов'язкові" align="start" />
                 </ShiftBy>
               </h3>
-              <div className={styles.MetadataField}>
-                <label htmlFor="workType" className={styles.Label}>
-                  Тип
-                </label>
-                <SelectField
-                  id="workType"
-                  onValueChange={setWorkType}
-                  value={workType}
-                  options={Object.values(WorkType)}
-                  labels={WORK_TYPE_LABELS}
-                />
-              </div>
-              <div className={styles.MetadataField}>
-                <label htmlFor="workStatus" className={styles.Label}>
-                  Статус твору
-                </label>
-                <SelectField
-                  id="workStatus"
-                  onValueChange={setWorkStatus}
-                  value={workStatus}
-                  options={Object.values(WorkStatus)}
-                  labels={WORK_STATUS_LABELS}
-                />
-              </div>
-              <div className={styles.MetadataField}>
-                <label htmlFor="translationStatus" className={styles.Label}>
-                  Статус перекладу
-                </label>
-                <SelectField
-                  id="translationStatus"
-                  onValueChange={setTranslationStatus}
-                  value={translationStatus}
-                  options={Object.values(TranslationStatus)}
-                  labels={TRANSLATION_STATUS_LABELS}
-                />
-              </div>
-              <div className={styles.MetadataField}>
-                <label htmlFor="ageRestriction" className={styles.Label}>
-                  Вікові обмеження
-                </label>
-                <SelectField
-                  id="ageRestriction"
-                  onValueChange={setAgeRestriction}
-                  value={ageRestriction}
-                  options={Object.values(AgeRestriction)}
-                  labels={AGE_RESTRICTION_LABELS}
-                />
-              </div>
-              <div className={styles.MetadataField}>
-                <label htmlFor="releaseYear" className={styles.Label}>
-                  Рік випуску
-                </label>
-                <input
-                  id="releaseYear"
-                  name="releaseYear"
-                  type="text"
-                  value={releaseYear}
-                  onChange={(e) => setReleaseYear(e.target.value)}
-                  autoComplete="off"
-                  className={styles.FieldInput}
-                />
-              </div>
-            </div>
+              <form.Field
+                name="type"
+                children={(field) => (
+                  <Field.Root
+                    name={field.name}
+                    invalid={!field.state.meta.isValid}
+                    dirty={field.state.meta.isDirty}
+                    touched={field.state.meta.isTouched}
+                    className={styles.MetadataField}
+                  >
+                    <Field.Label htmlFor={field.name} className={styles.Label}>
+                      Тип
+                    </Field.Label>
+                    <SelectField
+                      id={field.name}
+                      value={field.state.value}
+                      onValueChange={field.handleChange}
+                      options={Object.values(WorkType)}
+                      labels={WORK_TYPE_LABELS}
+                    />
+                  </Field.Root>
+                )}
+              />
 
-            <div>
-              <label className={styles.Label}>Жанри</label>
-              <ComboboxField
-                items={GENRES}
-                value={genres}
-                onChange={setGenres}
+              <form.Field
+                name="workStatus"
+                children={(field) => (
+                  <Field.Root
+                    name={field.name}
+                    invalid={!field.state.meta.isValid}
+                    dirty={field.state.meta.isDirty}
+                    touched={field.state.meta.isTouched}
+                    className={styles.MetadataField}
+                  >
+                    <Field.Label htmlFor={field.name} className={styles.Label}>
+                      Статус твору
+                    </Field.Label>
+                    <SelectField
+                      id={field.name}
+                      value={field.state.value}
+                      onValueChange={field.handleChange}
+                      options={Object.values(WorkStatus)}
+                      labels={WORK_STATUS_LABELS}
+                    />
+                  </Field.Root>
+                )}
+              />
+
+              <form.Field
+                name="translationStatus"
+                children={(field) => (
+                  <Field.Root
+                    name={field.name}
+                    invalid={!field.state.meta.isValid}
+                    dirty={field.state.meta.isDirty}
+                    touched={field.state.meta.isTouched}
+                    className={styles.MetadataField}
+                  >
+                    <Field.Label htmlFor={field.name} className={styles.Label}>
+                      Статус перекладу
+                    </Field.Label>
+                    <SelectField
+                      id={field.name}
+                      value={field.state.value}
+                      onValueChange={field.handleChange}
+                      options={Object.values(TranslationStatus)}
+                      labels={TRANSLATION_STATUS_LABELS}
+                    />
+                  </Field.Root>
+                )}
+              />
+
+              <form.Field
+                name="ageRestriction"
+                children={(field) => (
+                  <Field.Root
+                    name={field.name}
+                    invalid={!field.state.meta.isValid}
+                    dirty={field.state.meta.isDirty}
+                    touched={field.state.meta.isTouched}
+                    className={styles.MetadataField}
+                  >
+                    <Field.Label htmlFor={field.name} className={styles.Label}>
+                      Вікові обмеження
+                    </Field.Label>
+                    <SelectField
+                      id={field.name}
+                      value={field.state.value}
+                      onValueChange={field.handleChange}
+                      options={Object.values(AgeRestriction)}
+                      labels={AGE_RESTRICTION_LABELS}
+                    />
+                  </Field.Root>
+                )}
+              />
+
+              <form.Field
+                name="releaseYear"
+                children={(field) => (
+                  <Field.Root
+                    name={field.name}
+                    invalid={!field.state.meta.isValid}
+                    dirty={field.state.meta.isDirty}
+                    touched={field.state.meta.isTouched}
+                    className={styles.MetadataField}
+                  >
+                    <Field.Label htmlFor={field.name} className={styles.Label}>
+                      Рік випуску
+                    </Field.Label>
+                    <Field.Control
+                      id={field.name}
+                      name={field.name}
+                      type="text"
+                      autoComplete="off"
+                      inputMode="numeric"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                      className={styles.FieldInput}
+                    />
+                  </Field.Root>
+                )}
               />
             </div>
 
-            <div>
-              <label className={styles.Label}>Теги</label>
-              <ComboboxField items={TAGS} value={tags} onChange={setTags} />
-            </div>
-
-            <div>
-              <div className={styles.LabelBox}>
-                <label className={styles.Label}>
-                  Автори
-                  <Tooltip text="Обов'язкове поле" align="start" />
-                </label>
-                <Link className={styles.Link} to="/people/create">
-                  Створити нового автора
-                </Link>
-              </div>
-              <PersonComboboxField
-                selectedPeople={authors}
-                onChange={setAuthors}
-              />
-            </div>
-
-            <div>
-              <div className={styles.LabelBox}>
-                <label className={styles.Label}>
-                  Художники
-                  <Tooltip text="Обов'язкове поле" align="start" />
-                </label>
-                <Link className={styles.Link} to="/people/create">
-                  Створити нового художника
-                </Link>
-              </div>
-              <PersonComboboxField
-                selectedPeople={artists}
-                onChange={setArtists}
-              />
-            </div>
-
-            <div>
-              <div className={styles.LabelBox}>
-                <label className={styles.Label}>
-                  Команди
-                  <Tooltip
-                    text="Повинна бути обрана хоча б одна команда"
-                    align="start"
+            <form.Field
+              name="genres"
+              children={(field) => (
+                <Field.Root
+                  name={field.name}
+                  invalid={!field.state.meta.isValid}
+                  dirty={field.state.meta.isDirty}
+                  touched={field.state.meta.isTouched}
+                >
+                  <Field.Label className={styles.Label}>Жанри</Field.Label>
+                  <ComboboxField
+                    items={GENRES}
+                    value={field.state.value}
+                    onChange={field.handleChange}
                   />
-                </label>
-                <Link className={styles.Link} to="/team/create">
-                  Створити нову команду
-                </Link>
-              </div>
+                </Field.Root>
+              )}
+            />
 
-              <UserTeamsCheckboxList
-                selectedTeams={teams}
-                onChange={setTeams}
-              />
-            </div>
+            <form.Field
+              name="tags"
+              children={(field) => (
+                <Field.Root
+                  name={field.name}
+                  invalid={!field.state.meta.isValid}
+                  dirty={field.state.meta.isDirty}
+                  touched={field.state.meta.isTouched}
+                >
+                  <Field.Label className={styles.Label}>Теги</Field.Label>
+                  <ComboboxField
+                    items={TAGS}
+                    value={field.state.value}
+                    onChange={field.handleChange}
+                  />
+                </Field.Root>
+              )}
+            />
+
+            <form.Field
+              name="authors"
+              children={(field) => (
+                <Field.Root
+                  name={field.name}
+                  invalid={!field.state.meta.isValid}
+                  dirty={field.state.meta.isDirty}
+                  touched={field.state.meta.isTouched}
+                >
+                  <div className={styles.LabelBox}>
+                    <Field.Label className={styles.Label}>
+                      Автори
+                      <Tooltip text="Обов'язкове поле" align="start" />
+                    </Field.Label>
+                    <Link className={styles.Link} to="/people/create">
+                      Створити нового автора
+                    </Link>
+                  </div>
+                  <PersonComboboxField
+                    selectedPeople={field.state.value}
+                    onChange={field.handleChange}
+                  />
+                </Field.Root>
+              )}
+            />
+
+            <form.Field
+              name="artists"
+              children={(field) => (
+                <Field.Root
+                  name={field.name}
+                  invalid={!field.state.meta.isValid}
+                  dirty={field.state.meta.isDirty}
+                  touched={field.state.meta.isTouched}
+                >
+                  <div className={styles.LabelBox}>
+                    <Field.Label className={styles.Label}>
+                      Художники
+                      <Tooltip text="Обов'язкове поле" align="start" />
+                    </Field.Label>
+                    <Link className={styles.Link} to="/people/create">
+                      Створити нового художника
+                    </Link>
+                  </div>
+                  <PersonComboboxField
+                    selectedPeople={field.state.value}
+                    onChange={field.handleChange}
+                  />
+                </Field.Root>
+              )}
+            />
+
+            <form.Field
+              name="teams"
+              children={(field) => (
+                <Field.Root
+                  name={field.name}
+                  invalid={!field.state.meta.isValid}
+                  dirty={field.state.meta.isDirty}
+                  touched={field.state.meta.isTouched}
+                >
+                  <div className={styles.LabelBox}>
+                    <Field.Label className={styles.Label}>
+                      Команди
+                      <Tooltip
+                        text="Повинна бути обрана хоча б одна команда"
+                        align="start"
+                      />
+                    </Field.Label>
+                    <Link className={styles.Link} to="/team/create">
+                      Створити нову команду
+                    </Link>
+                  </div>
+
+                  <UserTeamsCheckboxList
+                    selectedTeams={field.state.value}
+                    onChange={field.handleChange}
+                  />
+                </Field.Root>
+              )}
+            />
           </form>
         </div>
         <footer className={styles.FooterMenu}>
