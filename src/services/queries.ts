@@ -103,3 +103,23 @@ export const peopleQueries = {
       },
     }),
 }
+
+export const tagsQueries = {
+  all: ['tags'] as const,
+  lists: () => [...tagsQueries.all, 'lists'] as const,
+  getAllTags: () =>
+    queryOptions({
+      queryKey: [...tagsQueries.lists()] as const,
+      queryFn: () => api().tags.all.get(),
+    }),
+}
+
+export const genresQueries = {
+  all: ['genres'] as const,
+  lists: () => [...genresQueries.all, 'lists'] as const,
+  getAllGenres: () =>
+    queryOptions({
+      queryKey: [...genresQueries.lists()] as const,
+      queryFn: () => api().genres.all.get(),
+    }),
+}

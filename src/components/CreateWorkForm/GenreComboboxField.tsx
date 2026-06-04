@@ -1,4 +1,4 @@
-import { Plus, X, Search, Check, XIcon } from 'lucide-react'
+import { Plus, X, Search, Check, XIcon, LoaderCircle } from 'lucide-react'
 import styles from './ComboboxField.module.scss'
 import { Combobox, ScrollArea, Separator } from '@base-ui/react'
 import MotionButton from '../MotionButton'
@@ -6,40 +6,47 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import VisuallyHidden from '../VisuallyHidden'
 import ClickTargetHelper from '../ClickTargetHelper'
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { genresQueries } from '@/services/queries'
+import { Genre } from '@/lib/treaty-types'
 
-interface Item {
-  name: string
+interface GenresComboboxFieldProps {
+  value: Genre[]
+  onChange: (value: Genre[]) => void
 }
 
-interface ComboboxFieldProps {
-  items: Item[]
-  value: string[]
-  onChange: (value: string[]) => void
-}
-
-export function ComboboxField({ items, value, onChange }: ComboboxFieldProps) {
+export function GenreComboboxField({
+  value,
+  onChange,
+}: GenresComboboxFieldProps) {
   const [isOpen, setIsOpen] = useState(false)
   const shouldReduceMotion = useReducedMotion()
+
+  const {
+    data: response,
+    isLoading,
+    isError,
+  } = useQuery(genresQueries.getAllGenres())
+
+  const allGenres = response?.data ?? []
+
   const triggerAnimation = shouldReduceMotion
     ? {}
     : {
         initial: { opacity: 0, scale: 0.85, filter: 'blur(4px)' },
         animate: { opacity: 1, scale: 1, filter: 'blur(0px)' },
         exit: { opacity: 0, scale: 0.85, filter: 'blur(4px)' },
-        transition: {
-          type: 'spring',
-          duration: 0.3,
-          bounce: 0,
-        } as const,
+        transition: { type: 'spring', duration: 0.3, bounce: 0 } as const,
       }
 
   return (
     <Combobox.Root
       multiple={true}
-      items={items}
+      items={allGenres}
       value={value}
       onValueChange={onChange}
       onOpenChange={setIsOpen}
+      itemToStringLabel={(genre: Genre) => genre.name}
     >
       <div className={styles.Wrapper}>
         <Combobox.Chips className={styles.ChipGroup}>
@@ -56,10 +63,8 @@ export function ComboboxField({ items, value, onChange }: ComboboxFieldProps) {
                 {...triggerAnimation}
                 key={isOpen ? 'open' : 'close'}
               >
-                <>
-                  {isOpen ? <XIcon size={16} /> : <Plus size={16} />}
-                  {isOpen ? 'Закрити' : 'Додати'}
-                </>
+                {isOpen ? <XIcon size={16} /> : <Plus size={16} />}
+                {isOpen ? 'Закрити' : 'Додати'}
               </motion.div>
             </AnimatePresence>
           </Combobox.Trigger>
@@ -68,7 +73,7 @@ export function ComboboxField({ items, value, onChange }: ComboboxFieldProps) {
             orientation="vertical"
             className={styles.HorizontalSeparator}
           />
-          <ChipList value={value} />
+          <ChipList selectedGenres={value} />
         </Combobox.Chips>
       </div>
 
@@ -77,7 +82,6 @@ export function ComboboxField({ items, value, onChange }: ComboboxFieldProps) {
           <Combobox.Popup className={styles.Popup}>
             <div className={styles.SearchWrapper}>
               <Search size={14} className={styles.SearchIcon} />
-
               <Combobox.Input
                 placeholder="Фільтрувати за назвою"
                 className={styles.Input}
@@ -90,20 +94,30 @@ export function ComboboxField({ items, value, onChange }: ComboboxFieldProps) {
             />
 
             <ScrollArea.Root className={styles.ScrollArea}>
-              <Combobox.Empty className={styles.Empty}>
-                Нічого не знайдено
-              </Combobox.Empty>
+              {isLoading && (
+                <div className={styles.Status}>
+                  <LoaderCircle size={20} className={styles.Spinner} />
+                  <span>Завантаження...</span>
+                </div>
+              )}
+
+              {isError && (
+                <div className={styles.Status}>Помилка завантаження жанрів</div>
+              )}
+
+              <GenresEmptyState isLoading={isLoading} isError={isError} />
+
               <Combobox.List
                 render={<ScrollArea.Viewport />}
                 className={styles.List}
               >
-                {(item: Item) => (
+                {(genre: Genre) => (
                   <Combobox.Item
-                    key={item.name}
-                    value={item.name}
+                    key={genre.id}
+                    value={genre}
                     className={styles.Item}
                   >
-                    <span>{item.name}</span>
+                    <span>{genre.name}</span>
                     <Combobox.ItemIndicator>
                       <Check size={16} />
                     </Combobox.ItemIndicator>
@@ -122,7 +136,7 @@ export function ComboboxField({ items, value, onChange }: ComboboxFieldProps) {
   )
 }
 
-function ChipList({ value }: { value: string[] }) {
+function ChipList({ selectedGenres }: { selectedGenres: Genre[] }) {
   const shouldReduceMotion = useReducedMotion()
   const chipAnimation = shouldReduceMotion
     ? {}
@@ -135,25 +149,43 @@ function ChipList({ value }: { value: string[] }) {
           layout: { duration: 0.25, ease: 'easeOut' },
         },
       }
+
   return (
     <AnimatePresence mode={shouldReduceMotion ? undefined : 'popLayout'}>
-      {value.map((name) => (
+      {selectedGenres.map((genre) => (
         <Combobox.Chip
-          key={name}
+          key={genre.id}
           render={
             <motion.span layout={!shouldReduceMotion} {...chipAnimation} />
           }
-          aria-label={name}
           className={styles.Chip}
         >
-          {name}
+          {genre.name}
           <Combobox.ChipRemove className={styles.RemoveBtn}>
             <X size={14} />
             <ClickTargetHelper />
-            <VisuallyHidden>Видалити {name}</VisuallyHidden>
+            <VisuallyHidden>Видалити {genre.name}</VisuallyHidden>
           </Combobox.ChipRemove>
         </Combobox.Chip>
       ))}
     </AnimatePresence>
+  )
+}
+
+function GenresEmptyState({
+  isLoading,
+  isError,
+}: {
+  isLoading: boolean
+  isError: boolean
+}) {
+  const filteredTags = Combobox.useFilteredItems()
+
+  if (isLoading || isError) return null
+
+  return (
+    <Combobox.Empty className={styles.Empty}>
+      {filteredTags.length === 0 && 'Нічого не знайдено'}
+    </Combobox.Empty>
   )
 }

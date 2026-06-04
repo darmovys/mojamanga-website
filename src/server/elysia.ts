@@ -6,6 +6,8 @@ import { filesRouter } from './routes/files'
 import { cronJobsPlugin } from './plugins/cron-jobs'
 import { teamsRouter } from './routes/teams'
 import { peopleRouter } from './routes/people'
+import { tagsRouter } from './routes/tags'
+import { genresRouter } from './routes/genres'
 
 export const app = new Elysia({
   prefix: '/api',
@@ -23,4 +25,6 @@ export const app = new Elysia({
   .use(filesRouter)
   .use(teamsRouter)
   .use(peopleRouter)
+  .use(tagsRouter)
+  .use(genresRouter)
   .use(cronJobsPlugin)

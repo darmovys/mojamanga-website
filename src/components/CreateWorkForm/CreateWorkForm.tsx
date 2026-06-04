@@ -13,7 +13,6 @@ import CropImageDialog from '../CropImageDialog'
 import { showTimedToast } from '@/lib/toast'
 import { SelectField } from './SelectField'
 import ShiftBy from '../ShiftBy/ShiftBy'
-import { ComboboxField } from './ComboboxField'
 import { PersonComboboxField } from './PersonComboboxField'
 import { Link } from '@tanstack/react-router'
 import { UserTeamsCheckboxList } from './UserTeamsCheckboxList'
@@ -32,12 +31,12 @@ import {
 } from '@/generated/prisma/enums'
 import {
   AGE_RESTRICTION_LABELS,
-  GENRES,
-  TAGS,
   TRANSLATION_STATUS_LABELS,
   WORK_STATUS_LABELS,
   WORK_TYPE_LABELS,
 } from '@/lib/constants'
+import { TagComboboxField } from './TagComboboxField'
+import { GenreComboboxField } from './GenreComboboxField'
 import styles from './CreateWorkForm.module.scss'
 
 const MAX_DESCRIPTION_LENGTH = 1000
@@ -598,8 +597,7 @@ function CreateWorkForm() {
                   touched={field.state.meta.isTouched}
                 >
                   <Field.Label className={styles.Label}>Жанри</Field.Label>
-                  <ComboboxField
-                    items={GENRES}
+                  <GenreComboboxField
                     value={field.state.value}
                     onChange={field.handleChange}
                   />
@@ -617,8 +615,7 @@ function CreateWorkForm() {
                   touched={field.state.meta.isTouched}
                 >
                   <Field.Label className={styles.Label}>Теги</Field.Label>
-                  <ComboboxField
-                    items={TAGS}
+                  <TagComboboxField
                     value={field.state.value}
                     onChange={field.handleChange}
                   />

@@ -11,6 +11,39 @@ import { useForm } from '@tanstack/react-form-start'
 import { useTransition } from 'react'
 import z from 'zod'
 
+type FieldTypes = { [key: string]: 'string' | 'number' | 'boolean' }
+
+function zodObjectArray<T>(fields: FieldTypes, errorMsg: string) {
+  return z.array(
+    z.custom<T>((val) => {
+      if (typeof val !== 'object' || val === null) return false
+      return Object.entries(fields).every(
+        ([key, type]) => typeof (val as Record<string, unknown>)[key] === type,
+      )
+    }),
+    { error: errorMsg },
+  )
+}
+
+const zodTeamArray = zodObjectArray<Team>(
+  { id: 'string', name: 'string' },
+  'Масив не відповідає типу Team',
+)
+
+const zodPersonArray = zodObjectArray<Person>(
+  { id: 'string', nameUkr: 'string', nameLat: 'string' },
+  'Масив не відповідає типу Person',
+)
+
+const zodTagArray = zodObjectArray<Tag>(
+  { id: 'string', name: 'string' },
+  'Масив не відповідає типу Tag',
+)
+const zodGenreArray = zodObjectArray<Genre>(
+  { id: 'string', name: 'string' },
+  'Масив не відповідає типу Genre',
+)
+
 const workFormSchema = z.object({
   ukrName: z.string().min(1, { error: "Назва українською обов'язкова" }),
   enName: z.string().min(1, { error: "Назва англійською обов'язкова" }),
@@ -46,17 +79,11 @@ const workFormSchema = z.object({
       },
       { error: 'Вкажіть коректний рік випуску' },
     ),
-  genres: z.array(z.string()),
-  tags: z.array(z.string()),
-  authors: z
-    .array(z.custom<Person>())
-    .min(1, { error: 'Додайте хоча б одного автора' }),
-  artists: z
-    .array(z.custom<Person>())
-    .min(1, { error: 'Додайте хоча б одного художника' }),
-  teams: z
-    .array(z.custom<Team>())
-    .min(1, { error: 'Оберіть хоча б одну команду' }),
+  genres: zodGenreArray,
+  tags: zodTagArray,
+  authors: zodPersonArray.min(1, { error: 'Додайте хоча б одного автора' }),
+  artists: zodPersonArray.min(1, { error: 'Додайте хоча б одного художника' }),
+  teams: zodTeamArray.min(1, { error: 'Оберіть хоча б одну команду' }),
 })
 
 export function useWorkForm() {
@@ -75,8 +102,8 @@ export function useWorkForm() {
       translationStatus: null as TranslationStatus | null,
       ageRestriction: null as AgeRestriction | null,
       releaseYear: '',
-      genres: [] as string[],
-      tags: [] as string[],
+      genres: [] as Genre[],
+      tags: [] as Tag[],
       authors: [] as Person[],
       artists: [] as Person[],
       teams: [] as Team[],
