@@ -6,11 +6,9 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import VisuallyHidden from '../VisuallyHidden'
 import ClickTargetHelper from '../ClickTargetHelper'
 import { useEffect, useRef, useState, useTransition } from 'react'
-import { Treaty } from '@elysiajs/eden'
-import { api, Api } from '@/lib/api-client'
+import { api } from '@/lib/api-client'
 import clsx from 'clsx'
-
-type Person = Treaty.Data<Api['people']['people-to-attach']['get']>[number]
+import { Person } from '@/lib/treaty-types'
 
 interface PersonComboboxFieldProps {
   selectedPeople: Person[]

@@ -5,15 +5,11 @@ import {
   WorkType,
 } from '@/generated/prisma/enums'
 import { useImageUpload } from '@/hooks/use-image-upload'
-import { Api } from '@/lib/api-client'
 import { showTimedToast } from '@/lib/toast'
-import { Treaty } from '@elysiajs/eden'
+import { Genre, Person, Tag, Team } from '@/lib/treaty-types'
 import { useForm } from '@tanstack/react-form-start'
 import { useTransition } from 'react'
 import z from 'zod'
-
-type Person = Treaty.Data<Api['people']['people-to-attach']['get']>[number]
-type Team = Treaty.Data<Api['teams']['teams-to-attach']['get']>[number]
 
 const workFormSchema = z.object({
   ukrName: z.string().min(1, { error: "Назва українською обов'язкова" }),

@@ -1,6 +1,4 @@
-import { Api } from '@/lib/api-client'
 import { teamsQueries } from '@/services/queries'
-import { Treaty } from '@elysiajs/eden'
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useId } from 'react'
@@ -10,8 +8,7 @@ import { CheckIcon, MinusIcon } from 'lucide-react'
 import clsx from 'clsx'
 import { range } from '@/lib/utils'
 import styles from './CreateWorkForm.module.scss'
-
-type Team = Treaty.Data<Api['teams']['teams-to-attach']['get']>[number]
+import { Team } from '@/lib/treaty-types'
 
 type UserTeamsCheckboxListProps = {
   selectedTeams: Team[]
