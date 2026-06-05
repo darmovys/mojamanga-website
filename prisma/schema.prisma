@@ -36,6 +36,7 @@ model User {
   publishingSubscriptions PublishingSubscription[]
   news                    News[]
   notifications           Notification[]
+  workAddings             Work[]
   workProposals           WorkProposal[]
   workEditions            WorkVersion[]
   complaints              Complaint[]
@@ -159,9 +160,13 @@ model TeamMember {
 // ================= CONTENT: WORKS =================
 
 model Work {
-  id             String             @id @default(cuid(2))
-  type           WorkType
-  approvalStatus WorkApprovalStatus @default(PENDING)
+  id                 String             @id @default(cuid(2))
+  type               WorkType
+  approvalStatus     WorkApprovalStatus @default(PENDING)
+  moderationFeedback Json?
+
+  proposedByUserId String
+  proposedByUser   User   @relation(fields: [proposedByUserId], references: [id])
 
   currentVersionId String?       @unique
   currentVersion   WorkVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
