@@ -111,6 +111,7 @@ export const tagsQueries = {
     queryOptions({
       queryKey: [...tagsQueries.lists()] as const,
       queryFn: () => api().tags.all.get(),
+      staleTime: Infinity,
     }),
 }
 
@@ -121,5 +122,6 @@ export const genresQueries = {
     queryOptions({
       queryKey: [...genresQueries.lists()] as const,
       queryFn: () => api().genres.all.get(),
+      staleTime: Infinity,
     }),
 }
