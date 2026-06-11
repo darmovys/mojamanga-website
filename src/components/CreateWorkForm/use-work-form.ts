@@ -5,89 +5,20 @@ import {
   WorkType,
 } from '@/generated/prisma/enums'
 import { useImageUpload } from '@/hooks/use-image-upload'
-import { showTimedToast } from '@/lib/toast'
+import { api } from '@/lib/api-client'
+import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { Genre, Person, Tag, Team } from '@/lib/treaty-types'
+import { addWorkSchema } from '@/schemas/works'
+import { worksQueries } from '@/services/queries'
 import { useForm } from '@tanstack/react-form-start'
+import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { useTransition } from 'react'
-import z from 'zod'
-
-type FieldTypes = { [key: string]: 'string' | 'number' | 'boolean' }
-
-function zodObjectArray<T>(fields: FieldTypes, errorMsg: string) {
-  return z.array(
-    z.custom<T>((val) => {
-      if (typeof val !== 'object' || val === null) return false
-      return Object.entries(fields).every(
-        ([key, type]) => typeof (val as Record<string, unknown>)[key] === type,
-      )
-    }),
-    { error: errorMsg },
-  )
-}
-
-const zodTeamArray = zodObjectArray<Team>(
-  { id: 'string', name: 'string' },
-  'Масив не відповідає типу Team',
-)
-
-const zodPersonArray = zodObjectArray<Person>(
-  { id: 'string', nameUkr: 'string', nameLat: 'string' },
-  'Масив не відповідає типу Person',
-)
-
-const zodTagArray = zodObjectArray<Tag>(
-  { id: 'string', name: 'string' },
-  'Масив не відповідає типу Tag',
-)
-const zodGenreArray = zodObjectArray<Genre>(
-  { id: 'string', name: 'string' },
-  'Масив не відповідає типу Genre',
-)
-
-const workFormSchema = z.object({
-  ukrName: z.string().min(1, { error: "Назва українською обов'язкова" }),
-  enName: z.string().min(1, { error: "Назва англійською обов'язкова" }),
-  alternativeNames: z
-    .string()
-    .refine((val) => val === '' || /^[^/]+( \/ [^/]+)*$/.test(val), {
-      error: 'Дотримуйтесь формату: Назва 1 / Назва 2 (з пробілами)',
-    }),
-  type: z
-    .enum(WorkType, { error: 'Оберіть тип твору' })
-    .nullable()
-    .refine((val) => val !== null, { error: 'Оберіть тип твору' }),
-  workStatus: z
-    .enum(WorkStatus, { error: 'Оберіть статус твору' })
-    .nullable()
-    .refine((val) => val !== null, { error: 'Оберіть статус твору' }),
-  translationStatus: z
-    .enum(TranslationStatus, { error: 'Оберіть статус перекладу' })
-    .nullable()
-    .refine((val) => val !== null, { error: 'Оберіть статус перекладу' }),
-  ageRestriction: z
-    .enum(AgeRestriction, { error: 'Вкажіть вікове обмеження' })
-    .nullable()
-    .refine((val) => val !== null, { error: 'Вкажіть вікове обмеження' }),
-  releaseYear: z
-    .string()
-    .min(1, { error: 'Вкажіть рік випуску' })
-    .regex(/^\d{4}$/, { error: 'Рік випуску має складатися з 4 цифр' })
-    .refine(
-      (val) => {
-        const year = parseInt(val)
-        return year >= 1900 && year <= new Date().getFullYear() + 10
-      },
-      { error: 'Вкажіть коректний рік випуску' },
-    ),
-  genres: zodGenreArray,
-  tags: zodTagArray,
-  authors: zodPersonArray.min(1, { error: 'Додайте хоча б одного автора' }),
-  artists: zodPersonArray.min(1, { error: 'Додайте хоча б одного художника' }),
-  teams: zodTeamArray.min(1, { error: 'Оберіть хоча б одну команду' }),
-})
 
 export function useWorkForm() {
   const [isUploading, startUploadingTransition] = useTransition()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const form = useForm({
     defaultValues: {
@@ -109,30 +40,65 @@ export function useWorkForm() {
       teams: [] as Team[],
     },
     onSubmit: async ({ value: formValues }) => {
-      if (!cover.fileState?.key) {
-        showTimedToast(
-          {
-            type: 'warning',
-            title: 'Попередження',
-            description: 'Прикріпіть обкладинку твору',
-          },
-          4000,
-        )
-        return
-      }
+      const parsedResult = addWorkSchema.safeParse(formValues)
 
-      const result = workFormSchema.safeParse(formValues)
-
-      if (!result.success) {
+      if (!parsedResult.success) {
         showTimedToast({
           type: 'warning',
           title: 'Попередження',
-          description: result.error.issues[0].message,
+          description: parsedResult.error.issues[0].message,
         })
         return
       }
 
-      console.log('Дані форми готової до відправки:', formValues)
+      startUploadingTransition(async () => {
+        const { error, data } = await api().works['add-work'].post(
+          parsedResult.data,
+        )
+        if (error) {
+          if (error.status === 401) {
+            showAuthToast()
+          } else if (error.status === 422) {
+            showTimedToast(
+              {
+                type: 'warning',
+                title: 'Попередження',
+                description: error.value.message,
+              },
+              4000,
+            )
+          } else if (error.status === 500 || error.status === 404) {
+            showTimedToast(
+              {
+                type: 'error',
+                title: 'Помилка',
+                description: error.value,
+              },
+              4000,
+            )
+          } else {
+            showTimedToast(
+              {
+                type: 'warning',
+                title: 'Попередження',
+                description: error.value,
+              },
+              4000,
+            )
+          }
+          return
+        }
+        await queryClient.invalidateQueries({ queryKey: worksQueries.all })
+        navigate({ to: '/' })
+        showTimedToast(
+          {
+            type: 'success',
+            title: 'Успіх',
+            description: data.message,
+          },
+          4000,
+        )
+      })
     },
   })
 

@@ -125,3 +125,8 @@ export const genresQueries = {
       staleTime: Infinity,
     }),
 }
+
+export const worksQueries = {
+  all: ['works'] as const,
+  lists: () => [...genresQueries.all, 'lists'] as const,
+}
