@@ -43,7 +43,8 @@ const MAX_DESCRIPTION_LENGTH = 1000
 
 function CreateWorkForm() {
   const { handleGoBack } = useGoBack()
-  const { form, cover, background, isUploading } = useWorkForm()
+  const { form, cover, background, isUploading, handleClearForm } =
+    useWorkForm()
 
   return (
     <div className={styles.MaxWidthWrapper}>
@@ -96,236 +97,268 @@ function CreateWorkForm() {
             }}
           >
             <div className={styles.CoversWrapper}>
-              <div>
-                <label className={styles.Label}>
-                  Обкладинка
-                  <Tooltip text="Обов'язкове поле" align="start" />
-                </label>
-                <div className={styles.UploadAvatarWrapper}>
-                  {!cover.fileState && (
-                    <motion.div
-                      {...tapAnimation}
-                      {...cover.getRootProps({
-                        role: 'button',
-                        'aria-label': 'drag and drop area',
-                      })}
-                      className={styles.UploadZone}
-                      data-drag-active={cover.isDragActive}
-                    >
-                      <input {...cover.getInputProps()} />
-                      <UploadCloud size={20} />
-                      <span>Завантажте</span>
-                      <span>фото</span>
+              <form.Field
+                name="coverKey"
+                children={(field) => (
+                  <Field.Root
+                    invalid={
+                      !field.state.meta.isValid &&
+                      form.state.submissionAttempts > 0
+                    }
+                  >
+                    <Field.Label className={styles.Label}>
+                      Обкладинка
+                      <Tooltip text="Обов'язкове поле" align="start" />
+                    </Field.Label>
+                    <div className={styles.UploadAvatarWrapper}>
+                      {!cover.fileState && (
+                        <motion.div
+                          {...tapAnimation}
+                          {...cover.getRootProps({
+                            role: 'button',
+                            'aria-label': 'drag and drop area',
+                          })}
+                          className={styles.UploadZone}
+                          data-drag-active={cover.isDragActive}
+                        >
+                          <input {...cover.getInputProps()} />
+                          <UploadCloud size={20} />
+                          <span>Завантажте</span>
+                          <span>фото</span>
 
-                      <svg
-                        className={styles.UploadZoneBorder}
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <rect className={styles.Rectangle} />
-                      </svg>
-                    </motion.div>
-                  )}
-
-                  {cover.fileState && (
-                    <div className={styles.UploadedCover}>
-                      <Image
-                        layout="fullWidth"
-                        alt={cover.fileState.file.name}
-                        src={cover.fileState.objectUrl ?? ''}
-                        draggable={false}
-                      />
-
-                      {cover.fileState.uploading &&
-                        !cover.fileState.isDeleting && (
-                          <div className={styles.Overlay}>
-                            {cover.fileState.progress}%
-                          </div>
-                        )}
-
-                      {!cover.fileState.uploading &&
-                        !cover.fileState.isDeleting &&
-                        cover.fileState.error && (
-                          <div className={styles.Overlay}>
-                            <CircleAlert className={styles.Error} size={30} />
-                          </div>
-                        )}
-
-                      {!cover.fileState.uploading && (
-                        <div className={styles.TrashButtonWrapper}>
-                          <MotionButton
-                            focusableWhenDisabled={true}
-                            disabled={cover.fileState.isDeleting || isUploading}
-                            onClick={cover.removeFile}
-                            className={styles.TrashButton}
+                          <svg
+                            className={styles.UploadZoneBorder}
+                            xmlns="http://www.w3.org/2000/svg"
                           >
-                            <ClickTargetHelper />
-                            {cover.fileState.isDeleting ? (
-                              <>
-                                <LoaderCircle
-                                  className={styles.Loader}
-                                  size={16}
-                                />
-                                <VisuallyHidden>
-                                  Видаляємо зображення
-                                </VisuallyHidden>
-                              </>
-                            ) : (
-                              <>
-                                <Trash2 size={16} />
-                                <VisuallyHidden>
-                                  Видалити зображення
-                                </VisuallyHidden>
-                              </>
+                            <rect className={styles.Rectangle} />
+                          </svg>
+                        </motion.div>
+                      )}
+
+                      {cover.fileState && (
+                        <div className={styles.UploadedCover}>
+                          <Image
+                            layout="fullWidth"
+                            alt={cover.fileState.file.name}
+                            src={cover.fileState.objectUrl ?? ''}
+                            draggable={false}
+                          />
+
+                          {cover.fileState.uploading &&
+                            !cover.fileState.isDeleting && (
+                              <div className={styles.Overlay}>
+                                {cover.fileState.progress}%
+                              </div>
                             )}
-                          </MotionButton>
+
+                          {!cover.fileState.uploading &&
+                            !cover.fileState.isDeleting &&
+                            cover.fileState.error && (
+                              <div className={styles.Overlay}>
+                                <CircleAlert
+                                  className={styles.Error}
+                                  size={30}
+                                />
+                              </div>
+                            )}
+
+                          {!cover.fileState.uploading && (
+                            <div className={styles.TrashButtonWrapper}>
+                              <MotionButton
+                                focusableWhenDisabled={true}
+                                disabled={
+                                  cover.fileState.isDeleting || isUploading
+                                }
+                                onClick={() => cover.removeFile()}
+                                className={styles.TrashButton}
+                              >
+                                <ClickTargetHelper />
+                                {cover.fileState.isDeleting ? (
+                                  <>
+                                    <LoaderCircle
+                                      className={styles.Loader}
+                                      size={16}
+                                    />
+                                    <VisuallyHidden>
+                                      Видаляємо зображення
+                                    </VisuallyHidden>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Trash2 size={16} />
+                                    <VisuallyHidden>
+                                      Видалити зображення
+                                    </VisuallyHidden>
+                                  </>
+                                )}
+                              </MotionButton>
+                            </div>
+                          )}
                         </div>
                       )}
+                      <AnimatePresence>
+                        {cover.imageToCrop && cover.cropImageUrl && (
+                          <CropImageDialog
+                            src={cover.cropImageUrl}
+                            originalName={cover.imageToCrop.name}
+                            croppedWidth={cover.croppedWidth}
+                            croppedHeight={cover.croppedHeight}
+                            onCropped={(file) => {
+                              if (!file) {
+                                showTimedToast(
+                                  {
+                                    type: 'error',
+                                    title: 'Помилка',
+                                    description:
+                                      'Не вдалося обрізати зображення',
+                                  },
+                                  3000,
+                                )
+                                return
+                              }
+                              cover.uploadFile(file)
+                            }}
+                            onClose={() => {
+                              cover.setImageToCrop(null)
+                            }}
+                          />
+                        )}
+                      </AnimatePresence>
                     </div>
-                  )}
-                  <AnimatePresence>
-                    {cover.imageToCrop && cover.cropImageUrl && (
-                      <CropImageDialog
-                        src={cover.cropImageUrl}
-                        originalName={cover.imageToCrop.name}
-                        croppedWidth={cover.croppedWidth}
-                        croppedHeight={cover.croppedHeight}
-                        onCropped={(file) => {
-                          if (!file) {
-                            showTimedToast(
-                              {
-                                type: 'error',
-                                title: 'Помилка',
-                                description: 'Не вдалося обрізати зображення',
-                              },
-                              3000,
-                            )
-                            return
-                          }
-                          cover.uploadFile(file)
-                        }}
-                        onClose={() => {
-                          cover.setImageToCrop(null)
-                        }}
-                      />
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
+                  </Field.Root>
+                )}
+              />
 
-              <div>
-                <label className={styles.Label}>Задній фон</label>
-                <div className={styles.UploadBackgroundWrapper}>
-                  {!background.fileState && (
-                    <motion.div
-                      {...tapAnimation}
-                      {...background.getRootProps({
-                        role: 'button',
-                        'aria-label': 'drag and drop area',
-                      })}
-                      className={styles.UploadZone}
-                      data-drag-active={background.isDragActive}
-                    >
-                      <input {...background.getInputProps()} />
-                      <UploadCloud size={20} />
-                      <span>Завантажте</span>
-                      <span>фото</span>
+              <form.Field
+                name="backgroundKey"
+                children={(field) => (
+                  <Field.Root
+                    invalid={
+                      !field.state.meta.isValid &&
+                      form.state.submissionAttempts > 0
+                    }
+                  >
+                    <Field.Label className={styles.Label}>
+                      Задній фон
+                    </Field.Label>
+                    <div className={styles.UploadBackgroundWrapper}>
+                      {!background.fileState && (
+                        <motion.div
+                          {...tapAnimation}
+                          {...background.getRootProps({
+                            role: 'button',
+                            'aria-label': 'drag and drop area',
+                          })}
+                          className={styles.UploadZone}
+                          data-drag-active={background.isDragActive}
+                        >
+                          <input {...background.getInputProps()} />
+                          <UploadCloud size={20} />
+                          <span>Завантажте</span>
+                          <span>фото</span>
 
-                      <svg
-                        className={styles.UploadZoneBorder}
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <rect className={styles.Rectangle} />
-                      </svg>
-                    </motion.div>
-                  )}
-
-                  {background.fileState && (
-                    <div className={styles.UploadedCover}>
-                      <Image
-                        layout="fullWidth"
-                        alt={background.fileState.file.name}
-                        src={background.fileState.objectUrl ?? ''}
-                        draggable={false}
-                      />
-
-                      {background.fileState.uploading &&
-                        !background.fileState.isDeleting && (
-                          <div className={styles.Overlay}>
-                            {background.fileState.progress}%
-                          </div>
-                        )}
-
-                      {!background.fileState.uploading &&
-                        !background.fileState.isDeleting &&
-                        background.fileState.error && (
-                          <div className={styles.Overlay}>
-                            <CircleAlert className={styles.Error} size={30} />
-                          </div>
-                        )}
-
-                      {!background.fileState.uploading && (
-                        <div className={styles.TrashButtonWrapper}>
-                          <MotionButton
-                            className={styles.TrashButton}
-                            focusableWhenDisabled={true}
-                            disabled={
-                              background.fileState.isDeleting || isUploading
-                            }
-                            onClick={background.removeFile}
+                          <svg
+                            className={styles.UploadZoneBorder}
+                            xmlns="http://www.w3.org/2000/svg"
                           >
-                            <ClickTargetHelper />
-                            {background.fileState.isDeleting ? (
-                              <>
-                                <LoaderCircle
-                                  className={styles.Loader}
-                                  size={16}
-                                />
-                                <VisuallyHidden>
-                                  Видаляємо зображення
-                                </VisuallyHidden>
-                              </>
-                            ) : (
-                              <>
-                                <Trash2 size={16} />
-                                <VisuallyHidden>
-                                  Видалити зображення
-                                </VisuallyHidden>
-                              </>
+                            <rect className={styles.Rectangle} />
+                          </svg>
+                        </motion.div>
+                      )}
+
+                      {background.fileState && (
+                        <div className={styles.UploadedCover}>
+                          <Image
+                            layout="fullWidth"
+                            alt={background.fileState.file.name}
+                            src={background.fileState.objectUrl ?? ''}
+                            draggable={false}
+                          />
+
+                          {background.fileState.uploading &&
+                            !background.fileState.isDeleting && (
+                              <div className={styles.Overlay}>
+                                {background.fileState.progress}%
+                              </div>
                             )}
-                          </MotionButton>
+
+                          {!background.fileState.uploading &&
+                            !background.fileState.isDeleting &&
+                            background.fileState.error && (
+                              <div className={styles.Overlay}>
+                                <CircleAlert
+                                  className={styles.Error}
+                                  size={30}
+                                />
+                              </div>
+                            )}
+
+                          {!background.fileState.uploading && (
+                            <div className={styles.TrashButtonWrapper}>
+                              <MotionButton
+                                className={styles.TrashButton}
+                                focusableWhenDisabled={true}
+                                disabled={
+                                  background.fileState.isDeleting || isUploading
+                                }
+                                onClick={() => background.removeFile()}
+                              >
+                                <ClickTargetHelper />
+                                {background.fileState.isDeleting ? (
+                                  <>
+                                    <LoaderCircle
+                                      className={styles.Loader}
+                                      size={16}
+                                    />
+                                    <VisuallyHidden>
+                                      Видаляємо зображення
+                                    </VisuallyHidden>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Trash2 size={16} />
+                                    <VisuallyHidden>
+                                      Видалити зображення
+                                    </VisuallyHidden>
+                                  </>
+                                )}
+                              </MotionButton>
+                            </div>
+                          )}
                         </div>
                       )}
+                      <AnimatePresence>
+                        {background.imageToCrop && background.cropImageUrl && (
+                          <CropImageDialog
+                            src={background.cropImageUrl}
+                            originalName={background.imageToCrop.name}
+                            croppedWidth={background.croppedWidth}
+                            croppedHeight={background.croppedHeight}
+                            onCropped={(file) => {
+                              if (!file) {
+                                showTimedToast(
+                                  {
+                                    type: 'error',
+                                    title: 'Помилка',
+                                    description:
+                                      'Не вдалося обрізати зображення',
+                                  },
+                                  3000,
+                                )
+                                return
+                              }
+                              background.uploadFile(file)
+                            }}
+                            onClose={() => {
+                              background.setImageToCrop(null)
+                            }}
+                          />
+                        )}
+                      </AnimatePresence>
                     </div>
-                  )}
-                  <AnimatePresence>
-                    {background.imageToCrop && background.cropImageUrl && (
-                      <CropImageDialog
-                        src={background.cropImageUrl}
-                        originalName={background.imageToCrop.name}
-                        croppedWidth={background.croppedWidth}
-                        croppedHeight={background.croppedHeight}
-                        onCropped={(file) => {
-                          if (!file) {
-                            showTimedToast(
-                              {
-                                type: 'error',
-                                title: 'Помилка',
-                                description: 'Не вдалося обрізати зображення',
-                              },
-                              3000,
-                            )
-                            return
-                          }
-                          background.uploadFile(file)
-                        }}
-                        onClose={() => {
-                          background.setImageToCrop(null)
-                        }}
-                      />
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
+                  </Field.Root>
+                )}
+              />
             </div>
 
             <form.Field
@@ -710,27 +743,26 @@ function CreateWorkForm() {
           <MotionButton
             onClick={() => form.handleSubmit()}
             focusableWhenDisabled={true}
-            // disabled={isUploading}
+            disabled={isUploading}
             className={clsx(styles.SendButton, 'Gradient', {
-              // [styles.Loading]: isUploading,
+              [styles.Loading]: isUploading,
             })}
           >
-            {/* {isUploading ? (
+            {isUploading ? (
               <>
                 <span>Надсилаємо..</span>
                 <LoaderCircle size={14} />
               </>
             ) : (
               'Надіслати на розгляд'
-            )} */}
-            Надіслати на розгляд
+            )}
           </MotionButton>
 
           <MotionButton
-            // onClick={handleClearForm}
+            onClick={handleClearForm}
             focusableWhenDisabled={true}
             className={clsx(styles.ClearButton, 'Gradient', {
-              // [styles.Loading]: isUploading,
+              [styles.Loading]: isUploading,
             })}
           >
             Очистити

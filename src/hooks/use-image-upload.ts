@@ -18,11 +18,14 @@ interface FileState {
 interface ImageUploadConfig {
   width: number
   height: number
+  onKeyChange?: (key: string | null) => void
 }
 
-export function useImageUpload(config: ImageUploadConfig) {
-  const { width, height } = config
-
+export function useImageUpload({
+  width,
+  height,
+  onKeyChange,
+}: ImageUploadConfig) {
   const [fileState, setFileState] = useState<FileState | null>(null)
   const [imageToCrop, setImageToCrop] = useState<File | null>(null)
 
@@ -101,12 +104,13 @@ export function useImageUpload(config: ImageUploadConfig) {
       }
 
       if (!quietCompletion) {
-      showTimedToast(
-        { type: 'success', title: 'Успіх', description: data.message },
-        4000,
-      )
+        showTimedToast(
+          { type: 'success', title: 'Успіх', description: data.message },
+          4000,
+        )
       }
 
+      onKeyChange?.(null)
       setFileState(null)
     } catch (_) {
       showTimedToast(
@@ -198,6 +202,7 @@ export function useImageUpload(config: ImageUploadConfig) {
               },
               3000,
             )
+            onKeyChange?.(key)
             resolve()
           } else {
             reject(new Error(`Помилка завантаження. Статус: ${xhr.status}`))

@@ -87,12 +87,12 @@ const workFormSchema = z.object({
 })
 
 export function useWorkForm() {
-  const cover = useImageUpload({ width: 375, height: 525 })
-  const background = useImageUpload({ width: 1450, height: 540 })
   const [isUploading, startUploadingTransition] = useTransition()
 
   const form = useForm({
     defaultValues: {
+      coverKey: '',
+      backgroundKey: '',
       ukrName: '',
       enName: '',
       alternativeNames: '',
@@ -136,10 +136,34 @@ export function useWorkForm() {
     },
   })
 
+  const cover = useImageUpload({
+    width: 375,
+    height: 525,
+    onKeyChange: (key) => {
+      form.setFieldValue('coverKey', key ?? '')
+      form.validateField('coverKey', 'change')
+    },
+  })
+  const background = useImageUpload({
+    width: 1450,
+    height: 540,
+    onKeyChange: (key) => {
+      form.setFieldValue('backgroundKey', key ?? '')
+    },
+  })
+
+  function handleClearForm() {
+    if (cover.fileState !== null) cover.removeFile({ quietCompletion: true })
+    if (background.fileState !== null)
+      background.removeFile({ quietCompletion: true })
+    form.reset()
+  }
+
   return {
     cover,
     background,
     form,
     isUploading,
+    handleClearForm,
   }
 }
