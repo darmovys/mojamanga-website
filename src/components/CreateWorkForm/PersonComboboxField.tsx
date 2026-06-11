@@ -5,7 +5,7 @@ import MotionButton from '../MotionButton'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import VisuallyHidden from '../VisuallyHidden'
 import ClickTargetHelper from '../ClickTargetHelper'
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api-client'
 import clsx from 'clsx'
 import { Person } from '@/lib/treaty-types'
@@ -26,7 +26,7 @@ export function PersonComboboxField({
   const [searchValue, setSearchValue] = useState('')
   const [debouncedSearchValue, setDebouncedSearchValue] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
+  const [isSearching, setIsSearching] = useState(false)
   const abortControllerRef = useRef<AbortController | null>(null)
   const shouldReduceMotion = useReducedMotion()
   const triggerAnimation = shouldReduceMotion
@@ -43,6 +43,12 @@ export function PersonComboboxField({
       }
 
   useEffect(() => {
+    if (searchValue.length >= 2) {
+      setIsSearching(true)
+    } else {
+      setIsSearching(false)
+    }
+
     const timer = setTimeout(() => {
       setDebouncedSearchValue(searchValue)
     }, debounceMs)
@@ -52,6 +58,7 @@ export function PersonComboboxField({
 
   useEffect(() => {
     if (debouncedSearchValue.length < 2) {
+      setIsSearching(false)
       setError(null)
       return
     }
@@ -59,33 +66,33 @@ export function PersonComboboxField({
     abortControllerRef.current?.abort()
     abortControllerRef.current = controller
 
-    startTransition(async () => {
-      setError(null)
-      const { data: results, error } = await api().people[
-        'people-to-attach'
-      ].get({
+    setError(null)
+
+    api()
+      .people['people-to-attach'].get({
         query: {
           search: debouncedSearchValue,
         },
       })
+      .then(({ data, error }) => {
+        if (controller.signal.aborted) return
 
-      if (controller.signal.aborted) return
+        setIsSearching(false)
 
-      startTransition(() => {
         if (error) {
           setError('Не вдалося отримати персон')
           setSearchResults([])
         } else {
-          setSearchResults(results)
+          setSearchResults(data)
           setError(null)
         }
       })
-    })
+
     return () => controller.abort()
   }, [debouncedSearchValue])
 
   function getStatus() {
-    if (isPending && searchResults.length === 0) {
+    if (isSearching && searchResults.length === 0) {
       return (
         <>
           <LoaderCircle size={22} className={styles.Spinner} />
@@ -98,7 +105,7 @@ export function PersonComboboxField({
       return error
     }
 
-    if (searchValue.length < 2 && !isPending && searchResults.length === 0) {
+    if (searchValue.length < 2 && !isSearching && searchResults.length === 0) {
       return 'Введіть принаймні 2 символи'
     }
 
@@ -112,7 +119,8 @@ export function PersonComboboxField({
       multiple={true}
       items={searchResults}
       filter={null}
-      itemToStringLabel={(person: Person) => person.nameUkr}
+      itemToStringLabel={(item: Person) => item.nameUkr}
+      isItemEqualToValue={(item: Person, value: Person) => item.id === value.id}
       onValueChange={(nextSelectedValues: Person[]) => {
         onChange(nextSelectedValues)
         setSearchValue('')
@@ -183,7 +191,7 @@ export function PersonComboboxField({
               </Combobox.Status>
               <Combobox.Empty className={styles.Empty}>
                 {searchValue.length >= 2 &&
-                  !isPending &&
+                  !isSearching &&
                   searchResults.length === 0 &&
                   !error &&
                   'Нічого не знайдено'}
@@ -191,7 +199,7 @@ export function PersonComboboxField({
               <Combobox.List
                 render={<ScrollArea.Viewport />}
                 className={clsx(styles.List, {
-                  [styles.Loading]: isPending && searchResults.length > 0,
+                  [styles.Loading]: isSearching && searchResults.length > 0,
                 })}
               >
                 {(person: Person) => (

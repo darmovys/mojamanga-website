@@ -46,7 +46,8 @@ export function GenreComboboxField({
       value={value}
       onValueChange={onChange}
       onOpenChange={setIsOpen}
-      itemToStringLabel={(genre: Genre) => genre.name}
+      itemToStringLabel={(item: Genre) => item.name}
+      isItemEqualToValue={(item: Genre, value: Genre) => item.id === value.id}
     >
       <div className={styles.Wrapper}>
         <Combobox.Chips className={styles.ChipGroup}>

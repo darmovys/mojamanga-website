@@ -43,7 +43,8 @@ export function TagComboboxField({ value, onChange }: TagsComboboxFieldProps) {
       value={value}
       onValueChange={onChange}
       onOpenChange={setIsOpen}
-      itemToStringLabel={(tag: Tag) => tag.name}
+      itemToStringLabel={(item: Tag) => item.name}
+      isItemEqualToValue={(item: Tag, value: Tag) => item.id === value.id}
     >
       <div className={styles.Wrapper}>
         <Combobox.Chips className={styles.ChipGroup}>
