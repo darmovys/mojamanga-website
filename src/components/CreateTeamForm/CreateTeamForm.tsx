@@ -169,7 +169,7 @@ function CreateTeamForm() {
                             disabled={
                               avatar.fileState.isDeleting || isUploading
                             }
-                            onClick={avatar.removeFile}
+                            onClick={() => avatar.removeFile()}
                             className={styles.TrashButton}
                           >
                             <ClickTargetHelper />
@@ -285,7 +285,7 @@ function CreateTeamForm() {
                             disabled={
                               background.fileState.isDeleting || isUploading
                             }
-                            onClick={background.removeFile}
+                            onClick={() => background.removeFile()}
                           >
                             <ClickTargetHelper />
                             {background.fileState.isDeleting ? (

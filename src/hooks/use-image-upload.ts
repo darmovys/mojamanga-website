@@ -57,7 +57,9 @@ export function useImageUpload(config: ImageUploadConfig) {
     setFileState(null)
   }
 
-  async function removeFile() {
+  async function removeFile({
+    quietCompletion = false,
+  }: { quietCompletion?: boolean } = {}) {
     if (!fileState) return
 
     if (!fileState.key) {
@@ -98,10 +100,12 @@ export function useImageUpload(config: ImageUploadConfig) {
         return
       }
 
+      if (!quietCompletion) {
       showTimedToast(
         { type: 'success', title: 'Успіх', description: data.message },
         4000,
       )
+      }
 
       setFileState(null)
     } catch (_) {

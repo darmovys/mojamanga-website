@@ -138,8 +138,9 @@ export function useTeamForm() {
   })
 
   function handleClearForm() {
-    if (avatar.fileState !== null) avatar.removeFile()
-    if (background.fileState !== null) background.removeFile()
+    if (avatar.fileState !== null) avatar.removeFile({ quietCompletion: true })
+    if (background.fileState !== null)
+      background.removeFile({ quietCompletion: true })
 
     form.reset()
 

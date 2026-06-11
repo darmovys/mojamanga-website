@@ -87,7 +87,7 @@ export function usePersonForm() {
   })
 
   function handleClearForm() {
-    if (cover.fileState !== null) cover.removeFile()
+    if (cover.fileState !== null) cover.removeFile({ quietCompletion: true })
     form.reset()
   }
 

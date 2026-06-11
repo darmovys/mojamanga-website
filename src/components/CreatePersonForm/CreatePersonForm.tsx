@@ -143,7 +143,7 @@ function CreatePersonForm() {
                         <MotionButton
                           focusableWhenDisabled={true}
                           disabled={cover.fileState.isDeleting || isUploading}
-                          onClick={cover.removeFile}
+                          onClick={() => cover.removeFile()}
                           className={styles.TrashButton}
                         >
                           <ClickTargetHelper />
