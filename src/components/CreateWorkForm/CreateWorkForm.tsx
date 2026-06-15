@@ -14,11 +14,12 @@ import { showTimedToast } from '@/lib/toast'
 import { SelectField } from './SelectField'
 import ShiftBy from '../ShiftBy/ShiftBy'
 import { PersonComboboxField } from './PersonComboboxField'
-import { Link } from '@tanstack/react-router'
+import { getRouteApi, Link } from '@tanstack/react-router'
 import { UserTeamsCheckboxList } from './UserTeamsCheckboxList'
 import {
   ArrowLeft,
   CircleAlert,
+  Info,
   LoaderCircle,
   Trash2,
   UploadCloud,
@@ -38,13 +39,21 @@ import {
 import { TagComboboxField } from './TagComboboxField'
 import { GenreComboboxField } from './GenreComboboxField'
 import styles from './CreateWorkForm.module.scss'
+import { useHelperDialog } from '@/hooks/use-helper-dialog'
+import HelperDialog from '../HelperDialog'
 
 const MAX_DESCRIPTION_LENGTH = 1000
+
+const routeApi = getRouteApi('/work/create/')
 
 function CreateWorkForm() {
   const { handleGoBack } = useGoBack()
   const { form, cover, background, isUploading, handleClearForm } =
     useWorkForm()
+  const loaderData = routeApi.useLoaderData()
+
+  const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
+    useHelperDialog('seen_create_work_rules', loaderData)
 
   return (
     <div className={styles.MaxWidthWrapper}>
@@ -55,7 +64,7 @@ function CreateWorkForm() {
           <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
         </Button>
         <h1 className={styles.GoBackHeading}>Створення твору</h1>
-        {/* <HelperDialog
+        <HelperDialog
           title={title}
           content={content}
           mdast={mdast}
@@ -68,13 +77,13 @@ function CreateWorkForm() {
               <VisuallyHidden>Довідка</VisuallyHidden>
             </Button>
           )}
-        /> */}
+        />
       </div>
       <div className={styles.Wrapper}>
         <div className={styles.Content}>
           <div className={styles.ContentHeaderWrapper}>
             <h1 className={styles.ContentTitle}>Створення твору</h1>
-            {/* <HelperDialog
+            <HelperDialog
               title={title}
               content={content}
               mdast={mdast}
@@ -86,7 +95,7 @@ function CreateWorkForm() {
                   <span>Довідка</span>
                 </Button>
               )}
-            /> */}
+            />
           </div>
           <form
             className={styles.Form}
