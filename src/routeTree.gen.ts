@@ -26,6 +26,7 @@ import { Route as TeamCreateIndexRouteImport } from './routes/team/create/index'
 import { Route as PeopleCreateIndexRouteImport } from './routes/people/create/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
+import { Route as ModerationWorkReviewWorkIdRouteImport } from './routes/moderation/work-review/$workId'
 import { Route as ModerationTeamReviewTeamIdRouteImport } from './routes/moderation/team-review/$teamId'
 import { Route as ModerationPersonReviewPersonIdRouteImport } from './routes/moderation/person-review/$personId'
 
@@ -113,6 +114,12 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const ModerationWorkReviewWorkIdRoute =
+  ModerationWorkReviewWorkIdRouteImport.update({
+    id: '/work-review/$workId',
+    path: '/work-review/$workId',
+    getParentRoute: () => ModerationRouteRoute,
+  } as any)
 const ModerationTeamReviewTeamIdRoute =
   ModerationTeamReviewTeamIdRouteImport.update({
     id: '/team-review/$teamId',
@@ -140,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/title/': typeof TitleIndexRoute
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
+  '/moderation/work-review/$workId': typeof ModerationWorkReviewWorkIdRoute
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
   '/people/create/': typeof PeopleCreateIndexRoute
@@ -159,6 +167,7 @@ export interface FileRoutesByTo {
   '/title': typeof TitleIndexRoute
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
+  '/moderation/work-review/$workId': typeof ModerationWorkReviewWorkIdRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
   '/people/create': typeof PeopleCreateIndexRoute
@@ -181,6 +190,7 @@ export interface FileRoutesById {
   '/title/': typeof TitleIndexRoute
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
+  '/moderation/work-review/$workId': typeof ModerationWorkReviewWorkIdRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
   '/people/create/': typeof PeopleCreateIndexRoute
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
     | '/title/'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
+    | '/moderation/work-review/$workId'
     | '/login/'
     | '/signup/'
     | '/people/create/'
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
     | '/title'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
+    | '/moderation/work-review/$workId'
     | '/login'
     | '/signup'
     | '/people/create'
@@ -243,6 +255,7 @@ export interface FileRouteTypes {
     | '/title/'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
+    | '/moderation/work-review/$workId'
     | '/_auth/login/'
     | '/_auth/signup/'
     | '/people/create/'
@@ -388,6 +401,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/moderation/work-review/$workId': {
+      id: '/moderation/work-review/$workId'
+      path: '/work-review/$workId'
+      fullPath: '/moderation/work-review/$workId'
+      preLoaderRoute: typeof ModerationWorkReviewWorkIdRouteImport
+      parentRoute: typeof ModerationRouteRoute
+    }
     '/moderation/team-review/$teamId': {
       id: '/moderation/team-review/$teamId'
       path: '/team-review/$teamId'
@@ -423,12 +443,14 @@ interface ModerationRouteRouteChildren {
   ModerationIndexRoute: typeof ModerationIndexRoute
   ModerationPersonReviewPersonIdRoute: typeof ModerationPersonReviewPersonIdRoute
   ModerationTeamReviewTeamIdRoute: typeof ModerationTeamReviewTeamIdRoute
+  ModerationWorkReviewWorkIdRoute: typeof ModerationWorkReviewWorkIdRoute
 }
 
 const ModerationRouteRouteChildren: ModerationRouteRouteChildren = {
   ModerationIndexRoute: ModerationIndexRoute,
   ModerationPersonReviewPersonIdRoute: ModerationPersonReviewPersonIdRoute,
   ModerationTeamReviewTeamIdRoute: ModerationTeamReviewTeamIdRoute,
+  ModerationWorkReviewWorkIdRoute: ModerationWorkReviewWorkIdRoute,
 }
 
 const ModerationRouteRouteWithChildren = ModerationRouteRoute._addFileChildren(

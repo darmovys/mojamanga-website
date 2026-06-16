@@ -126,7 +126,24 @@ export const genresQueries = {
     }),
 }
 
+export type PendingTitle = NonNullable<
+  Awaited<ReturnType<typeof fetchPendingTitles>>
+>['titles'][number]
+
+const fetchPendingTitles = async (page: number) => {
+  const response = await api().titles['get-pending-titles'].get({
+    query: { page },
+  })
+  if (response.error) throw response.error
+  return response.data
+}
+
 export const titlesQueries = {
   all: ['titles'] as const,
-  lists: () => [...genresQueries.all, 'lists'] as const,
+  lists: () => [...titlesQueries.all, 'lists'] as const,
+  pendingTitles: (page: number) =>
+    queryOptions({
+      queryKey: [...titlesQueries.lists(), 'pending', page] as const,
+      queryFn: () => fetchPendingTitles(page),
+    }),
 }
