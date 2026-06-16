@@ -214,9 +214,7 @@ export const teamsRouter = new Elysia({
         '/team-creation-request/:id',
         async ({ params: { id }, status }) => {
           const teamData = await prisma.team.findFirst({
-            where: {
-              AND: { id, status: 'PENDING' },
-            },
+            where: { id, status: 'PENDING' },
             include: {
               creator: { select: { image: true, displayUsername: true } },
               links: true,
@@ -228,6 +226,7 @@ export const teamsRouter = new Elysia({
           return teamData
         },
         {
+          moderator: true,
           params: z.object({
             id: z.string(),
           }),

@@ -203,6 +203,7 @@ export const peopleRouter = new Elysia({
           return personData
         },
         {
+          moderator: true,
           params: z.object({
             id: z.string(),
           }),
