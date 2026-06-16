@@ -100,7 +100,7 @@ function PersonRequestCard({ person }: { person: PendingPerson }) {
 export function PeopleRequestsSkeleton() {
   return (
     <div className={styles.ListContainer}>
-      <h2 className={styles.ListHeading}>Заявки на додавання персон (?)</h2>
+      <h2 className={styles.ListHeading}>Запити на додавання персон (?)</h2>
       <div className={styles.List} style={{ alignSelf: 'stretch' }}>
         {range(10).map((el) => (
           <Skeleton key={el} height="135px" width="100%" borderRadius="12px" />
