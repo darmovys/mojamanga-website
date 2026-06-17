@@ -307,4 +307,68 @@ export const titlesRouter = new Elysia({
           moderator: true,
         },
       )
+      .get(
+        '/work-adding-request/:id',
+        async ({ params: { id }, status }) => {
+          const workRawData = await prisma.work.findFirst({
+            where: {
+              AND: [
+                { id, approvalStatus: 'PENDING' },
+                { currentVersion: { isNot: null } },
+              ],
+            },
+            include: {
+              proposedByUser: {
+                select: { image: true, displayUsername: true },
+              },
+              currentVersion: {
+                select: {
+                  coverImage: true,
+                  backgroundImage: true,
+                  nameUkr: true,
+                  nameEng: true,
+                  alternativeNames: { select: { id: true, name: true } },
+                  description: true,
+                  type: true,
+                  workStatus: true,
+                  translationStatus: true,
+                  ageRestriction: true,
+                  releaseYear: true,
+                  genres: { select: { id: true, name: true } },
+                  tags: { select: { id: true, name: true } },
+                  people: {
+                    select: {
+                      personId: true,
+                      role: true,
+                      person: { select: { nameUkr: true } },
+                    },
+                  },
+                },
+              },
+              publishers: {
+                select: { team: { select: { id: true, name: true } } },
+              },
+            },
+          })
+
+          if (!workRawData) {
+            return status(404, 'Такої заявки не знайдено')
+          }
+
+          const workData = workRawData as Omit<
+            typeof workRawData,
+            'currentVersion'
+          > & {
+            currentVersion: NonNullable<typeof workRawData.currentVersion>
+          }
+
+          return workData
+        },
+        {
+          moderator: true,
+          params: z.object({
+            id: z.string(),
+          }),
+        },
+      )
   })

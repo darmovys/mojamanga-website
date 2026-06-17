@@ -146,4 +146,22 @@ export const titlesQueries = {
       queryKey: [...titlesQueries.lists(), 'pending', page] as const,
       queryFn: () => fetchPendingTitles(page),
     }),
+  getWorkAddingRequest: (id: string) =>
+    queryOptions({
+      queryKey: [...worksQueries.all, id] as const,
+      queryFn: async () => {
+        const response = await api()
+          .works['work-adding-request']({ id: id })
+          .get()
+        const { error } = response
+        if (error) {
+          if (error.status === 404) {
+            throw notFound()
+          } else {
+            throw error
+          }
+        }
+        return response.data
+      },
+    }),
 }

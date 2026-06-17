@@ -1,0 +1,536 @@
+@use '../../styles/breakpoints' as *;
+
+.MaxWidthWrapper {
+  min-block-size: 100dvh;
+  max-inline-size: var(--960px);
+  margin-inline: auto;
+  inline-size: 100%;
+  display: flex;
+  flex-direction: column;
+
+  @include up('tablet') {
+    padding-inline: var(--24px);
+  }
+
+  @include up('laptop') {
+    padding-inline: var(--16px);
+  }
+}
+
+.GoBackHeader {
+  position: sticky;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  inset-inline-start: 0;
+  z-index: 10;
+  color: var(--sys-on-surface);
+  background-color: oklch(from var(--sys-surface) l c h / 0.8);
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  padding: var(--14px) var(--8px);
+  backdrop-filter: blur(5px);
+  box-shadow: var(--shadow-border);
+
+  @include up('tablet') {
+    display: none;
+  }
+}
+
+.GoBackHeading {
+  font-size: var(--16px);
+  font-weight: 460;
+}
+
+.GoBackHeaderButton {
+  block-size: var(--32px);
+  inline-size: var(--32px);
+  border-radius: 100vmax;
+  outline-offset: 2px;
+  position: relative; // for click target helper
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
+
+.InfoButton {
+  composes: GoBackHeaderButton;
+  margin-inline-start: auto;
+}
+
+.Content {
+  --card-spacing: var(--16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-spacing);
+  padding-inline: var(--16px);
+
+  @include up('tablet') {
+    padding: revert;
+  }
+}
+
+.Card {
+  font-size: var(--16px);
+  --outer-radius: var(--10px);
+  --padding: var(--16px);
+  background-color: var(--sys-surface-highest);
+  color: var(--sys-on-surface);
+  border-radius: var(--outer-radius);
+  padding: var(--padding);
+
+  &.Creator {
+    --spacing: var(--6px);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+    padding: var(--12px);
+
+    @include up('tablet') {
+      justify-content: center;
+      flex-direction: revert;
+      gap: var(--spacing);
+      padding: var(--padding);
+      border-radius: var(--outer-radius);
+    }
+  }
+
+  &.NavCard {
+    display: none;
+
+    @include up('tablet') {
+      display: flex;
+      align-items: center;
+      gap: var(--6px);
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+      padding: var(--4px) var(--12px) var(--6px);
+    }
+  }
+
+  &.Footer {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+    position: sticky;
+    inset-block-end: 0;
+    box-shadow: var(--shadow-border);
+    outline: 1px solid var(--sys-outline);
+    margin-inline: calc(var(--padding) * -1);
+
+    @include up('tablet') {
+      position: revert;
+      margin-inline: revert;
+    }
+  }
+}
+
+.CardGroup {
+  display: grid;
+  // grid-template-columns: 1fr;
+  grid-template-areas:
+    'cover'
+    'background'
+    'meta'
+    'description'
+    'genres'
+    'tags';
+  gap: var(--card-spacing);
+
+  // 770px
+  @media (min-width: 48.125rem) {
+    grid-template-columns: var(--288px) 1fr;
+    grid-template-areas:
+      'cover background'
+      'cover description'
+      'meta description'
+      'meta genres'
+      'meta tags';
+  }
+}
+
+.Card.Cover {
+  grid-area: cover;
+  display: flex;
+  justify-content: center;
+}
+
+.Card.Background {
+  grid-area: background;
+}
+
+.Card.Meta {
+  grid-area: meta;
+}
+
+.Card.Description {
+  grid-area: description;
+}
+
+.Card.Genres {
+  grid-area: genres;
+}
+
+.Card.Tags {
+  grid-area: tags;
+}
+
+.CardTitle {
+  font-weight: 550;
+  margin-block-end: var(--6px);
+  font-size: inherit;
+}
+
+.ImageWrapper {
+  border-radius: calc(var(--padding) - var(--outer-radius));
+  overflow: hidden; // Щоб обрізати кути зображення
+  position: relative; // Для того, щоб текст зображення розмістивсь поверх ноьго
+
+  .Cover & {
+    flex: 0 1 calc(var(--220px) + var(--20px));
+    // 770px
+    @media (min-width: 48.125rem) {
+      flex: 1;
+    }
+  }
+}
+
+.Image {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.ImageHeading {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  padding: var(--4px) var(--12px);
+  color: var(--tone-13);
+  background-color: oklch(0% 0 0 / 0.3);
+  border-end-end-radius: calc(var(--padding) - var(--outer-radius));
+  font-size: inherit;
+  font-weight: 600;
+}
+
+.NoImage {
+  background-color: var(--sys-surface-low);
+  box-shadow: var(--inset-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--4px);
+
+  color: var(--sys-on-surface-variant);
+}
+
+.TextField {
+  border-radius: var(--4px);
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.MetaTitle {
+  composes: CardTitle;
+  margin-block-end: var(--2px);
+}
+
+.MetaField {
+  composes: TextField;
+  font-size: var(--14px);
+}
+
+.AltNamesGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--4px);
+}
+
+.AltName {
+  display: flex;
+  align-items: center;
+  gap: var(--4px);
+}
+
+.CopyButton {
+  &:focus-visible {
+    border-radius: var(--2px);
+    outline: 2px solid var(--blue-400);
+    outline-offset: 2px;
+  }
+}
+
+.LinksGroup {
+  --border-radius: var(--6px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--6px);
+}
+
+.ChipLink {
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s var(--bg-animation);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--sys-on-button);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+  }
+}
+
+.Chip {
+  display: flex;
+  align-items: center;
+  gap: var(--6px);
+  padding: var(--4px) var(--10px);
+  border-radius: var(--border-radius);
+  background-color: transparent;
+  box-shadow: var(--shadow-border);
+  font-size: inherit;
+  block-size: var(--28px);
+  white-space: nowrap;
+}
+
+.IconWrapper {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  block-size: 100%;
+  inline-size: var(--45px);
+  background-color: var(--tone);
+  border-radius: 4px 0 0 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  svg {
+    inline-size: var(--28px);
+    block-size: var(--28px);
+  }
+}
+
+.Actions {
+  display: flex;
+  gap: var(--6px);
+  flex-wrap: wrap;
+}
+
+.ButtonBase {
+  padding: var(--4px) var(--10px);
+  border-radius: var(--8px);
+  flex: 1 0 var(--140px);
+  text-align: center;
+
+  svg {
+    margin-block-start: 3px;
+    animation: spin 1000ms linear infinite;
+  }
+
+  &::before {
+    border-radius: var(--8px) !important;
+  }
+
+  &.Pending {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.ApproveButton {
+  composes: ButtonBase;
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+  padding-inline: 0;
+  gap: var(--4px);
+}
+
+.RejectButton {
+  composes: ButtonBase;
+  color: var(--sys-primary);
+  outline: 2px solid var(--sys-primary);
+  outline-offset: -2px;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-8);
+      outline: none;
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.HardRejectButton {
+  composes: ButtonBase;
+  color: var(--danger);
+  background-color: var(--danger-background);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--danger-background-active);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+  }
+}
+
+.UserInfo {
+  display: flex;
+  gap: var(--spacing);
+  align-items: center;
+}
+
+.MetaInfo {
+  display: flex;
+  gap: var(--spacing);
+  align-items: center;
+}
+
+.CreatorLink {
+  display: flex;
+  gap: var(--4px);
+  align-items: center;
+  box-shadow: var(--shadow-border);
+  padding: var(--2px) var(--6px);
+  border-radius: var(--6px);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s var(--bg-animation);
+  outline: none;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--sys-on-button);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+  }
+}
+
+.UserImage {
+  block-size: var(--20px);
+  inline-size: var(--20px);
+  border-radius: 100vmax;
+}
+
+.Dot {
+  display: none;
+
+  @include up('tablet') {
+    display: revert;
+    font-size: var(--20px);
+  }
+}
+
+.Breadcrumbs {
+  display: flex;
+  color: var(--sys-on-surface-variant);
+  list-style-type: none;
+  padding-inline-start: 0;
+}
+
+.Crumb {
+  border-radius: var(--2px);
+
+  &:not(:first-of-type) {
+    &::before {
+      display: inline-block;
+      margin-inline: var(--8px);
+      transform: rotate(15deg) translateY(2px);
+      border-inline-end: 2px solid currentcolor;
+      block-size: 60%;
+      content: '';
+    }
+  }
+
+  &.Current {
+    font-weight: 600;
+  }
+}
+
+.Link {
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+  transition:
+    box-shadow 0.2s,
+    color 0.2s;
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--blue-400);
+      box-shadow: 0 1.5px 0 var(--blue-400);
+    }
+  }
+
+  &:focus-visible {
+    border-radius: var(--2px);
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+  }
+}
+
+.HelperButton {
+  margin-inline-start: auto;
+  padding: var(--4px) var(--6px);
+  gap: var(--4px);
+  font-size: var(--14px);
+  border-radius: var(--6px);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    background-color: var(--state-on-surface-opacity-variant-2);
+    outline: none;
+  }
+}
+
+.CreatorPlaceholder {
+  display: flex;
+  align-items: center;
+  gap: var(--4px);
+}
+
+.DescriptionLines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--8px);
+}
+
+.LinkSkeleton {
+  margin-block-start: var(--4px);
+}
+
+.Separator {
+  background-color: var(--sys-outline);
+  block-size: 1px;
+  margin-block: var(--8px);
+  // margin-inline-start: var(--10px);
+  // margin-inline-end: var(--14px);
+}
