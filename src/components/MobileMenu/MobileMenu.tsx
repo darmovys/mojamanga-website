@@ -35,7 +35,7 @@ import {
   addContentLinks,
   catalogLinks,
   otherLinks,
-  workTypeLinks,
+  titleTypeLinks,
 } from '@/lib/navigation-links'
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { authQueries } from '@/services/queries'
@@ -387,7 +387,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                   >
                                     <ArrowLeft size={18} />
                                   </Button>
-                                  {workTypeLinks.map((item) => (
+                                  {titleTypeLinks.map((item) => (
                                     <Link
                                       key={item.title}
                                       to={item.to}

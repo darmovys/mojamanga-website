@@ -1,21 +1,21 @@
 import {
   AgeRestriction,
   TranslationStatus,
-  WorkStatus,
-  WorkType,
+  TitleStatus,
+  TitleType,
 } from '@/generated/prisma/enums'
 import { useImageUpload } from '@/hooks/use-image-upload'
 import { api } from '@/lib/api-client'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { Genre, Person, Tag, Team } from '@/lib/treaty-types'
-import { addWorkSchema } from '@/schemas/works'
-import { worksQueries } from '@/services/queries'
+import { addTitleSchema } from '@/schemas/titles'
+import { titlesQueries } from '@/services/queries'
 import { useForm } from '@tanstack/react-form-start'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useTransition } from 'react'
 
-export function useWorkForm() {
+export function useTitleForm() {
   const [isUploading, startUploadingTransition] = useTransition()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -28,8 +28,8 @@ export function useWorkForm() {
       enName: '',
       alternativeNames: '',
       description: '',
-      type: null as WorkType | null,
-      workStatus: null as WorkStatus | null,
+      type: null as TitleType | null,
+      titleStatus: null as TitleStatus | null,
       translationStatus: null as TranslationStatus | null,
       ageRestriction: null as AgeRestriction | null,
       releaseYear: '',
@@ -40,7 +40,7 @@ export function useWorkForm() {
       teams: [] as Team[],
     },
     onSubmit: async ({ value: formValues }) => {
-      const parsedResult = addWorkSchema.safeParse(formValues)
+      const parsedResult = addTitleSchema.safeParse(formValues)
 
       if (!parsedResult.success) {
         showTimedToast({
@@ -52,7 +52,7 @@ export function useWorkForm() {
       }
 
       startUploadingTransition(async () => {
-        const { error, data } = await api().works['add-work'].post(
+        const { error, data } = await api().titles['add-new-title'].post(
           parsedResult.data,
         )
         if (error) {
@@ -88,7 +88,7 @@ export function useWorkForm() {
           }
           return
         }
-        await queryClient.invalidateQueries({ queryKey: worksQueries.all })
+        await queryClient.invalidateQueries({ queryKey: titlesQueries.all })
         navigate({ to: '/' })
         showTimedToast(
           {

@@ -1,8 +1,8 @@
 import z from 'zod'
 
 export const moderationMenuTypes = [
-  'works',
-  'suggestions',
+  'titles',
+  'titles-proposals',
   'chapters',
   'teams',
   'people',
@@ -11,7 +11,7 @@ export const moderationMenuTypes = [
 ] as const
 
 export const moderationMenuSchema = z.object({
-  type: z.enum(moderationMenuTypes).catch('teams'),
+  type: z.enum(moderationMenuTypes).catch('titles'),
 
   page: z.coerce
     .number()

@@ -4,22 +4,22 @@ import { prisma } from '@/db'
 import { createId } from '@paralleldrive/cuid2'
 import { moveS3File } from '@/lib/utils'
 import { S3 } from '@/lib/s3-client'
-import { addWorkSchema } from '@/schemas/works'
+import { addTitleSchema } from '@/schemas/titles'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 
-export const worksRouter = new Elysia({
-  name: 'works-router',
-  tags: ['Works'],
+export const titlesRouter = new Elysia({
+  name: 'titles-router',
+  tags: ['Titles'],
 })
   .use(betterAuthPlugin)
-  .group('/works', (app) => {
+  .group('/titles', (app) => {
     return app.post(
-      '/add-work',
+      '/add-new-title',
       async ({ body, status, user }) => {
         // Отримуємо інформацію про авторизованого користувача, та про твори, що він додав
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
-          include: { workAddings: true },
+          include: { titleAddings: true },
         })
 
         // Виходимо в разі, якщо з якоїсь причини користувача не знайдено
@@ -36,15 +36,19 @@ export const worksRouter = new Elysia({
           Перевіряємо чи цей користувач вже не надсилав запит 
           на додавання роботи, який ще не був пеервірений модерацією 
         */
-        const userWorkAddings = dbUser.workAddings
-        if (userWorkAddings.some((work) => work.approvalStatus === 'PENDING'))
+        const userTitleAddings = dbUser.titleAddings
+        if (
+          userTitleAddings.some((title) => title.approvalStatus === 'PENDING')
+        )
           return status(
             403,
             'У вас вже є запит на перевірці. Дочекайтеся його результату',
           )
 
         // Перевіряємо чи цей користувач не має відхиленого запиту на доопрацювання
-        if (userWorkAddings.some((work) => work.approvalStatus === 'REJECTED'))
+        if (
+          userTitleAddings.some((title) => title.approvalStatus === 'REJECTED')
+        )
           return status(
             403,
             'У вас є відхилені запити. Переробіть їх, або скасуйте повністю на сторінці профілю',
@@ -77,14 +81,14 @@ export const worksRouter = new Elysia({
           : []
 
         // Створюємо ідентифікатор твору, що зберігатиметься в БД
-        const workId = createId()
+        const titleId = createId()
 
         // Створюємо папку для збереження зображень твору
-        const worksFolder = `uploads/works/${body.enName}-${workId}`
+        const titlesFolder = `uploads/titles/${body.enName}-${titleId}`
 
         // Створюємо новий ключ для обкладинки твору
         const coverFileName = body.coverKey.split('/').pop()
-        const newCoverKey = `${worksFolder}/cover/${coverFileName}`
+        const newCoverKey = `${titlesFolder}/cover/${coverFileName}`
 
         // Переносимо зображення з тимчасової папки у папку твору
         const isCoverMoved = await moveS3File(body.coverKey, newCoverKey)
@@ -97,7 +101,7 @@ export const worksRouter = new Elysia({
         if (body.backgroundKey) {
           // Створюємо новий ключ для фонового зображення твору
           const bgFileName = body.backgroundKey.split('/').pop()
-          newBackgroundKey = `${worksFolder}/background/${bgFileName}`
+          newBackgroundKey = `${titlesFolder}/background/${bgFileName}`
 
           // Переносимо зображення з тимчасової папки у папку твору
           const isBgMoved = await moveS3File(
@@ -110,26 +114,26 @@ export const worksRouter = new Elysia({
         }
 
         try {
-          const workVersionId = createId()
+          const titleVersionId = createId()
 
-          await prisma.work.create({
+          await prisma.title.create({
             data: {
-              id: workId,
+              id: titleId,
               proposedByUserId: user.id,
 
               versions: {
                 create: {
-                  id: workVersionId,
+                  id: titleVersionId,
                   editorId: user.id,
                   nameUkr: body.ukrName,
                   nameEng: body.enName,
                   description: body.description || null,
-                  coverImage: newCoverKey,
-                  backgroundImage: newBackgroundKey,
+                  coverUrl: newCoverKey,
+                  backgroundUrl: newBackgroundKey,
                   releaseYear: parseInt(body.releaseYear),
                   type: body.type,
                   ageRestriction: body.ageRestriction,
-                  workStatus: body.workStatus,
+                  titleStatus: body.titleStatus,
                   translationStatus: body.translationStatus,
 
                   alternativeNames: {
@@ -137,11 +141,11 @@ export const worksRouter = new Elysia({
                   },
 
                   genres: {
-                    connect: body.genres.map((g) => ({ id: g.id })),
+                    create: body.genres.map((g) => ({ genreId: g.id })),
                   },
 
                   tags: {
-                    connect: body.tags.map((t) => ({ id: t.id })),
+                    create: body.tags.map((t) => ({ tagId: t.id })),
                   },
 
                   people: {
@@ -169,9 +173,9 @@ export const worksRouter = new Elysia({
             },
           })
 
-          await prisma.work.update({
-            where: { id: workId },
-            data: { currentVersionId: workVersionId },
+          await prisma.title.update({
+            where: { id: titleId },
+            data: { currentVersionId: titleVersionId },
           })
 
           return {
@@ -206,7 +210,7 @@ export const worksRouter = new Elysia({
       },
       {
         authed: true,
-        body: addWorkSchema,
+        body: addTitleSchema,
       },
     )
   })

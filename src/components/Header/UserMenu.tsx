@@ -87,7 +87,7 @@ export function UserMenu({ user }: UserMenuProps) {
                 if (user.role === 'ADMIN' || user.role === 'MODERATOR') {
                   return (
                     <Menu.Item
-                      render={<Link to={link.to} />}
+                      render={<Link to={link.to} search={link.search} />}
                       key={link.title}
                       className={styles.UserMenuItem}
                     >

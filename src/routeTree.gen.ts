@@ -17,11 +17,11 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as ModerationRouteRouteImport } from './routes/moderation/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as WorkIndexRouteImport } from './routes/work/index'
+import { Route as TitleIndexRouteImport } from './routes/title/index'
 import { Route as TeamIndexRouteImport } from './routes/team/index'
 import { Route as ModerationIndexRouteImport } from './routes/moderation/index'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
-import { Route as WorkCreateIndexRouteImport } from './routes/work/create/index'
+import { Route as TitleCreateIndexRouteImport } from './routes/title/create/index'
 import { Route as TeamCreateIndexRouteImport } from './routes/team/create/index'
 import { Route as PeopleCreateIndexRouteImport } from './routes/people/create/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
@@ -68,9 +68,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorkIndexRoute = WorkIndexRouteImport.update({
-  id: '/work/',
-  path: '/work/',
+const TitleIndexRoute = TitleIndexRouteImport.update({
+  id: '/title/',
+  path: '/title/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamIndexRoute = TeamIndexRouteImport.update({
@@ -88,9 +88,9 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
   path: '/api/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorkCreateIndexRoute = WorkCreateIndexRouteImport.update({
-  id: '/work/create/',
-  path: '/work/create/',
+const TitleCreateIndexRoute = TitleCreateIndexRouteImport.update({
+  id: '/title/create/',
+  path: '/title/create/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamCreateIndexRoute = TeamCreateIndexRouteImport.update({
@@ -137,14 +137,14 @@ export interface FileRoutesByFullPath {
   '/api/$': typeof ApiSplatRoute
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
-  '/work/': typeof WorkIndexRoute
+  '/title/': typeof TitleIndexRoute
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
   '/people/create/': typeof PeopleCreateIndexRoute
   '/team/create/': typeof TeamCreateIndexRoute
-  '/work/create/': typeof WorkCreateIndexRoute
+  '/title/create/': typeof TitleCreateIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -156,14 +156,14 @@ export interface FileRoutesByTo {
   '/api/$': typeof ApiSplatRoute
   '/moderation': typeof ModerationIndexRoute
   '/team': typeof TeamIndexRoute
-  '/work': typeof WorkIndexRoute
+  '/title': typeof TitleIndexRoute
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
   '/people/create': typeof PeopleCreateIndexRoute
   '/team/create': typeof TeamCreateIndexRoute
-  '/work/create': typeof WorkCreateIndexRoute
+  '/title/create': typeof TitleCreateIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -178,14 +178,14 @@ export interface FileRoutesById {
   '/api/$': typeof ApiSplatRoute
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
-  '/work/': typeof WorkIndexRoute
+  '/title/': typeof TitleIndexRoute
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
   '/people/create/': typeof PeopleCreateIndexRoute
   '/team/create/': typeof TeamCreateIndexRoute
-  '/work/create/': typeof WorkCreateIndexRoute
+  '/title/create/': typeof TitleCreateIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -200,14 +200,14 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/moderation/'
     | '/team/'
-    | '/work/'
+    | '/title/'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/login/'
     | '/signup/'
     | '/people/create/'
     | '/team/create/'
-    | '/work/create/'
+    | '/title/create/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -219,14 +219,14 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/moderation'
     | '/team'
-    | '/work'
+    | '/title'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/login'
     | '/signup'
     | '/people/create'
     | '/team/create'
-    | '/work/create'
+    | '/title/create'
   id:
     | '__root__'
     | '/'
@@ -240,14 +240,14 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/moderation/'
     | '/team/'
-    | '/work/'
+    | '/title/'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/_auth/login/'
     | '/_auth/signup/'
     | '/people/create/'
     | '/team/create/'
-    | '/work/create/'
+    | '/title/create/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -261,10 +261,10 @@ export interface RootRouteChildren {
   NotificationsRoute: typeof NotificationsRoute
   ApiSplatRoute: typeof ApiSplatRoute
   TeamIndexRoute: typeof TeamIndexRoute
-  WorkIndexRoute: typeof WorkIndexRoute
+  TitleIndexRoute: typeof TitleIndexRoute
   PeopleCreateIndexRoute: typeof PeopleCreateIndexRoute
   TeamCreateIndexRoute: typeof TeamCreateIndexRoute
-  WorkCreateIndexRoute: typeof WorkCreateIndexRoute
+  TitleCreateIndexRoute: typeof TitleCreateIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -325,11 +325,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/work/': {
-      id: '/work/'
-      path: '/work'
-      fullPath: '/work/'
-      preLoaderRoute: typeof WorkIndexRouteImport
+    '/title/': {
+      id: '/title/'
+      path: '/title'
+      fullPath: '/title/'
+      preLoaderRoute: typeof TitleIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/team/': {
@@ -353,11 +353,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/work/create/': {
-      id: '/work/create/'
-      path: '/work/create'
-      fullPath: '/work/create/'
-      preLoaderRoute: typeof WorkCreateIndexRouteImport
+    '/title/create/': {
+      id: '/title/create/'
+      path: '/title/create'
+      fullPath: '/title/create/'
+      preLoaderRoute: typeof TitleCreateIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/team/create/': {
@@ -446,10 +446,10 @@ const rootRouteChildren: RootRouteChildren = {
   NotificationsRoute: NotificationsRoute,
   ApiSplatRoute: ApiSplatRoute,
   TeamIndexRoute: TeamIndexRoute,
-  WorkIndexRoute: WorkIndexRoute,
+  TitleIndexRoute: TitleIndexRoute,
   PeopleCreateIndexRoute: PeopleCreateIndexRoute,
   TeamCreateIndexRoute: TeamCreateIndexRoute,
-  WorkCreateIndexRoute: WorkCreateIndexRoute,
+  TitleCreateIndexRoute: TitleCreateIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

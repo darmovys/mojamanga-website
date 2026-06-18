@@ -1,8 +1,8 @@
 import {
   AgeRestriction,
   TranslationStatus,
-  WorkStatus,
-  WorkType,
+  TitleStatus,
+  TitleType,
 } from '@/generated/prisma/enums'
 import { z } from 'zod'
 
@@ -60,7 +60,7 @@ const zodGenreArray = zodObjectArray<GenreShape>(
   'Масив не відповідає типу Genre',
 )
 
-export const addWorkSchema = z.object({
+export const addTitleSchema = z.object({
   coverKey: z
     .string({ error: 'Прикріпіть обкладинку твору' })
     .min(1, { error: 'Прикріпіть обкладинку твору' }),
@@ -74,11 +74,11 @@ export const addWorkSchema = z.object({
     }),
   description: z.string().trim().max(1000, { error: 'Задовгий опис' }),
   type: z
-    .enum(WorkType, { error: 'Оберіть тип твору' })
+    .enum(TitleType, { error: 'Оберіть тип твору' })
     .nullable()
     .refine((val) => val !== null, { error: 'Оберіть тип твору' }),
-  workStatus: z
-    .enum(WorkStatus, { error: 'Оберіть статус твору' })
+  titleStatus: z
+    .enum(TitleStatus, { error: 'Оберіть статус твору' })
     .nullable()
     .refine((val) => val !== null, { error: 'Оберіть статус твору' }),
   translationStatus: z

@@ -249,7 +249,7 @@ function PersonRequestCard({ person }: { person: PendingPerson }) {
               {person.nameUkr}
             </h3>
             <div className={styles.MetaInfo}>
-              <span>Запит від: {person.suggestedByUser?.displayUsername}</span>
+              <span>Запит від: {person.proposedByUser?.displayUsername}</span>
               <span className={styles.Dot}>•</span>
               <span>{formattedDate}</span>
             </div>

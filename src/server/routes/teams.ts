@@ -114,7 +114,9 @@ export const teamsRouter = new Elysia({
                   create: {
                     userId: user.id,
                     roles: ['ADMIN'],
-                    canPublish: true,
+                    canPublishChapters: true,
+                    canDeleteChapters: true,
+                    canEditTeamInfo: true,
                   },
                 },
 

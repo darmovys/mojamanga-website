@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { WorkType } from '@/generated/prisma/enums'
+import { TitleType } from '@/generated/prisma/enums'
 import { z } from 'zod'
 
-const workTypeSchema = z.enum(WorkType)
+const titleTypeSchema = z.enum(TitleType)
 
 export const Route = createFileRoute('/catalog')({
   validateSearch: z.object({
-    types: z.array(workTypeSchema).optional().catch(undefined),
+    types: z.array(titleTypeSchema).optional().catch(undefined),
   }),
   component: RouteComponent,
 })

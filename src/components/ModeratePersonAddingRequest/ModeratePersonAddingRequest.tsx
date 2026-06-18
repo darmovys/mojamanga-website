@@ -95,15 +95,15 @@ function ModeratePersonAddingRequest() {
               <Image
                 layout="fullWidth"
                 src={
-                  data.suggestedByUser?.image
+                  data.proposedByUser?.image
                     ? import.meta.env.VITE_STORAGE_URL +
                       '' +
-                      data.suggestedByUser.image
-                    : `https://api.dicebear.com/9.x/glass/svg?seed=${data.suggestedByUser?.displayUsername}`
+                      data.proposedByUser.image
+                    : `https://api.dicebear.com/9.x/glass/svg?seed=${data.proposedByUser?.displayUsername}`
                 }
                 className={styles.UserImage}
               />
-              <span>{data.suggestedByUser?.displayUsername}</span>
+              <span>{data.proposedByUser?.displayUsername}</span>
             </Link>
           </div>
 

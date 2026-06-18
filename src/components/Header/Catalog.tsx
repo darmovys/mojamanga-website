@@ -1,7 +1,7 @@
 import { Menu } from '@base-ui/react'
 import { ChevronRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import { catalogLinks, workTypeLinks } from '@/lib/navigation-links'
+import { catalogLinks, titleTypeLinks } from '@/lib/navigation-links'
 import { ArrowSvg } from './ArrowSvg'
 import styles from './DropdownMenu.module.scss'
 
@@ -35,7 +35,7 @@ export function Catalog() {
                         className={styles.Positioner}
                       >
                         <Menu.Popup className={styles.Popup}>
-                          {workTypeLinks.map((link) => (
+                          {titleTypeLinks.map((link) => (
                             <Menu.Item
                               render={
                                 <Link to={link.to} search={link.search} />

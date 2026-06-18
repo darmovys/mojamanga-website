@@ -8,7 +8,7 @@ import { teamsRouter } from './routes/teams'
 import { peopleRouter } from './routes/people'
 import { tagsRouter } from './routes/tags'
 import { genresRouter } from './routes/genres'
-import { worksRouter } from './routes/works'
+import { titlesRouter } from './routes/titles'
 
 export const app = new Elysia({
   prefix: '/api',
@@ -28,5 +28,5 @@ export const app = new Elysia({
   .use(peopleRouter)
   .use(tagsRouter)
   .use(genresRouter)
-  .use(worksRouter)
+  .use(titlesRouter)
   .use(cronJobsPlugin)

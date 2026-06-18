@@ -7,7 +7,7 @@ import { Checkbox, CheckboxGroup } from '@base-ui/react'
 import { CheckIcon, MinusIcon } from 'lucide-react'
 import clsx from 'clsx'
 import { range } from '@/lib/utils'
-import styles from './CreateWorkForm.module.scss'
+import styles from './CreateTitleForm.module.scss'
 import { Team } from '@/lib/treaty-types'
 
 type UserTeamsCheckboxListProps = {

@@ -8,7 +8,7 @@ import MotionButton, { tapAnimation } from '../MotionButton'
 import MobileNavigation from '../MobileNavigation'
 import clsx from 'clsx'
 import { Image } from '@unpic/react'
-import { useWorkForm } from './use-work-form'
+import { useTitleForm } from './use-title-form'
 import CropImageDialog from '../CropImageDialog'
 import { showTimedToast } from '@/lib/toast'
 import { SelectField } from './SelectField'
@@ -27,33 +27,33 @@ import {
 import {
   AgeRestriction,
   TranslationStatus,
-  WorkStatus,
-  WorkType,
+  TitleStatus,
+  TitleType,
 } from '@/generated/prisma/enums'
 import {
   AGE_RESTRICTION_LABELS,
   TRANSLATION_STATUS_LABELS,
-  WORK_STATUS_LABELS,
-  WORK_TYPE_LABELS,
+  TITLE_STATUS_LABELS,
+  TITLE_TYPE_LABELS,
 } from '@/lib/constants'
 import { TagComboboxField } from './TagComboboxField'
 import { GenreComboboxField } from './GenreComboboxField'
-import styles from './CreateWorkForm.module.scss'
+import styles from './CreateTitleForm.module.scss'
 import { useHelperDialog } from '@/hooks/use-helper-dialog'
 import HelperDialog from '../HelperDialog'
 
 const MAX_DESCRIPTION_LENGTH = 1000
 
-const routeApi = getRouteApi('/work/create/')
+const routeApi = getRouteApi('/title/create/')
 
-function CreateWorkForm() {
+function CreateTitleForm() {
   const { handleGoBack } = useGoBack()
   const { form, cover, background, isUploading, handleClearForm } =
-    useWorkForm()
+    useTitleForm()
   const loaderData = routeApi.useLoaderData()
 
   const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
-    useHelperDialog('seen_create_work_rules', loaderData)
+    useHelperDialog('seen_create_title_rules', loaderData)
 
   return (
     <div className={styles.MaxWidthWrapper}>
@@ -521,15 +521,15 @@ function CreateWorkForm() {
                       id={field.name}
                       value={field.state.value}
                       onValueChange={field.handleChange}
-                      options={Object.values(WorkType)}
-                      labels={WORK_TYPE_LABELS}
+                      options={Object.values(TitleType)}
+                      labels={TITLE_TYPE_LABELS}
                     />
                   </Field.Root>
                 )}
               />
 
               <form.Field
-                name="workStatus"
+                name="titleStatus"
                 children={(field) => (
                   <Field.Root
                     name={field.name}
@@ -545,8 +545,8 @@ function CreateWorkForm() {
                       id={field.name}
                       value={field.state.value}
                       onValueChange={field.handleChange}
-                      options={Object.values(WorkStatus)}
-                      labels={WORK_STATUS_LABELS}
+                      options={Object.values(TitleStatus)}
+                      labels={TITLE_STATUS_LABELS}
                     />
                   </Field.Root>
                 )}
@@ -783,4 +783,4 @@ function CreateWorkForm() {
   )
 }
 
-export default CreateWorkForm
+export default CreateTitleForm

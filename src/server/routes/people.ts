@@ -12,8 +12,7 @@ async function getPersonOrFail(id: string) {
   const person = await prisma.person.findUnique({ where: { id } })
 
   if (!person) return 'NOT_FOUND' as const
-  if (person.personVerificationStatus !== 'PENDING')
-    return 'NOT_PENDING' as const
+  if (person.verificationStatus !== 'PENDING') return 'NOT_PENDING' as const
 
   return person
 }
@@ -30,7 +29,7 @@ export const peopleRouter = new Elysia({
         async ({ body, status, user }) => {
           const dbUser = await prisma.user.findUnique({
             where: { id: user.id },
-            include: { suggestedPeople: true },
+            include: { proposedPeople: true },
           })
 
           if (!dbUser) return status(404, 'Користувача не знайдено')
@@ -42,8 +41,8 @@ export const peopleRouter = new Elysia({
 
           let pendingCount = 0
 
-          for (const person of dbUser.suggestedPeople) {
-            if (person.personVerificationStatus === 'PENDING') {
+          for (const person of dbUser.proposedPeople) {
+            if (person.verificationStatus === 'PENDING') {
               pendingCount++
             }
             if (pendingCount >= 3) break
@@ -78,8 +77,8 @@ export const peopleRouter = new Elysia({
                 description:
                   body.description === undefined ? null : body.description,
                 coverUrl: newCoverKey,
-                personVerificationStatus: 'PENDING',
-                suggestedByUserId: user.id,
+                verificationStatus: 'PENDING',
+                proposedByUserId: user.id,
               },
             })
 
@@ -108,7 +107,7 @@ export const peopleRouter = new Elysia({
 
             const people = await prisma.person.findMany({
               where: {
-                personVerificationStatus: 'APPROVED',
+                verificationStatus: 'APPROVED',
                 OR: [
                   {
                     nameUkr: {
@@ -154,16 +153,16 @@ export const peopleRouter = new Elysia({
 
             const [people, total] = await Promise.all([
               prisma.person.findMany({
-                where: { personVerificationStatus: 'PENDING' },
+                where: { verificationStatus: 'PENDING' },
                 include: {
-                  suggestedByUser: { select: { displayUsername: true } },
+                  proposedByUser: { select: { displayUsername: true } },
                 },
                 orderBy: { createdAt: 'desc' },
                 skip,
                 take: limit,
               }),
               prisma.person.count({
-                where: { personVerificationStatus: 'PENDING' },
+                where: { verificationStatus: 'PENDING' },
               }),
             ])
 
@@ -190,10 +189,10 @@ export const peopleRouter = new Elysia({
         async ({ params: { id }, status }) => {
           const personData = await prisma.person.findFirst({
             where: {
-              AND: { id, personVerificationStatus: 'PENDING' },
+              AND: { id, verificationStatus: 'PENDING' },
             },
             include: {
-              suggestedByUser: {
+              proposedByUser: {
                 select: { image: true, displayUsername: true },
               },
             },
@@ -221,7 +220,7 @@ export const peopleRouter = new Elysia({
 
             await prisma.person.update({
               where: { id: body.id },
-              data: { personVerificationStatus: 'APPROVED' },
+              data: { verificationStatus: 'APPROVED' },
             })
 
             return { message: 'Запит виконано' }

@@ -13,8 +13,8 @@ import {
   AgeRestriction,
   LinkType,
   TranslationStatus,
-  WorkStatus,
-  WorkType,
+  TitleStatus,
+  TitleType,
 } from '@/generated/prisma/enums'
 
 import { Globe } from 'lucide-react'
@@ -26,21 +26,21 @@ type LinkMeta = {
   toneDark?: string
 }
 
-export const WORK_TYPE_LABELS: Record<WorkType, string> = {
-  [WorkType.MANGA]: 'Манга',
-  [WorkType.MANHWA]: 'Манхва',
-  [WorkType.MANHUA]: 'Маньхва',
-  [WorkType.MALOPUS]: 'Мальопис',
-  [WorkType.COMIC]: 'Комікс',
-  [WorkType.WEBCOMIC]: 'Вебкомікс',
+export const TITLE_TYPE_LABELS: Record<TitleType, string> = {
+  [TitleType.MANGA]: 'Манга',
+  [TitleType.MANHWA]: 'Манхва',
+  [TitleType.MANHUA]: 'Маньхва',
+  [TitleType.MALOPUS]: 'Мальопис',
+  [TitleType.COMIC]: 'Комікс',
+  [TitleType.WEBCOMIC]: 'Вебкомікс',
 }
 
-export const WORK_STATUS_LABELS: Record<WorkStatus, string> = {
-  [WorkStatus.ONGOING]: 'Видається',
-  [WorkStatus.ENDED]: 'Закінчено',
-  [WorkStatus.PAUSED]: 'Призупинено',
-  [WorkStatus.LICENSED]: 'Ліцензовано',
-  [WorkStatus.ANNOUNCEMENT]: 'Анонсовано',
+export const TITLE_STATUS_LABELS: Record<TitleStatus, string> = {
+  [TitleStatus.ONGOING]: 'Видається',
+  [TitleStatus.ENDED]: 'Закінчено',
+  [TitleStatus.PAUSED]: 'Призупинено',
+  [TitleStatus.LICENSED]: 'Ліцензовано',
+  [TitleStatus.ANNOUNCEMENT]: 'Анонсовано',
 }
 
 export const TRANSLATION_STATUS_LABELS: Record<TranslationStatus, string> = {

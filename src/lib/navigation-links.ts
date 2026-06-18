@@ -1,5 +1,6 @@
 import { linkOptions } from '@tanstack/react-router'
-import { WorkType } from '@/generated/prisma/enums'
+import { TITLE_TYPE_LABELS } from './constants'
+import { TitleType } from '@/generated/prisma/enums'
 import {
   Layers,
   Users,
@@ -15,15 +16,6 @@ import {
   Settings,
   Shield,
 } from 'lucide-react'
-
-export const WORK_TYPE_TITLES: Record<WorkType, string> = {
-  [WorkType.MANGA]: 'Манга',
-  [WorkType.MANHWA]: 'Манхва',
-  [WorkType.MANHUA]: 'Маньхва',
-  [WorkType.MALOPUS]: 'Мальопис',
-  [WorkType.COMIC]: 'Комікс',
-  [WorkType.WEBCOMIC]: 'Вебкомікс',
-}
 
 export const catalogLinks = linkOptions([
   {
@@ -79,12 +71,12 @@ export const otherLinks = linkOptions([
   },
 ])
 
-export const workTypeLinks = linkOptions(
-  Object.entries(WORK_TYPE_TITLES).map(([type, title]) => ({
+export const titleTypeLinks = linkOptions(
+  Object.entries(TITLE_TYPE_LABELS).map(([type, title]) => ({
     title,
     to: '/catalog',
     search: {
-      types: [type as WorkType],
+      types: [type as TitleType],
     },
   })),
 )
@@ -93,7 +85,7 @@ export const addContentLinks = linkOptions([
   {
     title: 'Додати твір',
     icon: BookPlus,
-    to: '/work/create',
+    to: '/title/create',
     activeOptions: {
       exact: true,
     },
@@ -145,7 +137,7 @@ export const userLinks = linkOptions([
     title: 'Модераторска',
     icon: Shield,
     to: '/moderation',
-    search: { type: 'teams' },
+    search: { type: 'titles' },
     activeOptions: {
       exact: true,
     },

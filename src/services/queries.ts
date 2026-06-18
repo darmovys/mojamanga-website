@@ -126,7 +126,7 @@ export const genresQueries = {
     }),
 }
 
-export const worksQueries = {
-  all: ['works'] as const,
+export const titlesQueries = {
+  all: ['titles'] as const,
   lists: () => [...genresQueries.all, 'lists'] as const,
 }
