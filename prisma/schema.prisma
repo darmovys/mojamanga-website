@@ -37,7 +37,8 @@ model User {
   news                    News[]
   notifications           Notification[]
   workAddings             Work[]
-  workProposals           WorkProposal[]
+  workEditProposals       WorkEditProposal[]       @relation("ProposalSubmitter")
+  workEditReviews         WorkEditProposal[]       @relation("ProposalReviewer")
   workEditions            WorkVersion[]
   complaints              Complaint[]
   suggestedPeople         Person[]
@@ -161,7 +162,6 @@ model TeamMember {
 
 model Work {
   id                 String             @id @default(cuid(2))
-  type               WorkType
   approvalStatus     WorkApprovalStatus @default(PENDING)
   moderationFeedback Json?
 
@@ -175,7 +175,7 @@ model Work {
   publishers PublishingVersion[]
   comments   Comment[]
   ratings    Rating[]
-  proposals  WorkProposal[]
+  proposals  WorkEditProposal[]
   bookmarks  Bookmark[]
 
   createdAt DateTime @default(now())
@@ -200,6 +200,7 @@ model WorkVersion {
   coverImage        String
   backgroundImage   String?
   releaseYear       Int
+  type              WorkType
   ageRestriction    AgeRestriction
   workStatus        WorkStatus
   translationStatus TranslationStatus
@@ -210,8 +211,8 @@ model WorkVersion {
 
   changeReason String?
 
-  proposalId String?       @unique
-  proposal   WorkProposal? @relation(fields: [proposalId], references: [id])
+  proposalId String?           @unique
+  proposal   WorkEditProposal? @relation(fields: [proposalId], references: [id])
 
   createdAt DateTime @default(now())
 
@@ -236,34 +237,39 @@ model WorkVersionToPerson {
   personId  String
   role      PersonRole
 
-  version WorkVersion @relation(fields: [versionId], references: [id])
-  person  Person      @relation(fields: [personId], references: [id])
+  version WorkVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  person  Person      @relation(fields: [personId], references: [id], onDelete: Restrict)
 
   @@id([versionId, personId, role])
 }
 
-model WorkProposal {
+model WorkEditProposal {
   id String @id @default(cuid(2))
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation("ProposalSubmitter", fields: [userId], references: [id], onDelete: Restrict)
+
+  reviewerId String?
+  reviewer   User?   @relation("ProposalReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
 
   workId String
   work   Work   @relation(fields: [workId], references: [id])
 
-  status ProposalStatus @default(PENDING)
+  status WorkEditProposalStatus @default(PENDING)
 
   // --- Поля для зміни (Nullable) ---
   // Якщо поле null - значить його змінювати не пропонують
   suggestedNameUkr              String?
   suggestedNameEng              String?
   suggestedAlternativeNamesJson Json?
-  suggestedDescription          String?         @db.Text
+  suggestedDescription          String?            @db.Text
   suggestedCoverImage           String?
   suggestedBackgroundImage      String?
   suggestedReleaseYear          Int?
+  suggestedType                 WorkType?
   suggestedAgeRestriction       AgeRestriction?
-  suggestedIsNSFW               Boolean?
+  suggestedWorkStatus           WorkStatus?
+  suggestedTranslationStatus    TranslationStatus?
   suggestedTagsJson             Json?
   suggestedGenresJson           Json?
   suggestedAuthorsJson          Json?
@@ -325,9 +331,9 @@ model Person {
 model PublishingVersion {
   id     String @id @default(cuid(2))
   teamId String
-  team   Team   @relation(fields: [teamId], references: [id])
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
   workId String
-  work   Work   @relation(fields: [workId], references: [id])
+  work   Work   @relation(fields: [workId], references: [id], onDelete: Cascade)
 
   chapters                Chapter[]
   publishingSubscriptions PublishingSubscription[]
@@ -348,7 +354,7 @@ model Chapter {
   rejectionReason String?
 
   publishingVersionId String
-  publishingVersion   PublishingVersion @relation(fields: [publishingVersionId], references: [id])
+  publishingVersion   PublishingVersion @relation(fields: [publishingVersionId], references: [id], onDelete: Cascade)
 
   uploaderId String
   uploader   User   @relation(fields: [uploaderId], references: [id])
@@ -628,7 +634,7 @@ enum PersonRole {
   ARTIST
 }
 
-enum ProposalStatus {
+enum WorkEditProposalStatus {
   PENDING
   ACCEPTED
   REJECTED

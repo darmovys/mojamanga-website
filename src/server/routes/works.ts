@@ -110,17 +110,16 @@ export const worksRouter = new Elysia({
         }
 
         try {
-          const workWersionId = createId()
+          const workVersionId = createId()
 
           await prisma.work.create({
             data: {
               id: workId,
-              type: body.type,
               proposedByUserId: user.id,
 
               versions: {
                 create: {
-                  id: workWersionId,
+                  id: workVersionId,
                   editorId: user.id,
                   nameUkr: body.ukrName,
                   nameEng: body.enName,
@@ -128,6 +127,7 @@ export const worksRouter = new Elysia({
                   coverImage: newCoverKey,
                   backgroundImage: newBackgroundKey,
                   releaseYear: parseInt(body.releaseYear),
+                  type: body.type,
                   ageRestriction: body.ageRestriction,
                   workStatus: body.workStatus,
                   translationStatus: body.translationStatus,
@@ -171,7 +171,7 @@ export const worksRouter = new Elysia({
 
           await prisma.work.update({
             where: { id: workId },
-            data: { currentVersionId: workWersionId },
+            data: { currentVersionId: workVersionId },
           })
 
           return {
