@@ -13,12 +13,12 @@ model User {
   id              String     @id @default(cuid(2))
   name            String
   email           String
-  emailVerified   Boolean    @default(false)
-  image           String?
-  backgroundCover String?
+  emailVerified   Boolean    @default(false) @map("email_verified")
+  image           String?    @map("cover_url")
+  backgroundUrl   String?    @map("background_url")
   role            UserRole   @default(USER)
   username        String     @unique
-  displayUsername String
+  displayUsername String     @map("display_username")
   status          UserStatus @default(NORMAL)
 
   sessions Session[]
@@ -36,15 +36,15 @@ model User {
   publishingSubscriptions PublishingSubscription[]
   news                    News[]
   notifications           Notification[]
-  workAddings             Work[]
-  workEditProposals       WorkEditProposal[]       @relation("ProposalSubmitter")
-  workEditReviews         WorkEditProposal[]       @relation("ProposalReviewer")
-  workEditions            WorkVersion[]
-  complaints              Complaint[]
-  suggestedPeople         Person[]
+  titleAddings            Title[]
+  titleEditProposals      TitleEditProposal[]      @relation("ProposalSubmitter")
+  titleEditReviews        TitleEditProposal[]      @relation("ProposalReviewer")
+  titleEditions           TitleVersion[]
+  commentComplaints       CommentComplaint[]
+  proposedPeople          Person[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([email])
   @@map("users")
@@ -52,15 +52,15 @@ model User {
 
 model Session {
   id        String   @id @default(cuid(2))
-  expiresAt DateTime
+  expiresAt DateTime @map("expires_at")
   token     String
-  ipAddress String?
-  userAgent String?
-  userId    String
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  userId    String   @map("user_id")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([token])
   @@index([userId])
@@ -69,20 +69,20 @@ model Session {
 
 model Account {
   id                    String    @id @default(cuid(2))
-  accountId             String
-  providerId            String
-  userId                String
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id")
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
   scope                 String?
   password              String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([userId])
   @@map("accounts")
@@ -92,10 +92,10 @@ model Verification {
   id         String   @id @default(cuid(2))
   identifier String
   value      String
-  expiresAt  DateTime
+  expiresAt  DateTime @map("expires_at")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([identifier])
   @@map("verifications")
@@ -106,22 +106,22 @@ model Verification {
 model Team {
   id            String     @id @default(cuid(2))
   name          String
-  coverUrl      String?
-  backgroundUrl String?
+  coverUrl      String?    @map("cover_url")
+  backgroundUrl String?    @map("background_url")
   description   String?
   status        TeamStatus @default(PENDING)
 
-  rejectionReason String?
+  rejectionReason String? @map("rejection_reason")
 
-  creatorId String
+  creatorId String @map("creator_id")
   creator   User   @relation("TeamCreator", fields: [creatorId], references: [id])
 
   members            TeamMember[]
   links              TeamLink[]
   publishingVersions PublishingVersion[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("teams")
 }
@@ -131,155 +131,173 @@ model TeamLink {
   type LinkType
   url  String
 
-  teamId String
+  teamId String @map("team_id")
   team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("team_links")
 }
 
 model TeamMember {
-  id                String     @id @default(cuid(2))
-  userId            String
-  user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  teamId            String
-  team              Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  roles             TeamRole[] @default([TRANSLATOR])
-  canPublish        Boolean    @default(false)
-  canEditTeamInfo   Boolean    @default(false)
-  canDeleteChapters Boolean    @default(false)
+  id                 String     @id @default(cuid(2))
+  userId             String     @map("user_id")
+  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamId             String     @map("team_id")
+  team               Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  roles              TeamRole[] @default([TRANSLATOR])
+  canPublishChapters Boolean    @default(false) @map("can_publish_chapters")
+  canEditTeamInfo    Boolean    @default(false) @map("can_edit_team_info")
+  canDeleteChapters  Boolean    @default(false) @map("can_delete_chapters")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([userId, teamId]) // Юзер не може бути двічі в одній команді
   @@map("team_members")
 }
 
-// ================= CONTENT: WORKS =================
+// ================= CONTENT: TITLES =================
 
-model Work {
-  id                 String             @id @default(cuid(2))
-  approvalStatus     WorkApprovalStatus @default(PENDING)
-  moderationFeedback Json?
+model Title {
+  id                 String              @id @default(cuid(2))
+  approvalStatus     TitleApprovalStatus @default(PENDING) @map("approval_status")
+  moderationFeedback Json?               @map("moderation_feedback")
 
-  proposedByUserId String
+  proposedByUserId String @map("proposed_by_user_id")
   proposedByUser   User   @relation(fields: [proposedByUserId], references: [id])
 
-  currentVersionId String?       @unique
-  currentVersion   WorkVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
-  versions         WorkVersion[] @relation("WorkHistory")
+  currentVersionId String?        @unique @map("current_version_id")
+  currentVersion   TitleVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+  versions         TitleVersion[] @relation("TitleHistory")
 
   publishers PublishingVersion[]
   comments   Comment[]
   ratings    Rating[]
-  proposals  WorkEditProposal[]
+  proposals  TitleEditProposal[]
   bookmarks  Bookmark[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("works")
+  @@map("titles")
 }
 
-model WorkVersion {
-  id     String @id @default(cuid(2))
-  workId String
-  work   Work   @relation("WorkHistory", fields: [workId], references: [id], onDelete: Cascade)
+model TitleVersion {
+  id      String @id @default(cuid(2))
+  titleId String @map("title_id")
+  title   Title  @relation("TitleHistory", fields: [titleId], references: [id], onDelete: Cascade)
 
-  editorId String
+  editorId String @map("editor_id")
   editor   User   @relation(fields: [editorId], references: [id])
 
   // Версіоновані поля
-  nameUkr           String
-  nameEng           String
+  nameUkr           String            @map("name_ukr")
+  nameEng           String            @map("name_eng")
   alternativeNames  AlternativeName[]
   description       String?
-  coverImage        String
-  backgroundImage   String?
-  releaseYear       Int
-  type              WorkType
-  ageRestriction    AgeRestriction
-  workStatus        WorkStatus
-  translationStatus TranslationStatus
+  coverUrl          String            @map("cover_url")
+  backgroundUrl     String?           @map("background_url")
+  releaseYear       Int               @map("release_year")
+  type              TitleType
+  ageRestriction    AgeRestriction    @map("age_restriction")
+  titleStatus       TitleStatus       @map("title_status")
+  translationStatus TranslationStatus @map("translation_status")
 
-  tags   Tag[]
-  genres Genre[]
-  people WorkVersionToPerson[]
+  tags   TitleVersionToTag[]
+  genres TitleVersionToGenre[]
+  people TitleVersionToPerson[]
 
-  changeReason String?
+  proposalId String?            @unique @map("proposal_id")
+  proposal   TitleEditProposal? @relation(fields: [proposalId], references: [id])
 
-  proposalId String?           @unique
-  proposal   WorkEditProposal? @relation(fields: [proposalId], references: [id])
-
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
 
   // Зворотний зв'язок
-  workAsCurrent Work? @relation("CurrentVersion")
+  titleAsCurrent Title? @relation("CurrentVersion")
 
-  @@map("work_versions")
+  @@map("title_versions")
 }
 
 model AlternativeName {
-  id            String      @id @default(cuid(2))
-  name          String
-  workVersionId String
-  workVersion   WorkVersion @relation(fields: [workVersionId], references: [id], onDelete: Cascade)
+  id             String       @id @default(cuid(2))
+  name           String
+  titleVersionId String       @map("title_version")
+  titleVersion   TitleVersion @relation(fields: [titleVersionId], references: [id], onDelete: Cascade)
 
   @@index([name])
   @@map("alternative_names")
 }
 
-model WorkVersionToPerson {
-  versionId String
-  personId  String
+model TitleVersionToPerson {
   role      PersonRole
-
-  version WorkVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
-  person  Person      @relation(fields: [personId], references: [id], onDelete: Restrict)
+  versionId String       @map("version_id")
+  version   TitleVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  personId  String       @map("person_id")
+  person    Person       @relation(fields: [personId], references: [id], onDelete: Restrict)
 
   @@id([versionId, personId, role])
+  @@map("title_version_to_person")
 }
 
-model WorkEditProposal {
+model TitleVersionToGenre {
+  versionId String       @map("version_id")
+  version   TitleVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  genreId   String       @map("genre_id")
+  genre     Genre        @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([versionId, genreId])
+  @@map("title_version_to_genre")
+}
+
+model TitleVersionToTag {
+  versionId String       @map("version_id")
+  version   TitleVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  tagId     String       @map("tag_id")
+  tag       Tag          @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([versionId, tagId])
+  @@map("title_version_to_tag")
+}
+
+model TitleEditProposal {
   id String @id @default(cuid(2))
 
-  userId String
+  userId String @map("user_id")
   user   User   @relation("ProposalSubmitter", fields: [userId], references: [id], onDelete: Restrict)
 
-  reviewerId String?
+  reviewerId String? @map("reviewer_id")
   reviewer   User?   @relation("ProposalReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
 
-  workId String
-  work   Work   @relation(fields: [workId], references: [id])
+  titleId String @map("title_id")
+  title   Title  @relation(fields: [titleId], references: [id])
 
-  status WorkEditProposalStatus @default(PENDING)
+  status TitleEditProposalStatus @default(PENDING)
 
   // --- Поля для зміни (Nullable) ---
   // Якщо поле null - значить його змінювати не пропонують
-  suggestedNameUkr              String?
-  suggestedNameEng              String?
-  suggestedAlternativeNamesJson Json?
-  suggestedDescription          String?            @db.Text
-  suggestedCoverImage           String?
-  suggestedBackgroundImage      String?
-  suggestedReleaseYear          Int?
-  suggestedType                 WorkType?
-  suggestedAgeRestriction       AgeRestriction?
-  suggestedWorkStatus           WorkStatus?
-  suggestedTranslationStatus    TranslationStatus?
-  suggestedTagsJson             Json?
-  suggestedGenresJson           Json?
-  suggestedAuthorsJson          Json?
-  suggestedArtistsJson          Json?
+  proposedNameUkr           String?            @map("proposed_name_ukr")
+  proposedNameEng           String?            @map("proposed_name_eng")
+  proposedAlternativeNames  Json?              @map("proposed_alternative_names")
+  proposedDescription       String?            @map("proposed_description")
+  proposedCoverUrl          String?            @map("proposed_cover_url")
+  proposedBackgroundUrl     String?            @map("proposed_background_url")
+  proposedReleaseYear       Int?               @map("proposed_release_year")
+  proposedType              TitleType?         @map("proposed_type")
+  proposedAgeRestriction    AgeRestriction?    @map("proposed_age_restriction")
+  proposedTitleStatus       TitleStatus?       @map("proposed_title_status")
+  proposedTranslationStatus TranslationStatus? @map("proposed_translation_status")
+  proposedTags              Json?              @map("proposed_tags")
+  proposedGenres            Json?              @map("proposed_genres")
+  proposedAuthors           Json?              @map("proposed_authors")
+  proposedArtists           Json?              @map("proposed_artists")
 
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  workVersion WorkVersion?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  titleVersion TitleVersion?
 
-  @@map("work_proposals")
+  @@map("title_edit_proposals")
 }
 
 // ================= METADATA (TAGS, AUTHORS...) =================
@@ -288,10 +306,10 @@ model Tag {
   id   String @id @default(cuid(2))
   name String @unique
 
-  workVersions WorkVersion[]
+  titleVersions TitleVersionToTag[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("tags")
 }
@@ -300,71 +318,71 @@ model Genre {
   id   String @id @default(cuid(2))
   name String @unique
 
-  workVersions WorkVersion[]
+  titleVersions TitleVersionToGenre[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("genres")
 }
 
 model Person {
-  id                       String                   @id @default(cuid(2))
-  nameUkr                  String
-  nameLat                  String
-  description              String?
-  coverUrl                 String?
-  personVerificationStatus PersonVerificationStatus @default(PENDING)
-  works                    WorkVersionToPerson[]
-  suggestedByUserId        String?
-  suggestedByUser          User?                    @relation(fields: [suggestedByUserId], references: [id], onDelete: SetNull)
+  id                 String                   @id @default(cuid(2))
+  nameUkr            String                   @map("name_ukr")
+  nameLat            String                   @map("name_lat")
+  description        String?
+  coverUrl           String?                  @map("cover_url")
+  verificationStatus PersonVerificationStatus @default(PENDING) @map("verification_status")
+  titles             TitleVersionToPerson[]
+  proposedByUserId   String?                  @map("proposed_by_user_id")
+  proposedByUser     User?                    @relation(fields: [proposedByUserId], references: [id], onDelete: SetNull)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@index([suggestedByUserId])
+  @@index([proposedByUserId])
   @@map("people")
 }
 
 // ================= PUBLISHING & CHAPTERS =================
 
 model PublishingVersion {
-  id     String @id @default(cuid(2))
-  teamId String
-  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  workId String
-  work   Work   @relation(fields: [workId], references: [id], onDelete: Cascade)
+  id      String @id @default(cuid(2))
+  teamId  String @map("team_id")
+  team    Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  titleId String @map("title_id")
+  title   Title  @relation(fields: [titleId], references: [id], onDelete: Cascade)
 
   chapters                Chapter[]
   publishingSubscriptions PublishingSubscription[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@unique([teamId, workId]) // Одна команда - одна версія перекладу для твору
+  @@unique([teamId, titleId]) // Одна команда - одна версія перекладу для твору
   @@map("publishing_versions")
 }
 
 model Chapter {
-  id              String             @id @default(cuid(2))
+  id              String              @id @default(cuid(2))
   name            String?
-  volumeNum       Float
-  chapterNum      Float
-  approvalStatus  WorkApprovalStatus @default(PENDING)
-  rejectionReason String?
+  volumeNum       Float               @map("volume_num")
+  chapterNum      Float               @map("chapter_num")
+  approvalStatus  TitleApprovalStatus @default(PENDING) @map("approval_status")
+  rejectionReason String?             @map("rejection_reason")
 
-  publishingVersionId String
+  publishingVersionId String            @map("publishing_version_id")
   publishingVersion   PublishingVersion @relation(fields: [publishingVersionId], references: [id], onDelete: Cascade)
 
-  uploaderId String
+  uploaderId String @map("uploader_id")
   uploader   User   @relation(fields: [uploaderId], references: [id])
 
   pages     Page[]
   bookmarks Bookmark[]
   likes     Like[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([publishingVersionId, volumeNum, chapterNum]) // Унікальність в межах версії команди
   @@map("chapters")
@@ -372,10 +390,10 @@ model Chapter {
 
 model Page {
   id        String  @id @default(cuid(2))
-  chapterId String
+  chapterId String  @map("chapter_id")
   chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-  pageNum   Int
-  imageUrl  String
+  pageNum   Int     @map("page_num")
+  pageUrl   String  @map("page_url")
 
   comments Comment[]
 
@@ -387,18 +405,18 @@ model Page {
 model Comment {
   id           String  @id @default(cuid(2))
   content      String
-  isDeleted    Boolean @default(false)
-  isHidden     Boolean @default(false)
-  hidingReason String?
+  isDeleted    Boolean @default(false) @map("is_deleted")
+  isHidden     Boolean @default(false) @map("is_hidden")
+  hidingReason String? @map("hiding_reason")
 
-  authorId String
+  authorId String @map("author_id")
   author   User   @relation(fields: [authorId], references: [id])
 
-  pageId String?
+  pageId String? @map("page_id")
   page   Page?   @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
-  workId String?
-  work   Work?   @relation(fields: [workId], references: [id], onDelete: Cascade)
+  titleId String? @map("title_id")
+  title   Title?  @relation(fields: [titleId], references: [id], onDelete: Cascade)
 
   // Closure Table Relations
   ancestors   CommentClosure[] @relation("Ancestors")
@@ -406,17 +424,17 @@ model Comment {
 
   likes      Like[]
   dislikes   Dislike[]
-  complaints Complaint[]
+  complaints CommentComplaint[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("comments")
 }
 
 model CommentClosure {
-  ancestorId   String
-  descendantId String
+  ancestorId   String @map("ancestor_id")
+  descendantId String @map("descendant_id")
   depth        Int
 
   ancestor   Comment @relation("Ancestors", fields: [ancestorId], references: [id], onDelete: Cascade)
@@ -429,65 +447,68 @@ model CommentClosure {
   @@map("comment_closures")
 }
 
-// Розділені лайки для чистоти схеми
 model Like {
-  id     String @id @default(cuid(2))
-  userId String
+  id String @id @default(cuid(2))
+
+  userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id])
 
-  commentId String?
+  commentId String?  @map("comment_id")
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
-  chapterId String?
+  chapterId String?  @map("chapter_id")
   chapter   Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@unique([userId, commentId]) // Юзер може лайкнути комент лише раз
   @@map("likes")
 }
 
 model Dislike {
-  id     String @id @default(cuid(2))
-  userId String
+  id String @id @default(cuid(2))
+
+  userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id])
 
-  commentId String?
+  commentId String?  @map("comment_id")
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@unique([userId, commentId])
   @@map("dislikes")
 }
 
 model Rating {
-  id     String @id @default(cuid(2))
-  score  Int // 1-10 або 1-5
-  userId String
+  id    String @id @default(cuid(2))
+  score Int // 1-10 або 1-5
+
+  userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id])
-  workId String
-  work   Work   @relation(fields: [workId], references: [id])
 
-  createdAt DateTime @default(now())
+  titleId String @map("title_id")
+  title   Title  @relation(fields: [titleId], references: [id])
 
-  @@unique([userId, workId])
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, titleId])
   @@map("ratings")
 }
 
 model BookmarkFolder {
   id         String            @id @default(cuid(2))
   name       String
-  isSystem   Boolean           @default(false)
-  systemType SystemFolderType?
+  isSystem   Boolean           @default(false) @map("is_system")
+  systemType SystemFolderType? @map("system_type")
 
-  userId String
+  userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   bookmarks Bookmark[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([userId, name])
   @@map("bookmark_folders")
@@ -496,23 +517,23 @@ model BookmarkFolder {
 model Bookmark {
   id String @id @default(cuid(2))
 
-  folderId String
+  folderId String         @map("folder_id")
   folder   BookmarkFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
-  userId String
+  userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id])
 
-  workId String
-  work   Work   @relation(fields: [workId], references: [id], onDelete: Cascade)
+  titleId String @map("title_id")
+  title   Title  @relation(fields: [titleId], references: [id], onDelete: Cascade)
 
   // Прогрес читання (остання глава)
-  lastChapterId String?
+  lastChapterId String?  @map("last_chapter_id")
   lastChapter   Chapter? @relation(fields: [lastChapterId], references: [id], onDelete: SetNull)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@unique([folderId, workId])
+  @@unique([folderId, titleId])
   @@map("bookmarks")
 }
 
@@ -521,71 +542,83 @@ model Bookmark {
 model PublishingSubscription {
   id String @id @default(cuid(2))
 
-  userId String
+  userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Підписка йде на конкретний переклад конкретної команди
-  publishingVersionId String
+  publishingVersionId String            @map("publishing_version_id")
   publishingVersion   PublishingVersion @relation(fields: [publishingVersionId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
 
   // Захист від дублікатів підписок
   @@unique([userId, publishingVersionId])
   @@map("publishing_subscriptions")
 }
 
+/**
+ * Нижня таблиця підлягає значним змінам в структурі
+ * (дивитися "примітки по роботі над сайтом")
+ */
+
 model Notification {
   id          String           @id @default(cuid(2))
   type        NotificationType
-  data        Json // { workId: "...", title: "..." }
-  isRead      Boolean          @default(false)
-  isImportant Boolean          @default(false)
+  isRead      Boolean          @default(false) @map("is_read")
+  isImportant Boolean          @default(false) @map("is_important")
+
   /**
    * Якщо сповіщення важливе, воно не видалятиметься автоматично через деякий час.
    * Користувач може зберігати такі сповіщення
    */
 
-  receiverId String
+  receiverId String @map("reciever_id")
   receiver   User   @relation(fields: [receiverId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("notifications")
 }
 
 // ================= MISC =================
 
+/**
+ * Потенційна таблиця на видалення
+ * (Якщо до новин не буде прикріплена система коментарів)
+ */
+
 model News {
-  id        String   @id @default(cuid(2))
-  title     String
-  content   String   @db.Text
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+  id      String @id @default(cuid(2))
+  title   String
+  content String
+  userId  String @map("user_id")
+  user    User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("news")
 }
 
-model Complaint {
+model CommentComplaint {
   id String @id @default(cuid(2))
 
-  reporterId String
+  reporterId String @map("reporter_id")
   reporter   User   @relation(fields: [reporterId], references: [id])
 
-  commentId String
+  commentId String  @map("comment_id")
   comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   reason  ReportReason
   details String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // Захист від спаму: один юзер може поскаржитися на один коментар лише раз
   @@unique([reporterId, commentId])
-  @@map("complaints")
+  @@map("comment_complaints")
 }
 
 // ================= ENUMS =================
@@ -634,13 +667,13 @@ enum PersonRole {
   ARTIST
 }
 
-enum WorkEditProposalStatus {
+enum TitleEditProposalStatus {
   PENDING
   ACCEPTED
   REJECTED
 }
 
-enum WorkType {
+enum TitleType {
   MANGA
   MANHWA
   MANHUA
@@ -649,7 +682,7 @@ enum WorkType {
   WEBCOMIC
 }
 
-enum WorkStatus {
+enum TitleStatus {
   ONGOING
   ENDED
   PAUSED
@@ -693,7 +726,7 @@ enum ReportReason {
   OTHER
 }
 
-enum WorkApprovalStatus {
+enum TitleApprovalStatus {
   PENDING
   APPROVED
   REJECTED
