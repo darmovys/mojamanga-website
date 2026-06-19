@@ -146,12 +146,12 @@ export const titlesQueries = {
       queryKey: [...titlesQueries.lists(), 'pending', page] as const,
       queryFn: () => fetchPendingTitles(page),
     }),
-  getWorkAddingRequest: (id: string) =>
+  getTitleAddingRequest: (id: string) =>
     queryOptions({
-      queryKey: [...worksQueries.all, id] as const,
+      queryKey: [...titlesQueries.all, id] as const,
       queryFn: async () => {
         const response = await api()
-          .works['work-adding-request']({ id: id })
+          .titles['title-adding-request']({ id: id })
           .get()
         const { error } = response
         if (error) {

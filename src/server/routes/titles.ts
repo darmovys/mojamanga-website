@@ -184,11 +184,11 @@ export const titlesRouter = new Elysia({
                         })),
                       ],
                     },
-
-                    publishers: {
-                      create: teamIds.map((teamId) => ({ teamId })),
-                    },
                   },
+                },
+
+                publishers: {
+                  create: teamIds.map((teamId) => ({ teamId })),
                 },
               },
 
@@ -308,9 +308,9 @@ export const titlesRouter = new Elysia({
         },
       )
       .get(
-        '/work-adding-request/:id',
+        '/title-adding-request/:id',
         async ({ params: { id }, status }) => {
-          const workRawData = await prisma.work.findFirst({
+          const titleRawData = await prisma.title.findFirst({
             where: {
               AND: [
                 { id, approvalStatus: 'PENDING' },
@@ -323,19 +323,23 @@ export const titlesRouter = new Elysia({
               },
               currentVersion: {
                 select: {
-                  coverImage: true,
-                  backgroundImage: true,
+                  coverUrl: true,
+                  backgroundUrl: true,
                   nameUkr: true,
                   nameEng: true,
                   alternativeNames: { select: { id: true, name: true } },
                   description: true,
                   type: true,
-                  workStatus: true,
+                  titleStatus: true,
                   translationStatus: true,
                   ageRestriction: true,
                   releaseYear: true,
-                  genres: { select: { id: true, name: true } },
-                  tags: { select: { id: true, name: true } },
+                  genres: {
+                    select: { genre: { select: { id: true, name: true } } },
+                  },
+                  tags: {
+                    select: { tag: { select: { id: true, name: true } } },
+                  },
                   people: {
                     select: {
                       personId: true,
@@ -351,18 +355,18 @@ export const titlesRouter = new Elysia({
             },
           })
 
-          if (!workRawData) {
+          if (!titleRawData) {
             return status(404, 'Такої заявки не знайдено')
           }
 
-          const workData = workRawData as Omit<
-            typeof workRawData,
+          const titleData = titleRawData as Omit<
+            typeof titleRawData,
             'currentVersion'
           > & {
-            currentVersion: NonNullable<typeof workRawData.currentVersion>
+            currentVersion: NonNullable<typeof titleRawData.currentVersion>
           }
 
-          return workData
+          return titleData
         },
         {
           moderator: true,

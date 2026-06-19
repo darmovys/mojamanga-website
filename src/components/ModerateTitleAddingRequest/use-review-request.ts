@@ -1,7 +1,7 @@
 import { Api } from '@/lib/api-client'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { teamsMutations } from '@/services/mutations'
-import { teamsQueries, worksQueries } from '@/services/queries'
+import { teamsQueries, titlesQueries } from '@/services/queries'
 import { Treaty } from '@elysiajs/eden'
 import {
   useMutation,
@@ -17,7 +17,7 @@ type AnyEndpointError = Treaty.Error<
 >
 
 export function useReviewRequest(workId: string) {
-  const { data } = useSuspenseQuery(worksQueries.getWorkAddingRequest(workId))
+  const { data } = useSuspenseQuery(titlesQueries.getTitleAddingRequest(workId))
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
@@ -92,8 +92,8 @@ export function useReviewRequest(workId: string) {
     declineMutation.mutate({
       id: workId,
       message,
-      coverUrl: data.currentVersion.coverImage,
-      backgroundUrl: data.currentVersion.backgroundImage,
+      coverUrl: data.currentVersion.coverUrl,
+      backgroundUrl: data.currentVersion.backgroundUrl,
     })
   }
 

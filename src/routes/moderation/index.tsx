@@ -5,7 +5,7 @@ import {
   moderationMenuSchema,
   ModerationMenuSearch,
 } from '@/schemas/moderation'
-import { peopleQueries, teamsQueries, worksQueries } from '@/services/queries'
+import { peopleQueries, teamsQueries, titlesQueries } from '@/services/queries'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { produce } from 'immer'
 
@@ -49,10 +49,10 @@ export const Route = createFileRoute('/moderation/')({
           replace: true,
         })
       }
-    } else if (search.type === 'works') {
+    } else if (search.type === 'titles') {
       const page = search.page || 1
       const data = await context.queryClient.ensureQueryData(
-        worksQueries.pendingWorks(page),
+        titlesQueries.pendingTitles(page),
       )
       if (page > data.totalPages && data.totalPages > 0) {
         throw redirect({

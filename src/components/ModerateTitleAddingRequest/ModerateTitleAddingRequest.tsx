@@ -11,8 +11,8 @@ import { Image } from '@unpic/react'
 import {
   AGE_RESTRICTION_LABELS,
   TRANSLATION_STATUS_LABELS,
-  WORK_STATUS_LABELS,
-  WORK_TYPE_LABELS,
+  TITLE_STATUS_LABELS,
+  TITLE_TYPE_LABELS,
 } from '@/lib/constants'
 import { format } from 'date-fns'
 import ShiftBy from '../ShiftBy/ShiftBy'
@@ -20,21 +20,21 @@ import HelperDialog from '../HelperDialog'
 import { useReviewRequest } from './use-review-request'
 import Skeleton from '../Skeleton'
 import ConfirmDialog from '../ConfirmDialog'
-import styles from './ModerateWorkAddingRequest.module.scss'
+import styles from './ModerateTitleAddingRequest.module.scss'
 import { useHelperDialog } from '@/hooks/use-helper-dialog'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { AnimatePresence, motion } from 'motion/react'
 import { range } from '@/lib/utils'
 
-const routeApi = getRouteApi('/moderation/work-review/$workId')
+const routeApi = getRouteApi('/moderation/title-review/$titleId')
 
-function ModerateWorkAddingRequest() {
-  const { workId } = routeApi.useParams()
+function ModerateTitleAddingRequest() {
+  const { titleId } = routeApi.useParams()
   const loaderData = routeApi.useLoaderData()
 
   const { handleGoBack } = useGoBack()
   const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
-    useHelperDialog('seen_add_work_request_moderation_rules', loaderData)
+    useHelperDialog('seen_add_title_request_moderation_rules', loaderData)
 
   const {
     data,
@@ -45,7 +45,7 @@ function ModerateWorkAddingRequest() {
     approveMutation,
     reviseMutation,
     declineMutation,
-  } = useReviewRequest(workId)
+  } = useReviewRequest(titleId)
 
   const currentVersionData = data.currentVersion
 
@@ -100,7 +100,7 @@ function ModerateWorkAddingRequest() {
               <Link
                 className={styles.Link}
                 to="/moderation"
-                search={{ type: 'works' }}
+                search={{ type: 'titles' }}
               >
                 Запити на додавання нового твору
               </Link>
@@ -153,10 +153,10 @@ function ModerateWorkAddingRequest() {
         <div className={styles.CardGroup}>
           <div className={clsx(styles.Card, styles.Cover)}>
             <div className={styles.ImageWrapper}>
-              {currentVersionData.coverImage ? (
+              {currentVersionData.coverUrl ? (
                 <Image
                   layout="fullWidth"
-                  src={`${import.meta.env.VITE_STORAGE_URL}${currentVersionData.coverImage}`}
+                  src={`${import.meta.env.VITE_STORAGE_URL}${currentVersionData.coverUrl}`}
                   alt="Обкладинка твору"
                   // className={styles.Image}
                   loading="lazy"
@@ -172,10 +172,10 @@ function ModerateWorkAddingRequest() {
           </div>
           <div className={clsx(styles.Card, styles.Background)}>
             <div className={styles.ImageWrapper}>
-              {currentVersionData.backgroundImage ? (
+              {currentVersionData.backgroundUrl ? (
                 <Image
                   layout="fullWidth"
-                  src={`${import.meta.env.VITE_STORAGE_URL}${currentVersionData.backgroundImage}`}
+                  src={`${import.meta.env.VITE_STORAGE_URL}${currentVersionData.backgroundUrl}`}
                   alt="Фонове зображення твору"
                   // className={styles.Image}
                   loading="lazy"
@@ -200,14 +200,14 @@ function ModerateWorkAddingRequest() {
             <h2 className={styles.MetaTitle}>Тип твору</h2>
             <div className={styles.MetaField}>
               <Link to="/catalog" className={styles.Link}>
-                {WORK_TYPE_LABELS[currentVersionData.type]}
+                {TITLE_TYPE_LABELS[currentVersionData.type]}
               </Link>
             </div>
             <Separator orientation="horizontal" className={styles.Separator} />
             <h2 className={styles.MetaTitle}>Статус твору</h2>
             <div className={styles.MetaField}>
               <Link to="/catalog" className={styles.Link}>
-                {WORK_STATUS_LABELS[currentVersionData.workStatus]}
+                {TITLE_STATUS_LABELS[currentVersionData.titleStatus]}
               </Link>
             </div>
             <Separator orientation="horizontal" className={styles.Separator} />
@@ -305,7 +305,7 @@ function ModerateWorkAddingRequest() {
           <div className={clsx(styles.Card, styles.Genres)}>
             <h2 className={styles.CardTitle}>Жанри</h2>
             <div className={styles.LinksGroup}>
-              {currentVersionData.genres.map(({ id, name }) => (
+              {currentVersionData.genres.map(({ genre: { id, name } }) => (
                 <Link to="/catalog" key={id} className={styles.ChipLink}>
                   <span className={styles.Chip}>{name}</span>
                 </Link>
@@ -316,7 +316,7 @@ function ModerateWorkAddingRequest() {
           <div className={clsx(styles.Card, styles.Tags)}>
             <h2 className={styles.CardTitle}>Теги</h2>
             <div className={styles.LinksGroup}>
-              {currentVersionData.tags.map(({ id, name }) => (
+              {currentVersionData.tags.map(({ tag: { id, name } }) => (
                 <Link to="/catalog" key={id} className={styles.ChipLink}>
                   <span className={styles.Chip}># {name}</span>
                 </Link>
@@ -446,7 +446,7 @@ function AltName({ name }: { name: string }) {
   )
 }
 
-export function ModerateWorkAddingRequestSkeleton() {
+export function ModerateTitleAddingRequestSkeleton() {
   return (
     <div className={styles.MaxWidthWrapper}>
       <div className={styles.GoBackHeader}>
@@ -468,7 +468,7 @@ export function ModerateWorkAddingRequestSkeleton() {
               <Link
                 className={styles.Link}
                 to="/moderation"
-                search={{ type: 'works' }}
+                search={{ type: 'titles' }}
               >
                 Запити на додавання нового твору
               </Link>
@@ -591,4 +591,4 @@ export function ModerateWorkAddingRequestSkeleton() {
   )
 }
 
-export default ModerateWorkAddingRequest
+export default ModerateTitleAddingRequest

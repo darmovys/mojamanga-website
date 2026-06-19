@@ -16,7 +16,9 @@ import MobileNavigation from '../MobileNavigation'
 import PeopleRequestsList, {
   PeopleRequestsSkeleton,
 } from './PeopleRequestsList'
-import WorksRequestsList, { WorksRequestsSkeleton } from './WorksRequestsList'
+import TitlesRequestsList, {
+  TitlesRequestsSkeleton,
+} from './TitlesRequestsList'
 
 const routeApi = getRouteApi('/moderation/')
 
@@ -72,7 +74,7 @@ function ModerationMenu() {
     <ModerationMenuLayout>
       {sectionType === 'teams' && <TeamsRequestsList />}
       {sectionType === 'people' && <PeopleRequestsList />}
-      {sectionType === 'works' && <WorksRequestsList />}
+      {sectionType === 'titles' && <TitlesRequestsList />}
     </ModerationMenuLayout>
   )
 }
@@ -84,7 +86,7 @@ export function ModerationMenuSkeleton() {
     <ModerationMenuLayout>
       {sectionType === 'teams' && <TeamsRequestsSkeleton />}
       {sectionType === 'people' && <PeopleRequestsSkeleton />}
-      {sectionType === 'works' && <WorksRequestsSkeleton />}
+      {sectionType === 'titles' && <TitlesRequestsSkeleton />}
     </ModerationMenuLayout>
   )
 }

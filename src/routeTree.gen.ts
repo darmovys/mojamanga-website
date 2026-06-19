@@ -26,7 +26,7 @@ import { Route as TeamCreateIndexRouteImport } from './routes/team/create/index'
 import { Route as PeopleCreateIndexRouteImport } from './routes/people/create/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
-import { Route as ModerationWorkReviewWorkIdRouteImport } from './routes/moderation/work-review/$workId'
+import { Route as ModerationTitleReviewTitleIdRouteImport } from './routes/moderation/title-review/$titleId'
 import { Route as ModerationTeamReviewTeamIdRouteImport } from './routes/moderation/team-review/$teamId'
 import { Route as ModerationPersonReviewPersonIdRouteImport } from './routes/moderation/person-review/$personId'
 
@@ -114,10 +114,10 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const ModerationWorkReviewWorkIdRoute =
-  ModerationWorkReviewWorkIdRouteImport.update({
-    id: '/work-review/$workId',
-    path: '/work-review/$workId',
+const ModerationTitleReviewTitleIdRoute =
+  ModerationTitleReviewTitleIdRouteImport.update({
+    id: '/title-review/$titleId',
+    path: '/title-review/$titleId',
     getParentRoute: () => ModerationRouteRoute,
   } as any)
 const ModerationTeamReviewTeamIdRoute =
@@ -147,7 +147,7 @@ export interface FileRoutesByFullPath {
   '/title/': typeof TitleIndexRoute
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
-  '/moderation/work-review/$workId': typeof ModerationWorkReviewWorkIdRoute
+  '/moderation/title-review/$titleId': typeof ModerationTitleReviewTitleIdRoute
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
   '/people/create/': typeof PeopleCreateIndexRoute
@@ -167,7 +167,7 @@ export interface FileRoutesByTo {
   '/title': typeof TitleIndexRoute
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
-  '/moderation/work-review/$workId': typeof ModerationWorkReviewWorkIdRoute
+  '/moderation/title-review/$titleId': typeof ModerationTitleReviewTitleIdRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
   '/people/create': typeof PeopleCreateIndexRoute
@@ -190,7 +190,7 @@ export interface FileRoutesById {
   '/title/': typeof TitleIndexRoute
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
-  '/moderation/work-review/$workId': typeof ModerationWorkReviewWorkIdRoute
+  '/moderation/title-review/$titleId': typeof ModerationTitleReviewTitleIdRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
   '/people/create/': typeof PeopleCreateIndexRoute
@@ -213,7 +213,7 @@ export interface FileRouteTypes {
     | '/title/'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
-    | '/moderation/work-review/$workId'
+    | '/moderation/title-review/$titleId'
     | '/login/'
     | '/signup/'
     | '/people/create/'
@@ -233,7 +233,7 @@ export interface FileRouteTypes {
     | '/title'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
-    | '/moderation/work-review/$workId'
+    | '/moderation/title-review/$titleId'
     | '/login'
     | '/signup'
     | '/people/create'
@@ -255,7 +255,7 @@ export interface FileRouteTypes {
     | '/title/'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
-    | '/moderation/work-review/$workId'
+    | '/moderation/title-review/$titleId'
     | '/_auth/login/'
     | '/_auth/signup/'
     | '/people/create/'
@@ -401,11 +401,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/moderation/work-review/$workId': {
-      id: '/moderation/work-review/$workId'
-      path: '/work-review/$workId'
-      fullPath: '/moderation/work-review/$workId'
-      preLoaderRoute: typeof ModerationWorkReviewWorkIdRouteImport
+    '/moderation/title-review/$titleId': {
+      id: '/moderation/title-review/$titleId'
+      path: '/title-review/$titleId'
+      fullPath: '/moderation/title-review/$titleId'
+      preLoaderRoute: typeof ModerationTitleReviewTitleIdRouteImport
       parentRoute: typeof ModerationRouteRoute
     }
     '/moderation/team-review/$teamId': {
@@ -443,14 +443,14 @@ interface ModerationRouteRouteChildren {
   ModerationIndexRoute: typeof ModerationIndexRoute
   ModerationPersonReviewPersonIdRoute: typeof ModerationPersonReviewPersonIdRoute
   ModerationTeamReviewTeamIdRoute: typeof ModerationTeamReviewTeamIdRoute
-  ModerationWorkReviewWorkIdRoute: typeof ModerationWorkReviewWorkIdRoute
+  ModerationTitleReviewTitleIdRoute: typeof ModerationTitleReviewTitleIdRoute
 }
 
 const ModerationRouteRouteChildren: ModerationRouteRouteChildren = {
   ModerationIndexRoute: ModerationIndexRoute,
   ModerationPersonReviewPersonIdRoute: ModerationPersonReviewPersonIdRoute,
   ModerationTeamReviewTeamIdRoute: ModerationTeamReviewTeamIdRoute,
-  ModerationWorkReviewWorkIdRoute: ModerationWorkReviewWorkIdRoute,
+  ModerationTitleReviewTitleIdRoute: ModerationTitleReviewTitleIdRoute,
 }
 
 const ModerationRouteRouteWithChildren = ModerationRouteRoute._addFileChildren(
