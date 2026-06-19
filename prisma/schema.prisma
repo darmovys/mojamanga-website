@@ -205,9 +205,10 @@ model TitleVersion {
   titleStatus       TitleStatus       @map("title_status")
   translationStatus TranslationStatus @map("translation_status")
 
-  tags   TitleVersionToTag[]
-  genres TitleVersionToGenre[]
-  people TitleVersionToPerson[]
+  sources TitleSource[]
+  tags    TitleVersionToTag[]
+  genres  TitleVersionToGenre[]
+  people  TitleVersionToPerson[]
 
   proposalId String?            @unique @map("proposal_id")
   proposal   TitleEditProposal? @relation(fields: [proposalId], references: [id])
@@ -218,6 +219,19 @@ model TitleVersion {
   titleAsCurrent Title? @relation("CurrentVersion")
 
   @@map("title_versions")
+}
+
+model TitleSource {
+  id  String @id @default(cuid(2))
+  url String
+
+  titleId String       @map("title_id")
+  title   TitleVersion @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("title_sources")
 }
 
 model AlternativeName {
@@ -292,6 +306,7 @@ model TitleEditProposal {
   proposedGenres            Json?              @map("proposed_genres")
   proposedAuthors           Json?              @map("proposed_authors")
   proposedArtists           Json?              @map("proposed_artists")
+  proposedSources           Json?              @map("proposed_sources")
 
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
