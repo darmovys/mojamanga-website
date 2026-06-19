@@ -149,7 +149,11 @@
 
 .LabelBox {
   display: flex;
-  justify-content: space-between;
+  gap: var(--10px);
+
+  .Label {
+    flex: 1;
+  }
 }
 
 .Link {

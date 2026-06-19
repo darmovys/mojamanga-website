@@ -115,7 +115,11 @@ function CreateTitleForm() {
                       form.state.submissionAttempts > 0
                     }
                   >
-                    <Field.Label className={styles.Label}>
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<div />}
+                      className={styles.Label}
+                    >
                       Обкладинка
                       <Tooltip text="Обов'язкове поле" align="start" />
                     </Field.Label>
@@ -247,8 +251,12 @@ function CreateTitleForm() {
                       form.state.submissionAttempts > 0
                     }
                   >
-                    <Field.Label className={styles.Label}>
-                      Задній фон
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<div />}
+                      className={styles.Label}
+                    >
+                      Фонове зображення
                     </Field.Label>
                     <div className={styles.UploadBackgroundWrapper}>
                       {!background.fileState && (
@@ -514,7 +522,12 @@ function CreateTitleForm() {
                     touched={field.state.meta.isTouched}
                     className={styles.MetadataField}
                   >
-                    <Field.Label htmlFor={field.name} className={styles.Label}>
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<div />}
+                      htmlFor={field.name}
+                      className={styles.Label}
+                    >
                       Тип
                     </Field.Label>
                     <SelectField
@@ -538,7 +551,12 @@ function CreateTitleForm() {
                     touched={field.state.meta.isTouched}
                     className={styles.MetadataField}
                   >
-                    <Field.Label htmlFor={field.name} className={styles.Label}>
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<div />}
+                      htmlFor={field.name}
+                      className={styles.Label}
+                    >
                       Статус твору
                     </Field.Label>
                     <SelectField
@@ -562,7 +580,12 @@ function CreateTitleForm() {
                     touched={field.state.meta.isTouched}
                     className={styles.MetadataField}
                   >
-                    <Field.Label htmlFor={field.name} className={styles.Label}>
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<div />}
+                      htmlFor={field.name}
+                      className={styles.Label}
+                    >
                       Статус перекладу
                     </Field.Label>
                     <SelectField
@@ -586,7 +609,12 @@ function CreateTitleForm() {
                     touched={field.state.meta.isTouched}
                     className={styles.MetadataField}
                   >
-                    <Field.Label htmlFor={field.name} className={styles.Label}>
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<div />}
+                      htmlFor={field.name}
+                      className={styles.Label}
+                    >
                       Вікові обмеження
                     </Field.Label>
                     <SelectField
@@ -610,7 +638,12 @@ function CreateTitleForm() {
                     touched={field.state.meta.isTouched}
                     className={styles.MetadataField}
                   >
-                    <Field.Label htmlFor={field.name} className={styles.Label}>
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<div />}
+                      htmlFor={field.name}
+                      className={styles.Label}
+                    >
                       Рік випуску
                     </Field.Label>
                     <Field.Control
@@ -638,7 +671,13 @@ function CreateTitleForm() {
                   dirty={field.state.meta.isDirty}
                   touched={field.state.meta.isTouched}
                 >
-                  <Field.Label className={styles.Label}>Жанри</Field.Label>
+                  <Field.Label
+                    nativeLabel={false}
+                    render={<div />}
+                    className={styles.Label}
+                  >
+                    Жанри
+                  </Field.Label>
                   <GenreComboboxField
                     value={field.state.value}
                     onChange={field.handleChange}
@@ -656,7 +695,13 @@ function CreateTitleForm() {
                   dirty={field.state.meta.isDirty}
                   touched={field.state.meta.isTouched}
                 >
-                  <Field.Label className={styles.Label}>Теги</Field.Label>
+                  <Field.Label
+                    nativeLabel={false}
+                    render={<div />}
+                    className={styles.Label}
+                  >
+                    Теги
+                  </Field.Label>
                   <TagComboboxField
                     value={field.state.value}
                     onChange={field.handleChange}
@@ -675,7 +720,11 @@ function CreateTitleForm() {
                   touched={field.state.meta.isTouched}
                 >
                   <div className={styles.LabelBox}>
-                    <Field.Label className={styles.Label}>
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<div />}
+                      className={styles.Label}
+                    >
                       Автори
                       <Tooltip text="Обов'язкове поле" align="start" />
                     </Field.Label>
@@ -701,7 +750,11 @@ function CreateTitleForm() {
                   touched={field.state.meta.isTouched}
                 >
                   <div className={styles.LabelBox}>
-                    <Field.Label className={styles.Label}>
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<div />}
+                      className={styles.Label}
+                    >
                       Художники
                       <Tooltip text="Обов'язкове поле" align="start" />
                     </Field.Label>
@@ -727,7 +780,11 @@ function CreateTitleForm() {
                   touched={field.state.meta.isTouched}
                 >
                   <div className={styles.LabelBox}>
-                    <Field.Label className={styles.Label}>
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<div />}
+                      className={styles.Label}
+                    >
                       Команди
                       <Tooltip
                         text="Повинна бути обрана хоча б одна команда"

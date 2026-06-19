@@ -227,7 +227,7 @@ function CreateTeamForm() {
               </div>
 
               <div>
-                <span className={styles.Label}>Задній фон</span>
+                <span className={styles.Label}>Фонове зображення</span>
                 <div className={styles.UploadBackgroundWrapper}>
                   {!background.fileState && (
                     <motion.div
