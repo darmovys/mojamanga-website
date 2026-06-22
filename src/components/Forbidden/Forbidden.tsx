@@ -13,6 +13,7 @@ function Forbidden() {
           У вас недостатньо прав для цієї сторінки
         </p>
         <MotionButton
+          nativeButton={false}
           render={<Link to="/" />}
           className={clsx(styles.HomeButton, 'Gradient')}
         >

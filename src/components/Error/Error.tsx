@@ -1,11 +1,11 @@
 import { ErrorComponentProps, Link } from '@tanstack/react-router'
-import styles from './DefaultErrorComponent.module.scss'
+import styles from './Error.module.scss'
 import MotionButton from '../MotionButton'
 import { House, RefreshCw } from 'lucide-react'
 import clsx from 'clsx'
 import MobileNavigation from '../MobileNavigation'
 
-function DefaultErrorComponent({ reset, error }: ErrorComponentProps) {
+function Error({ reset, error }: ErrorComponentProps) {
   const isDev = import.meta.env.DEV
   return (
     <>
@@ -23,6 +23,7 @@ function DefaultErrorComponent({ reset, error }: ErrorComponentProps) {
             <span>Спробувати знову</span>
           </MotionButton>
           <MotionButton
+            nativeButton={false}
             render={<Link to="/" />}
             className={clsx(styles.SecondaryButton, 'Gradient')}
           >
@@ -36,4 +37,4 @@ function DefaultErrorComponent({ reset, error }: ErrorComponentProps) {
   )
 }
 
-export default DefaultErrorComponent
+export default Error
