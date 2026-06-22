@@ -8,15 +8,22 @@ import { useImageUpload } from '@/hooks/use-image-upload'
 import { api } from '@/lib/api-client'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { Genre, Person, Tag, Team } from '@/lib/treaty-types'
-import { addTitleSchema } from '@/schemas/titles'
+import { isValidUrl } from '@/lib/utils'
+import { addTitleSchema, SourceShape } from '@/schemas/titles'
 import { titlesQueries } from '@/services/queries'
 import { useForm } from '@tanstack/react-form-start'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { useTransition } from 'react'
+import { useState, useTransition } from 'react'
+
+export const MAX_NUMBER_OF_SOURCE_FIELDS = 20
 
 export function useTitleForm() {
   const [isUploading, startUploadingTransition] = useTransition()
+  const [isSourcesSectionShown, setIsSourcesSectionShown] = useState(true)
+  const [isOverflowVisible, setIsOverflowVisible] = useState(true)
+  const [hasAccordionAnimationFinished, setHasAccordionAnimationFinished] =
+    useState(false)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -38,6 +45,7 @@ export function useTitleForm() {
       authors: [] as Person[],
       artists: [] as Person[],
       teams: [] as Team[],
+      sources: [] as SourceShape[],
     },
     onSubmit: async ({ value: formValues }) => {
       const parsedResult = addTitleSchema.safeParse(formValues)
@@ -50,6 +58,37 @@ export function useTitleForm() {
         })
         return
       }
+
+      if (parsedResult.data.sources.length > MAX_NUMBER_OF_SOURCE_FIELDS) {
+        showTimedToast({
+          type: 'error',
+          title: 'Помилка',
+          description:
+            'Перевищена кількість максимально допустимих зовнішній ресурсів для прикріплення',
+        })
+        return
+      }
+
+      if (parsedResult.data.sources.some((field) => field.url.trim() === '')) {
+        showTimedToast({
+          type: 'warning',
+          title: 'Попередження',
+          description: 'У вас є незаповнені поля зовнішніх ресурсів',
+        })
+        return
+      }
+
+      if (parsedResult.data.sources.some((field) => !isValidUrl(field.url))) {
+        showTimedToast({
+          type: 'warning',
+          title: 'Попередження',
+          description:
+            'Деякі з наданих вами зовнішніх ресурсів мають невалідні посилання',
+        })
+        return
+      }
+
+      console.log(parsedResult.data.sources)
 
       startUploadingTransition(async () => {
         const { error, data } = await api().titles['add-new-title'].post(
@@ -125,11 +164,28 @@ export function useTitleForm() {
     form.reset()
   }
 
+  function handleSourcesPresence() {
+    if (!isSourcesSectionShown) {
+      setIsSourcesSectionShown(true)
+      setTimeout(() => setIsOverflowVisible(true), 250)
+    } else {
+      setHasAccordionAnimationFinished(false)
+      setIsOverflowVisible(false)
+      setIsSourcesSectionShown(false)
+    }
+  }
+
   return {
     cover,
     background,
     form,
     isUploading,
     handleClearForm,
+    isSourcesSectionShown,
+    setIsSourcesSectionShown,
+    isOverflowVisible,
+    hasAccordionAnimationFinished,
+    setHasAccordionAnimationFinished,
+    handleSourcesPresence,
   }
 }

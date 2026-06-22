@@ -160,6 +160,12 @@ export const titlesRouter = new Elysia({
                     titleStatus: body.titleStatus,
                     translationStatus: body.translationStatus,
 
+                    sources: {
+                      create: body.sources.map((source) => ({
+                        url: source.url,
+                      })),
+                    },
+
                     alternativeNames: {
                       create: alternativeNames.map((name) => ({ name })),
                     },
@@ -339,6 +345,9 @@ export const titlesRouter = new Elysia({
                   },
                   tags: {
                     select: { tag: { select: { id: true, name: true } } },
+                  },
+                  sources: {
+                    select: { id: true, url: true },
                   },
                   people: {
                     select: {

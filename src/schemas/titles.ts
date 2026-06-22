@@ -55,10 +55,18 @@ const zodTagArray = zodObjectArray<TagShape>(
   { id: 'string', name: 'string' },
   'Масив не відповідає типу Tag',
 )
+
 const zodGenreArray = zodObjectArray<GenreShape>(
   { id: 'string', name: 'string' },
   'Масив не відповідає типу Genre',
 )
+
+const sourceShapeSchema = z.object({
+  id: z.string(),
+  url: z.url({ error: 'Некоректний формат посилання' }),
+})
+
+export type SourceShape = z.infer<typeof sourceShapeSchema>
 
 export const addTitleSchema = z.object({
   coverKey: z
@@ -104,5 +112,13 @@ export const addTitleSchema = z.object({
   tags: zodTagArray,
   authors: zodPersonArray.min(1, { error: 'Додайте хоча б одного автора' }),
   artists: zodPersonArray.min(1, { error: 'Додайте хоча б одного художника' }),
+  sources: z
+    .array(
+      z.object({
+        id: z.string(),
+        url: z.string(),
+      }),
+    )
+    .default([]),
   teams: zodTeamArray.min(1, { error: 'Оберіть хоча б одну команду' }),
 })

@@ -1,4 +1,4 @@
-import { Button, Field } from '@base-ui/react'
+import { Accordion, Button, Field } from '@base-ui/react'
 import { useGoBack } from '@/hooks/use-go-back'
 import ClickTargetHelper from '../ClickTargetHelper'
 import VisuallyHidden from '../VisuallyHidden'
@@ -8,7 +8,7 @@ import MotionButton, { tapAnimation } from '../MotionButton'
 import MobileNavigation from '../MobileNavigation'
 import clsx from 'clsx'
 import { Image } from '@unpic/react'
-import { useTitleForm } from './use-title-form'
+import { MAX_NUMBER_OF_SOURCE_FIELDS, useTitleForm } from './use-title-form'
 import CropImageDialog from '../CropImageDialog'
 import { showTimedToast } from '@/lib/toast'
 import { SelectField } from './SelectField'
@@ -16,10 +16,22 @@ import ShiftBy from '../ShiftBy/ShiftBy'
 import { PersonComboboxField } from './PersonComboboxField'
 import { getRouteApi, Link } from '@tanstack/react-router'
 import { UserTeamsCheckboxList } from './UserTeamsCheckboxList'
+import { TagComboboxField } from './TagComboboxField'
+import { GenreComboboxField } from './GenreComboboxField'
+import { useHelperDialog } from '@/hooks/use-helper-dialog'
+import HelperDialog from '../HelperDialog'
+import { produce } from 'immer'
+import { createId } from '@paralleldrive/cuid2'
+import { SourceShape } from '@/schemas/titles'
+import { isValidUrl } from '@/lib/utils'
+import { useId } from 'react'
 import {
   ArrowLeft,
+  ChevronUp,
   CircleAlert,
   Info,
+  Link2Icon,
+  LinkIcon,
   LoaderCircle,
   Trash2,
   UploadCloud,
@@ -36,11 +48,7 @@ import {
   TITLE_STATUS_LABELS,
   TITLE_TYPE_LABELS,
 } from '@/lib/constants'
-import { TagComboboxField } from './TagComboboxField'
-import { GenreComboboxField } from './GenreComboboxField'
 import styles from './CreateTitleForm.module.scss'
-import { useHelperDialog } from '@/hooks/use-helper-dialog'
-import HelperDialog from '../HelperDialog'
 
 const MAX_DESCRIPTION_LENGTH = 1000
 
@@ -48,8 +56,19 @@ const routeApi = getRouteApi('/title/create/')
 
 function CreateTitleForm() {
   const { handleGoBack } = useGoBack()
-  const { form, cover, background, isUploading, handleClearForm } =
-    useTitleForm()
+  const {
+    form,
+    cover,
+    background,
+    isUploading,
+    handleClearForm,
+    isSourcesSectionShown,
+    setIsSourcesSectionShown,
+    isOverflowVisible,
+    hasAccordionAnimationFinished,
+    setHasAccordionAnimationFinished,
+    handleSourcesPresence,
+  } = useTitleForm()
   const loaderData = routeApi.useLoaderData()
 
   const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
@@ -176,14 +195,14 @@ function CreateTitleForm() {
                             )}
 
                           {!cover.fileState.uploading && (
-                            <div className={styles.TrashButtonWrapper}>
+                            <div className={styles.FloatingButtonWrapper}>
                               <MotionButton
                                 focusableWhenDisabled={true}
                                 disabled={
                                   cover.fileState.isDeleting || isUploading
                                 }
                                 onClick={() => cover.removeFile()}
-                                className={styles.TrashButton}
+                                className={styles.TrashImageButton}
                               >
                                 <ClickTargetHelper />
                                 {cover.fileState.isDeleting ? (
@@ -311,9 +330,9 @@ function CreateTitleForm() {
                             )}
 
                           {!background.fileState.uploading && (
-                            <div className={styles.TrashButtonWrapper}>
+                            <div className={styles.FloatingButtonWrapper}>
                               <MotionButton
-                                className={styles.TrashButton}
+                                className={styles.TrashImageButton}
                                 focusableWhenDisabled={true}
                                 disabled={
                                   background.fileState.isDeleting || isUploading
@@ -771,6 +790,187 @@ function CreateTitleForm() {
             />
 
             <form.Field
+              name="sources"
+              children={(field) => {
+                const visibleFields = field.state.value
+                const maxFieldsReached =
+                  visibleFields.length >= MAX_NUMBER_OF_SOURCE_FIELDS
+                const hasEmptyFields = visibleFields.some(
+                  (el) => el.url.trim() === '',
+                )
+
+                function handleAddSource() {
+                  if (hasEmptyFields || maxFieldsReached) {
+                    return
+                  }
+
+                  field.handleChange(
+                    produce((draft) => {
+                      draft.push({
+                        id: createId(),
+                        url: '',
+                      })
+                    }),
+                  )
+                }
+
+                function handleRemoveSource(id: string) {
+                  field.handleChange(
+                    produce((draft) => {
+                      const index = draft.findIndex((link) => link.id === id)
+                      if (index !== -1) draft.splice(index, 1)
+                    }),
+                  )
+                }
+
+                function handleChangeSource(id: string, newSource: string) {
+                  field.handleChange(
+                    produce((draft) => {
+                      const source = draft.find((source) => source.id === id)
+                      if (source) source.url = newSource
+                    }),
+                  )
+                }
+
+                return (
+                  <Field.Root
+                    name={field.name}
+                    invalid={!field.state.meta.isValid}
+                    dirty={field.state.meta.isDirty}
+                    touched={field.state.meta.isTouched}
+                  >
+                    <div className={styles.SourcesHeader}>
+                      <Field.Label
+                        nativeLabel={false}
+                        render={<div />}
+                        className={styles.Label}
+                      >
+                        Посилання на зовнішні ресруси
+                        <Tooltip
+                          color="yellow"
+                          text="Обов'язково вказуйте на початку https://"
+                          align="start"
+                        />
+                      </Field.Label>
+                      <AnimatePresence>
+                        {visibleFields.length > 1 && (
+                          <MotionButton
+                            type="button"
+                            initial={{ opacity: 0, filter: 'blur(4px)' }}
+                            animate={{ opacity: 1, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, filter: 'blur(4px)' }}
+                            transition={{
+                              type: 'spring',
+                              duration: 0.25,
+                              bounce: 0,
+                            }}
+                            className={styles.HideSourcesButton}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              handleSourcesPresence()
+                            }}
+                          >
+                            <ClickTargetHelper />
+                            <motion.div
+                              initial={false}
+                              animate={{
+                                rotate: isSourcesSectionShown
+                                  ? '180deg'
+                                  : '0deg',
+                              }}
+                              transition={{
+                                type: 'spring',
+                                duration: 0.4,
+                                bounce: 0,
+                              }}
+                            >
+                              <ChevronUp size={18} />
+                              <VisuallyHidden>
+                                {isSourcesSectionShown
+                                  ? 'Сховати зовнішні ресурси'
+                                  : 'Показати зовнішні ресурси'}
+                              </VisuallyHidden>
+                            </motion.div>
+                          </MotionButton>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    <Accordion.Root
+                      value={isSourcesSectionShown ? ['sources'] : []}
+                      onValueChange={(values) =>
+                        setIsSourcesSectionShown(values.length > 0)
+                      }
+                    >
+                      <Accordion.Item value="sources">
+                        <Accordion.Header style={{ display: 'none' }}>
+                          <Accordion.Trigger />
+                        </Accordion.Header>
+                        <Accordion.Panel
+                          style={{
+                            overflow: isOverflowVisible ? 'visible' : 'clip',
+                          }}
+                          className={styles.AccordionPanel}
+                          onTransitionEnd={() =>
+                            setHasAccordionAnimationFinished(true)
+                          }
+                        >
+                          <div
+                            className={clsx(styles.SourcesList, {
+                              [styles.MarginEnd]:
+                                visibleFields.length > 0 && !maxFieldsReached,
+                            })}
+                          >
+                            <AnimatePresence>
+                              {visibleFields.map((source, index) => {
+                                return (
+                                  <SourceInputField
+                                    key={source.id}
+                                    source={source}
+                                    fieldIndex={index}
+                                    onChangeSource={(id, value) =>
+                                      handleChangeSource(id, value)
+                                    }
+                                    onRemoveSource={(id) =>
+                                      handleRemoveSource(id)
+                                    }
+                                    hasAccordionAnimationFinished={
+                                      hasAccordionAnimationFinished
+                                    }
+                                  />
+                                )
+                              })}
+                            </AnimatePresence>
+                          </div>
+
+                          {!maxFieldsReached && (
+                            <MotionButton
+                              type="button"
+                              focusableWhenDisabled={true}
+                              disabled={hasEmptyFields}
+                              style={{
+                                pointerEvents: hasEmptyFields ? 'none' : 'auto',
+                              }}
+                              tabIndex={hasEmptyFields ? -1 : 0}
+                              onClick={(e) => {
+                                e.preventDefault()
+                                handleAddSource()
+                              }}
+                              className={styles.AddSourceButton}
+                            >
+                              <span>Додати посилання</span>
+                              <LinkIcon size={12} />
+                            </MotionButton>
+                          )}
+                        </Accordion.Panel>
+                      </Accordion.Item>
+                    </Accordion.Root>
+                  </Field.Root>
+                )
+              }}
+            />
+
+            <form.Field
               name="teams"
               children={(field) => (
                 <Field.Root
@@ -837,6 +1037,125 @@ function CreateTitleForm() {
         <MobileNavigation />
       </div>
     </div>
+  )
+}
+
+interface SourceInputField {
+  source: SourceShape
+  fieldIndex: number
+  onChangeSource: (id: string, value: string) => void
+  onRemoveSource: (id: string) => void
+  hasAccordionAnimationFinished: boolean
+}
+
+export function SourceInputField({
+  source,
+  fieldIndex,
+  onChangeSource,
+  onRemoveSource,
+  hasAccordionAnimationFinished,
+}: SourceInputField) {
+  const isValid = isValidUrl(source.url)
+  const fieldId = useId()
+  return (
+    <motion.div
+      layout={true}
+      initial={
+        hasAccordionAnimationFinished
+          ? { opacity: 0, height: 0, scale: 0.96 }
+          : false
+      }
+      animate={
+        hasAccordionAnimationFinished
+          ? {
+              opacity: 1,
+              height: 'auto',
+              scale: 1,
+              transition: {
+                type: 'spring',
+                duration: 0.25,
+                bounce: 0,
+              },
+            }
+          : false
+      }
+      exit={{
+        x: -80,
+        opacity: 0,
+        height: 0,
+        marginTop: 0,
+        marginBottom: 0,
+        overflow: 'hidden',
+        transition: {
+          x: { duration: 0.25, ease: 'easeOut' },
+          opacity: { delay: 0.1, duration: 0.2 },
+          height: { delay: 0.25, duration: 0.25, ease: 'easeInOut' },
+          marginTop: { delay: 0.25, duration: 0.25 },
+          marginBottom: { delay: 0.25, duration: 0.25 },
+        },
+      }}
+      className={styles.SourceFieldInputWrapper}
+    >
+      <input
+        type="url"
+        placeholder="https://example.com"
+        id={`source-${fieldId}`}
+        aria-label={`Посилання на ресурс ${fieldIndex + 1}`}
+        value={source.url}
+        onChange={(e) => onChangeSource(source.id, String(e.target.value))}
+        autoComplete="off"
+        className={styles.SourceFieldInput}
+        autoFocus={true}
+      />
+
+      <div className={styles.SourceFieldButtonsWrapper}>
+        {isValid ? (
+          <MotionButton
+            className={clsx(
+              styles.SourceFieldButton,
+              styles.SourceExternalButton,
+            )}
+            render={
+              <a
+                href={
+                  ['https://', 'http://'].some((protocol) =>
+                    source.url.startsWith(protocol),
+                  )
+                    ? source.url
+                    : `https://${source.url}`
+                }
+                target="_blank"
+              />
+            }
+            nativeButton={false}
+          >
+            <Link2Icon size={16} />
+            <VisuallyHidden>Перейти за наданим посиланням</VisuallyHidden>
+          </MotionButton>
+        ) : (
+          <MotionButton
+            className={clsx(
+              styles.SourceFieldButton,
+              styles.SourceExternalButton,
+            )}
+            disabled={true}
+          >
+            <Link2Icon size={16} />
+            <VisuallyHidden>
+              Неможливо перейти за посиланням (надайте коректне посилання)
+            </VisuallyHidden>
+          </MotionButton>
+        )}
+
+        <MotionButton
+          className={clsx(styles.SourceFieldButton, styles.TrashButton)}
+          onClick={() => onRemoveSource(source.id)}
+        >
+          <Trash2 size={16} />
+          <VisuallyHidden>Видалити поле</VisuallyHidden>
+        </MotionButton>
+      </div>
+    </motion.div>
   )
 }
 

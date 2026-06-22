@@ -197,7 +197,7 @@
   }
 }
 
-.LinksHeader {
+.SourcesHeader {
   display: flex;
   align-items: center;
   gap: var(--8px);
@@ -209,7 +209,7 @@
   }
 }
 
-.HideLinksButton {
+.HideSourcesButton {
   background-color: var(--sys-surface);
   color: var(--sys-primary);
   box-shadow: var(--shadow-border);
@@ -247,7 +247,7 @@
   }
 }
 
-.LinksList {
+.SourcesList {
   display: flex;
   flex-direction: column;
   gap: var(--16px);
@@ -257,14 +257,13 @@
   }
 }
 
-.LinkFieldInputWrapper {
+.SourceFieldInputWrapper {
   position: relative;
 }
 
-.LinkFieldInput {
+.SourceFieldInput {
   composes: FieldInput;
-  padding-inline-start: calc(var(--64px) + var(--8px));
-  padding-inline-end: calc(var(--32px) + var(--8px));
+  padding-inline-end: calc(var(--64px) + var(--14px));
 }
 
 .SelectWrapper {
@@ -350,7 +349,7 @@
   color: var(--sys-on-surface-variant);
 }
 
-.AddLinkButton {
+.AddSourceButton {
   border: 2px dashed var(--sys-on-surface-variant);
   border-radius: var(--4px);
   inline-size: 100%;
@@ -517,7 +516,7 @@
   color: var(--danger);
 }
 
-.TrashButtonWrapper {
+.FloatingButtonWrapper {
   --inset: var(--8px);
   --size: var(--32px);
   --border-radius: var(--8px);
@@ -528,19 +527,21 @@
   block-size: var(--size);
 }
 
-.TrashButton {
+.SourceFieldButtonsWrapper {
   position: absolute;
-  inset: 0;
+  inset-block-start: 50%;
+  inset-inline-end: var(--6px);
+  transform: translateY(-50%);
   display: flex;
-  justify-content: center;
-  align-items: center;
+  gap: var(--10px);
+}
+
+.TrashButton {
   background-color: var(--danger);
   opacity: 0.8;
   border-radius: var(--border-radius);
   color: #fff;
   transition: opacity 300ms ease;
-  border: none;
-  cursor: pointer;
   box-shadow: var(--shadow-border);
 
   &:hover,
@@ -561,12 +562,42 @@
   }
 }
 
-.TrashLinkButtonWrapper {
-  composes: TrashButtonWrapper;
-  --size: calc(var(--28px) + var(--2px));
-  inset-block-start: 50%;
-  inset-inline-end: var(--6px);
-  transform: translateY(-50%);
+.SourceFieldButton {
+  block-size: var(--28px);
+  inline-size: var(--28px);
+  border-radius: var(--6px);
+}
+
+.SourceExternalButton {
+  background-color: var(--sys-surface-highest);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  transition: color 0.2s var(--bg-animation);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--blue-400);
+    }
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+
+.TrashImageButton {
+  composes: TrashButton;
+  position: absolute;
+  inset: 0;
 }
 
 .Loader {
@@ -780,6 +811,13 @@
   min-width: 0; /* Важливо для коректної роботи ellipsis у flex-контейнері */
 }
 
+.ErrorMessage {
+  background-color: var(--danger-background);
+  color: var(--danger);
+  padding: var(--4px) var(--8px);
+  border-radius: var(--6px);
+}
+
 @keyframes marching-ants {
   to {
     stroke-dashoffset: -28;
@@ -790,11 +828,4 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-.ErrorMessage {
-  background-color: var(--danger-background);
-  color: var(--danger);
-  padding: var(--4px) var(--8px);
-  border-radius: var(--6px);
 }
