@@ -188,6 +188,7 @@
   font-weight: 550;
   margin-block-end: var(--6px);
   font-size: inherit;
+  color: var(--sys-primary);
 }
 
 .ImageWrapper {
@@ -264,6 +265,12 @@
 }
 
 .CopyButton {
+  transition: color 0.2s var(--bg-animation);
+  @media (hover: hover) {
+    &:hover {
+      color: var(--sys-primary);
+    }
+  }
   &:focus-visible {
     border-radius: var(--2px);
     outline: 2px solid var(--blue-400);
@@ -282,11 +289,14 @@
   text-decoration: none;
   color: inherit;
   border-radius: var(--border-radius);
-  transition: background-color 0.2s var(--bg-animation);
+  transition:
+    background-color 0.2s var(--bg-animation),
+    color 0.2s var(--bg-animation);
 
   @media (hover: hover) {
     &:hover {
       background-color: var(--sys-on-button);
+      color: var(--sys-primary);
     }
   }
 
