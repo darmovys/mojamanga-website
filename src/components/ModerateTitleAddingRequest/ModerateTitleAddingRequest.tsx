@@ -3,7 +3,7 @@ import { getRouteApi, Link } from '@tanstack/react-router'
 import { useGoBack } from '@/hooks/use-go-back'
 import { Button, Separator } from '@base-ui/react'
 import ClickTargetHelper from '../ClickTargetHelper'
-import { ArrowLeft, Check, Copy, ImageOff, Info } from 'lucide-react'
+import { ArrowLeft, Check, Copy, ImageOff, Info, Link2Icon } from 'lucide-react'
 import MotionButton from '../MotionButton'
 import clsx from 'clsx'
 import VisuallyHidden from '../VisuallyHidden'
@@ -339,6 +339,36 @@ function ModerateTitleAddingRequest() {
           </div>
         </div>
 
+        <div className={styles.Card}>
+          <h2 className={styles.CardTitle}>Посилання на зовнішні ресурси</h2>
+          <div className={styles.SourcesGroup}>
+            {currentVersionData.sources.map((source) => (
+              <div className={styles.SourcesItem} key={source.id}>
+                <MotionButton
+                  nativeButton={false}
+                  style={{ position: 'relative' }} // for click target helper
+                  render={
+                    <a
+                      className={styles.SourceLinkButton}
+                      href={source.url}
+                      onClick={(e) => {
+                        e.preventDefault()
+                      }}
+                    />
+                  }
+                >
+                  <Link2Icon size={16} />
+                  <VisuallyHidden>
+                    Перейти за посиланням {source.url}
+                  </VisuallyHidden>
+                  <ClickTargetHelper />
+                </MotionButton>
+                <div className={styles.Source}>{source.url}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <footer className={clsx(styles.Card, styles.Footer)}>
           <div className={styles.Actions}>
             <ConfirmDialog
@@ -584,6 +614,26 @@ export function ModerateTitleAddingRequestSkeleton() {
           <h2 className={styles.CardTitle}>Команди</h2>
           <div className={styles.LinksGroup}>
             <Skeleton width="130px" height="16px" borderRadius="4px" />
+          </div>
+        </div>
+
+        <div className={styles.Card} style={{ marginBlockEnd: 'var(--16px)' }}>
+          <h2 className={styles.CardTitle}>Посилання на зовнішні ресурси</h2>
+          <div className={styles.SourcesGroup}>
+            {range(3).map((index) => (
+              <div className={styles.SourcesItem} key={index}>
+                <Skeleton
+                  width="var(--32px)"
+                  height="var(--32px)"
+                  borderRadius="var(--6px)"
+                />
+                <Skeleton
+                  width="100%"
+                  height="var(--32px)"
+                  borderRadius="var(--6px)"
+                />
+              </div>
+            ))}
           </div>
         </div>
       </main>

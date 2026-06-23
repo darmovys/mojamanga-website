@@ -531,6 +531,49 @@
   background-color: var(--sys-outline);
   block-size: 1px;
   margin-block: var(--8px);
-  // margin-inline-start: var(--10px);
-  // margin-inline-end: var(--14px);
+}
+
+.SourcesGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--12px);
+}
+
+.SourcesItem {
+  display: flex;
+  gap: var(--10px);
+  min-inline-size: 0;
+}
+
+.SourceLinkButton {
+  flex: 0 0 var(--32px);
+  block-size: var(--32px);
+  border-radius: var(--6px);
+  background-color: var(--sys-surface-highest);
+  box-shadow: var(--shadow-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  transition:
+    color 0.2s var(--bg-animation),
+    background-color 0.2s var(--bg-animation);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--blue-400);
+      background-color: var(--sys-surface-high);
+    }
+  }
+}
+
+.Source {
+  border-radius: var(--4px);
+  word-break: break-all;
+  box-shadow: var(--shadow-border);
+  padding: var(--4px) var(--8px);
+  display: flex;
+  align-items: center;
+  flex: 1;
+  user-select: none;
 }
