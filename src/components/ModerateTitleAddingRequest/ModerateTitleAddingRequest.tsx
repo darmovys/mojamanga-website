@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { getRouteApi, Link } from '@tanstack/react-router'
 import { useGoBack } from '@/hooks/use-go-back'
 import { Button, Separator } from '@base-ui/react'
@@ -24,7 +24,8 @@ import styles from './ModerateTitleAddingRequest.module.scss'
 import { useHelperDialog } from '@/hooks/use-helper-dialog'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { AnimatePresence, motion } from 'motion/react'
-import { range } from '@/lib/utils'
+import { isTrustedHostname, range } from '@/lib/utils'
+import AwayDialog from '../AwayDialog'
 
 const routeApi = getRouteApi('/moderation/title-review/$titleId')
 
@@ -343,28 +344,7 @@ function ModerateTitleAddingRequest() {
           <h2 className={styles.CardTitle}>Посилання на зовнішні ресурси</h2>
           <div className={styles.SourcesGroup}>
             {currentVersionData.sources.map((source) => (
-              <div className={styles.SourcesItem} key={source.id}>
-                <MotionButton
-                  nativeButton={false}
-                  style={{ position: 'relative' }} // for click target helper
-                  render={
-                    <a
-                      className={styles.SourceLinkButton}
-                      href={source.url}
-                      onClick={(e) => {
-                        e.preventDefault()
-                      }}
-                    />
-                  }
-                >
-                  <Link2Icon size={16} />
-                  <VisuallyHidden>
-                    Перейти за посиланням {source.url}
-                  </VisuallyHidden>
-                  <ClickTargetHelper />
-                </MotionButton>
-                <div className={styles.Source}>{source.url}</div>
-              </div>
+              <Source key={source.id} id={source.id} url={source.url} />
             ))}
           </div>
         </div>
@@ -419,6 +399,58 @@ function ModerateTitleAddingRequest() {
           </div>
         </footer>
       </main>
+    </div>
+  )
+}
+
+interface SourceProps {
+  id: string
+  url: string
+}
+
+function Source({ id, url }: SourceProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const hostname = (() => {
+    try {
+      return new URL(url).hostname
+    } catch {
+      return null
+    }
+  })()
+
+  function openLink(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+    e.preventDefault()
+    if (hostname && isTrustedHostname(hostname)) {
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } else {
+      setIsDialogOpen(true)
+    }
+  }
+
+  return (
+    <div className={styles.SourcesItem} key={id}>
+      <MotionButton
+        nativeButton={false}
+        style={{ position: 'relative' }} // for click target helper
+        render={
+          <a
+            className={styles.SourceLinkButton}
+            href={url}
+            onClick={openLink}
+          />
+        }
+      >
+        <Link2Icon size={16} />
+        <VisuallyHidden>Перейти за посиланням {url}</VisuallyHidden>
+        <ClickTargetHelper />
+      </MotionButton>
+      <AwayDialog
+        url={url}
+        isOpen={isDialogOpen}
+        onIsOpenChange={setIsDialogOpen}
+      />
+
+      <div className={styles.Source}>{url}</div>
     </div>
   )
 }

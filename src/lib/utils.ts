@@ -1,5 +1,6 @@
 import { S3 } from '@/lib/s3-client'
 import { CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { createClientOnlyFn } from '@tanstack/react-start'
 
 export const getImageDimensions = (
   file: File,
@@ -159,3 +160,25 @@ export function isValidUrl(value: string) {
     return false
   }
 }
+
+const STORAGE_KEY = 'trusted_hostnames'
+
+export const getTrustedHostnames = createClientOnlyFn((): string[] => {
+  const raw = localStorage.getItem(STORAGE_KEY)
+  return raw ? JSON.parse(raw) : []
+})
+
+export const addTrustedHostname = createClientOnlyFn(
+  (hostname: string): void => {
+    const current = getTrustedHostnames()
+    if (!current.includes(hostname)) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...current, hostname]))
+    }
+  },
+)
+
+export const isTrustedHostname = createClientOnlyFn(
+  (hostname: string): boolean => {
+    return getTrustedHostnames().includes(hostname)
+  },
+)

@@ -1,0 +1,186 @@
+@use '../../styles/breakpoints' as *;
+
+.Overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--default-overlay-color);
+}
+
+.OuterContainer {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Popup {
+  background-color: var(--sys-surface-highest);
+  block-size: 100%;
+  inline-size: 100%;
+  position: relative; // for a close button
+  color: var(--sys-primary);
+  padding: var(--40px) var(--24px) var(--24px) var(--24px);
+  user-select: none;
+
+  @include up('tablet') {
+    block-size: revert;
+    inline-size: 80%;
+    max-inline-size: var(--512px);
+    border-radius: var(--12px);
+    padding: var(--24px);
+  }
+}
+
+.CloseButton {
+  position: absolute !important;
+  inset-block-start: var(--24px);
+  inset-inline-end: var(--10px);
+  border-radius: 100vmax;
+  color: var(--sys-on-surface);
+  padding: var(--6px);
+  transition: background-color 0.2s var(--bg-animation);
+
+  @include up('tablet') {
+    inset-block-start: var(--10px);
+    outline: 2px solid var(--sys-primary);
+    outline-offset: -2px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      outline: none;
+      background-color: var(--state-primary-opacity-8);
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+}
+
+.Heading {
+  font-size: var(--20px);
+  font-weight: 600;
+  margin-block-end: var(--8px);
+  line-height: 1.2;
+}
+
+.Paragraph {
+  font-size: var(--16px);
+  color: var(--sys-on-surface-variant);
+  line-height: 1.25;
+  margin-block-end: var(--24px);
+}
+
+.Url {
+  font-size: var(--16px);
+  color: var(--sys-on-surface-variant);
+  padding: var(--16px);
+  border-radius: var(--8px);
+  border: 1px solid var(--sys-outline);
+  overflow-wrap: break-word;
+  hyphens: auto;
+  margin-block-end: var(--12px);
+}
+
+.Hostname {
+  color: var(--sys-primary);
+  font-weight: 600;
+}
+
+.CheckboxWrapper {
+  color: var(--sys-on-surface-variant);
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  margin-block-end: var(--24px);
+
+  .Hostname {
+    color: inherit;
+  }
+}
+
+.CheckboxLabel {
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.Checkbox {
+  align-self: flex-start;
+  --size: var(--24px);
+  display: flex;
+  flex-shrink: 0;
+  inline-size: var(--size);
+  block-size: var(--size);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--4px);
+  outline: 0;
+  box-shadow: var(--inset-shadow);
+
+  &[data-unchecked] {
+    background-color: var(--sys-surface-low);
+  }
+
+  &[data-checked],
+  &[data-indeterminate] {
+    background-color: var(--blue-400);
+    color: oklch(97.614% 0.00011 271.152);
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+  }
+}
+
+.Indicator {
+  transform: scale(0);
+  transition: 0.15s transform cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &[data-checked],
+  &[data-indeterminate] {
+    transform: scale(0.8);
+  }
+}
+
+.Actions {
+  display: flex;
+  gap: var(--8px);
+}
+
+.Button {
+  flex: 1;
+  border-radius: var(--8px);
+  padding: var(--6px) var(--14px);
+  transition: background-color 0.2s var(--bg-animation);
+
+  &::before {
+    border-radius: var(--8px) !important;
+  }
+}
+
+.SecondaryButton {
+  composes: Button;
+  color: var(--sys-primary);
+  outline: 2px solid var(--sys-primary);
+  outline-offset: -2px;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-primary-opacity-8);
+      outline: none;
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.PrimaryButton {
+  composes: Button;
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+}
