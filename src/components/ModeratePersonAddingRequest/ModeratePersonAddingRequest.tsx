@@ -21,6 +21,7 @@ const routeApi = getRouteApi('/moderation/person-review/$personId')
 function ModeratePersonAddingRequest() {
   const { personId } = routeApi.useParams()
   const loaderData = routeApi.useLoaderData()
+
   const { handleGoBack } = useGoBack()
   const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
     useHelperDialog('seen_add_person_request_moderation_rules', loaderData)
@@ -32,6 +33,10 @@ function ModeratePersonAddingRequest() {
     handleDecline,
     approveMutation,
     declineMutation,
+    activeDialog,
+    setActiveDialog,
+    message,
+    setMessage,
   } = useReviewRequest(personId)
 
   return (
@@ -159,35 +164,49 @@ function ModeratePersonAddingRequest() {
 
         <footer className={clsx(styles.Card, styles.Footer)}>
           <div className={styles.Actions}>
+            <MotionButton
+              className={clsx(styles.ApproveButton, 'Gradient', {
+                [styles.Pending]: isPending,
+              })}
+              onClick={() => setActiveDialog('approve')}
+              disabled={isPending}
+            >
+              {approveMutation.isPending ? 'Обробка...' : 'Схвалити'}
+            </MotionButton>
             <ConfirmDialog
-              trigger={(openDialog) => (
-                <MotionButton
-                  className={clsx(styles.ApproveButton, 'Gradient', {
-                    [styles.Pending]: isPending,
-                  })}
-                  onClick={openDialog}
-                  disabled={isPending}
-                >
-                  {approveMutation.isPending ? 'Обробка...' : 'Схвалити'}
-                </MotionButton>
-              )}
-              type="approve"
-              onConfirm={() => handleApprove()}
+              description="Ви точно хочете схвалити запит?"
+              isOpen={activeDialog === 'approve'}
+              onIsOpenChange={(open) =>
+                setActiveDialog(open ? 'approve' : null)
+              }
+              onConfirm={handleApprove}
             />
+            <MotionButton
+              className={clsx(styles.HardRejectButton, {
+                [styles.Pending]: isPending,
+              })}
+              onClick={() => setActiveDialog('decline')}
+              disabled={isPending}
+            >
+              {declineMutation.isPending ? 'Обробка...' : 'Відхилити'}
+            </MotionButton>
             <ConfirmDialog
-              trigger={(openDialog) => (
-                <MotionButton
-                  className={clsx(styles.HardRejectButton, {
-                    [styles.Pending]: isPending,
-                  })}
-                  onClick={openDialog}
-                  disabled={isPending}
-                >
-                  {declineMutation.isPending ? 'Обробка...' : 'Відхилити'}
-                </MotionButton>
-              )}
-              type="decline"
-              onConfirm={(message) => handleDecline(message)}
+              description={'Ви точно хочете відхилити запит?'}
+              isOpen={activeDialog === 'decline'}
+              onIsOpenChange={(open) =>
+                setActiveDialog(open ? 'decline' : null)
+              }
+              onConfirm={handleDecline}
+              children={
+                <textarea
+                  name="message"
+                  id="message"
+                  placeholder="Опишіть причину (рекомендовано)"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className={styles.MessageField}
+                />
+              }
             />
           </div>
         </footer>

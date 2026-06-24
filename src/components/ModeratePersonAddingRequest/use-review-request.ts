@@ -9,18 +9,31 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
 
 type AnyEndpointError = Treaty.Error<
   | Api['people']['approve-person-request']['patch']
   | Api['people']['decline-person-request']['delete']
 >
 
+type ReviewDialogType = 'approve' | 'revise' | 'decline' | null
+
 export function useReviewRequest(personId: string) {
+  const [activeDialog, setActiveDialog] = useState<ReviewDialogType>(null)
+  const [message, setMessage] = useState('')
+
   const { data } = useSuspenseQuery(peopleQueries.getPersonRequest(personId))
+
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
+  const closeDialog = () => {
+    setActiveDialog(null)
+    setMessage('')
+  }
+
   function handleMutationSuccess() {
+    closeDialog()
     queryClient.invalidateQueries({ queryKey: peopleQueries.lists() })
     showTimedToast(
       { type: 'success', title: 'Успіх', description: 'Запит розглянуто' },
@@ -68,22 +81,22 @@ export function useReviewRequest(personId: string) {
     onError: handleMutationError,
   })
 
-  const isPending = approveMutation.isPending || declineMutation.isPending
-
-  function handleApprove() {
-    approveMutation.mutate(personId)
-  }
-
-  function handleDecline(message: string) {
-    declineMutation.mutate({ id: personId, message, coverUrl: data.coverUrl })
-  }
-
   return {
     data,
-    isPending,
-    handleApprove,
-    handleDecline,
+    isPending: approveMutation.isPending || declineMutation.isPending,
+    handleApprove: () => approveMutation.mutate(personId),
+    handleDecline: () =>
+      declineMutation.mutate({
+        id: personId,
+        message,
+        coverUrl: data.coverUrl,
+      }),
     approveMutation,
     declineMutation,
+    activeDialog,
+    setActiveDialog,
+    message,
+    setMessage,
+    closeDialog,
   }
 }

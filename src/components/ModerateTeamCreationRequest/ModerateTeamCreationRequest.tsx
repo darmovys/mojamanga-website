@@ -38,6 +38,10 @@ function ModerateTeamCreationRequest() {
     approveMutation,
     reviseMutation,
     declineMutation,
+    activeDialog,
+    setActiveDialog,
+    message,
+    setMessage,
   } = useReviewRequest(teamId)
 
   return (
@@ -209,50 +213,74 @@ function ModerateTeamCreationRequest() {
         </div>
         <footer className={clsx(styles.Card, styles.Footer)}>
           <div className={styles.Actions}>
+            <MotionButton
+              className={clsx(styles.ApproveButton, 'Gradient', {
+                [styles.Pending]: isPending,
+              })}
+              onClick={() => setActiveDialog('approve')}
+              disabled={isPending}
+            >
+              {approveMutation.isPending ? 'Обробка...' : 'Схвалити'}
+            </MotionButton>
             <ConfirmDialog
-              trigger={(openDialog) => (
-                <MotionButton
-                  className={clsx(styles.ApproveButton, 'Gradient', {
-                    [styles.Pending]: isPending,
-                  })}
-                  onClick={openDialog}
-                  disabled={isPending}
-                >
-                  {approveMutation.isPending ? 'Обробка...' : 'Схвалити'}
-                </MotionButton>
-              )}
-              type="approve"
-              onConfirm={() => handleApprove()}
+              description="Ви точно хочете схвалити запит?"
+              isOpen={activeDialog === 'approve'}
+              onIsOpenChange={(open) =>
+                setActiveDialog(open ? 'approve' : null)
+              }
+              onConfirm={handleApprove}
             />
+            <MotionButton
+              className={clsx(styles.RejectButton, 'Gradient', {
+                [styles.Pending]: isPending,
+              })}
+              onClick={() => setActiveDialog('revise')}
+              disabled={isPending}
+            >
+              {reviseMutation.isPending ? 'Обробка...' : 'Доопрацювати'}
+            </MotionButton>
             <ConfirmDialog
-              trigger={(openDialog) => (
-                <MotionButton
-                  className={clsx(styles.RejectButton, 'Gradient', {
-                    [styles.Pending]: isPending,
-                  })}
-                  onClick={openDialog}
-                  disabled={isPending}
-                >
-                  {reviseMutation.isPending ? 'Обробка...' : 'Доопрацювати'}
-                </MotionButton>
-              )}
-              type="revise"
-              onConfirm={(message) => handleRevise(message)}
+              description={'Ви точно хочете відправити запит на доопрацювання?'}
+              isOpen={activeDialog === 'revise'}
+              onIsOpenChange={(open) => setActiveDialog(open ? 'revise' : null)}
+              onConfirm={handleRevise}
+              children={
+                <textarea
+                  name="message"
+                  id="message"
+                  placeholder="Опишіть причину (рекомендовано)"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className={styles.MessageField}
+                />
+              }
             />
+            <MotionButton
+              className={clsx(styles.HardRejectButton, {
+                [styles.Pending]: isPending,
+              })}
+              onClick={() => setActiveDialog('decline')}
+              disabled={isPending}
+            >
+              {declineMutation.isPending ? 'Обробка...' : 'Відхилити'}
+            </MotionButton>
             <ConfirmDialog
-              trigger={(openDialog) => (
-                <MotionButton
-                  className={clsx(styles.HardRejectButton, {
-                    [styles.Pending]: isPending,
-                  })}
-                  onClick={openDialog}
-                  disabled={isPending}
-                >
-                  {declineMutation.isPending ? 'Обробка...' : 'Відхилити'}
-                </MotionButton>
-              )}
-              type="decline"
-              onConfirm={(message) => handleDecline(message)}
+              description={'Ви точно хочете відхилити запит?'}
+              isOpen={activeDialog === 'decline'}
+              onIsOpenChange={(open) =>
+                setActiveDialog(open ? 'decline' : null)
+              }
+              onConfirm={handleDecline}
+              children={
+                <textarea
+                  name="message"
+                  id="message"
+                  placeholder="Опишіть причину (рекомендовано)"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className={styles.MessageField}
+                />
+              }
             />
           </div>
         </footer>

@@ -9,6 +9,7 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
 
 type AnyEndpointError = Treaty.Error<
   | Api['teams']['approve-team-request']['patch']
@@ -16,12 +17,24 @@ type AnyEndpointError = Treaty.Error<
   | Api['teams']['decline-team-request']['delete']
 >
 
+type ReviewDialogType = 'approve' | 'revise' | 'decline' | null
+
 export function useReviewRequest(teamId: string) {
+  const [activeDialog, setActiveDialog] = useState<ReviewDialogType>(null)
+  const [message, setMessage] = useState('')
+
   const { data } = useSuspenseQuery(teamsQueries.getTeamRequest(teamId))
+
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
+  const closeDialog = () => {
+    setActiveDialog(null)
+    setMessage('')
+  }
+
   function handleMutationSuccess() {
+    closeDialog()
     queryClient.invalidateQueries({ queryKey: teamsQueries.lists() })
     showTimedToast(
       { type: 'success', title: 'Успіх', description: 'Запит розглянуто' },
@@ -75,36 +88,28 @@ export function useReviewRequest(teamId: string) {
     onError: handleMutationError,
   })
 
-  const isPending =
-    approveMutation.isPending ||
-    reviseMutation.isPending ||
-    declineMutation.isPending
-
-  function handleApprove() {
-    approveMutation.mutate(teamId)
-  }
-
-  function handleRevise(message: string) {
-    reviseMutation.mutate({ id: teamId, message })
-  }
-
-  function handleDecline(message: string) {
-    declineMutation.mutate({
-      id: teamId,
-      message,
-      coverUrl: data.coverUrl,
-      backgroundUrl: data.backgroundUrl,
-    })
-  }
-
   return {
     data,
-    isPending,
-    handleApprove,
-    handleRevise,
-    handleDecline,
+    isPending:
+      approveMutation.isPending ||
+      reviseMutation.isPending ||
+      declineMutation.isPending,
+    handleApprove: () => approveMutation.mutate(teamId),
+    handleRevise: () => reviseMutation.mutate({ id: teamId, message }),
+    handleDecline: () =>
+      declineMutation.mutate({
+        id: teamId,
+        message,
+        coverUrl: data.coverUrl,
+        backgroundUrl: data.backgroundUrl,
+      }),
     approveMutation,
     reviseMutation,
     declineMutation,
+    activeDialog,
+    setActiveDialog,
+    message,
+    setMessage,
+    closeDialog,
   }
 }

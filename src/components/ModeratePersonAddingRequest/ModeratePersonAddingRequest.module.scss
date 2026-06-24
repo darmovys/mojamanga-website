@@ -447,3 +447,23 @@
   flex-direction: column;
   gap: var(--8px);
 }
+
+.MessageField {
+  inline-size: 100%;
+  min-block-size: var(--128px);
+  resize: vertical;
+  border: none;
+  outline: none;
+  border-radius: var(--4px);
+  padding: var(--8px) var(--12px);
+  margin-block-start: var(--6px);
+  background-color: var(--sys-surface-low);
+  color: var(--sys-on-surface-highest-variant);
+  box-shadow: var(--inset-shadow);
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    color: var(--sys-on-surface);
+  }
+}
