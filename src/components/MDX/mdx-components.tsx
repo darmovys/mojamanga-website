@@ -18,7 +18,7 @@ export const mdxComponents = {
     return <div className={styles.Body}>{children}</div>
   },
   TextSection({ children }: Children) {
-    return <p className={styles.TextSection}>{children}</p>
+    return <div className={styles.TextSection}>{children}</div>
   },
   ol({ children }: Children) {
     return <ol className={styles.OrderedList}>{children}</ol>
