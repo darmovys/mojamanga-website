@@ -111,7 +111,7 @@ model Team {
   description   String?
   status        TeamStatus @default(PENDING)
 
-  rejectionReason String? @map("rejection_reason")
+  moderationFeedback String? @map("moderation_feedback")
 
   creatorId String @map("creator_id")
   creator   User   @relation("TeamCreator", fields: [creatorId], references: [id])
@@ -163,7 +163,7 @@ model TeamMember {
 model Title {
   id                 String              @id @default(cuid(2))
   approvalStatus     TitleApprovalStatus @default(PENDING) @map("approval_status")
-  moderationFeedback Json?               @map("moderation_feedback")
+  moderationFeedback String?             @map("moderation_feedback")
 
   proposedByUserId String @map("proposed_by_user_id")
   proposedByUser   User   @relation(fields: [proposedByUserId], references: [id])
