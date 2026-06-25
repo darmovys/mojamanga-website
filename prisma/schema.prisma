@@ -168,9 +168,10 @@ model Title {
   proposedByUserId String @map("proposed_by_user_id")
   proposedByUser   User   @relation(fields: [proposedByUserId], references: [id])
 
-  currentVersionId String?        @unique @map("current_version_id")
-  currentVersion   TitleVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
-  versions         TitleVersion[] @relation("TitleHistory")
+  currentVersionId String?            @unique @map("current_version_id")
+  currentVersion   TitleVersion?      @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+  versions         TitleVersion[]     @relation("TitleHistory")
+  lockedFields     TitleLockedField[]
 
   publishers PublishingVersion[]
   comments   Comment[]
@@ -184,6 +185,15 @@ model Title {
   @@map("titles")
 }
 
+model TitleLockedField {
+  titleId   String         @map("title_id")
+  title     Title          @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  fieldName TitleFieldName @map("field_name")
+
+  @@id([titleId, fieldName]) // composite PK — один запис на поле
+  @@map("title_locked_fields")
+}
+
 model TitleVersion {
   id      String @id @default(cuid(2))
   titleId String @map("title_id")
@@ -195,7 +205,6 @@ model TitleVersion {
   // Версіоновані поля
   nameUkr           String            @map("name_ukr")
   nameEng           String            @map("name_eng")
-  alternativeNames  AlternativeName[]
   description       String?
   coverUrl          String            @map("cover_url")
   backgroundUrl     String?           @map("background_url")
@@ -205,10 +214,11 @@ model TitleVersion {
   titleStatus       TitleStatus       @map("title_status")
   translationStatus TranslationStatus @map("translation_status")
 
-  sources TitleSource[]
-  tags    TitleVersionToTag[]
-  genres  TitleVersionToGenre[]
-  people  TitleVersionToPerson[]
+  alternativeNames AlternativeName[]
+  sources          TitleSource[]
+  tags             TitleVersionToTag[]
+  genres           TitleVersionToGenre[]
+  people           TitleVersionToPerson[]
 
   proposalId String?            @unique @map("proposal_id")
   proposal   TitleEditProposal? @relation(fields: [proposalId], references: [id])
@@ -228,6 +238,8 @@ model TitleSource {
   titleId String       @map("title_id")
   title   TitleVersion @relation(fields: [titleId], references: [id], onDelete: Cascade)
 
+  proposedSources ProposedSource[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -239,6 +251,8 @@ model AlternativeName {
   name           String
   titleVersionId String       @map("title_version")
   titleVersion   TitleVersion @relation(fields: [titleVersionId], references: [id], onDelete: Cascade)
+
+  proposedAlternativeNames ProposedAlternativeName[]
 
   @@index([name])
   @@map("alternative_names")
@@ -293,7 +307,6 @@ model TitleEditProposal {
   // Якщо поле null - значить його змінювати не пропонують
   proposedNameUkr           String?            @map("proposed_name_ukr")
   proposedNameEng           String?            @map("proposed_name_eng")
-  proposedAlternativeNames  Json?              @map("proposed_alternative_names")
   proposedDescription       String?            @map("proposed_description")
   proposedCoverUrl          String?            @map("proposed_cover_url")
   proposedBackgroundUrl     String?            @map("proposed_background_url")
@@ -302,17 +315,85 @@ model TitleEditProposal {
   proposedAgeRestriction    AgeRestriction?    @map("proposed_age_restriction")
   proposedTitleStatus       TitleStatus?       @map("proposed_title_status")
   proposedTranslationStatus TranslationStatus? @map("proposed_translation_status")
-  proposedTags              Json?              @map("proposed_tags")
-  proposedGenres            Json?              @map("proposed_genres")
-  proposedAuthors           Json?              @map("proposed_authors")
-  proposedArtists           Json?              @map("proposed_artists")
-  proposedSources           Json?              @map("proposed_sources")
+
+  proposedAlternativeNames ProposedAlternativeName[]
+  proposedTags             ProposedTag[]
+  proposedGenres           ProposedGenre[]
+  proposedAuthors          ProposedAuthor[]
+  proposedArtists          ProposedArtist[]
+  proposedSources          ProposedSource[]
 
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
   titleVersion TitleVersion?
 
   @@map("title_edit_proposals")
+}
+
+model ProposedAlternativeName {
+  proposalId        String                 @map("proposal_id")
+  proposal          TitleEditProposal      @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  alternativeNameId String                 @map("alternative_name_id")
+  alternativeName   AlternativeName        @relation(fields: [alternativeNameId], references: [id])
+  action            ProposedRelationAction
+
+  @@id([proposalId, alternativeNameId])
+  @@map("proposed_alternative_names")
+}
+
+model ProposedTag {
+  proposalId String                 @map("proposal_id")
+  proposal   TitleEditProposal      @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  tagId      String                 @map("tag_id")
+  tag        Tag                    @relation(fields: [tagId], references: [id])
+  action     ProposedRelationAction
+
+  @@id([proposalId, tagId])
+  @@map("proposed_tags")
+}
+
+model ProposedGenre {
+  proposalId String                 @map("proposal_id")
+  proposal   TitleEditProposal      @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  genreId    String                 @map("genre_id")
+  genre      Genre                  @relation(fields: [genreId], references: [id])
+  action     ProposedRelationAction
+
+  @@id([proposalId, genreId])
+  @@map("proposed_genres")
+}
+
+model ProposedAuthor {
+  proposalId String                 @map("proposal_id")
+  proposal   TitleEditProposal      @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  authorId   String                 @map("author_id")
+  author     Person                 @relation(fields: [authorId], references: [id])
+  action     ProposedRelationAction
+
+  @@id([proposalId, authorId])
+  @@map("proposed_authors")
+}
+
+model ProposedArtist {
+  proposalId String                 @map("proposal_id")
+  proposal   TitleEditProposal      @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  artistId   String                 @map("artist_id")
+  artist     Person                 @relation(fields: [artistId], references: [id])
+  action     ProposedRelationAction
+
+  @@id([proposalId, artistId])
+  @@map("proposed_artists")
+}
+
+model ProposedSource {
+  proposalId String                 @map("proposal_id")
+  proposal   TitleEditProposal      @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  sourceId   String                 @map("source_id")
+  source     TitleSource            @relation(fields: [sourceId], references: [id])
+  action     ProposedRelationAction
+
+  @@id([proposalId, sourceId])
+  @@map("proposed_sources")
 }
 
 // ================= METADATA (TAGS, AUTHORS...) =================
@@ -322,6 +403,7 @@ model Tag {
   name String @unique
 
   titleVersions TitleVersionToTag[]
+  proposedTags  ProposedTag[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -333,7 +415,8 @@ model Genre {
   id   String @id @default(cuid(2))
   name String @unique
 
-  titleVersions TitleVersionToGenre[]
+  titleVersions  TitleVersionToGenre[]
+  proposedGenres ProposedGenre[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -348,9 +431,12 @@ model Person {
   description        String?
   coverUrl           String?                  @map("cover_url")
   verificationStatus PersonVerificationStatus @default(PENDING) @map("verification_status")
-  titles             TitleVersionToPerson[]
   proposedByUserId   String?                  @map("proposed_by_user_id")
   proposedByUser     User?                    @relation(fields: [proposedByUserId], references: [id], onDelete: SetNull)
+
+  titles          TitleVersionToPerson[]
+  proposedAuthors ProposedAuthor[]
+  proposedArtists ProposedArtist[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -642,12 +728,16 @@ enum UserRole {
   USER
   MODERATOR
   ADMIN
+
+  @@map("user_role")
 }
 
 enum UserStatus {
   NORMAL
   RESTRICTED
   BANNED
+
+  @@map("user_status")
 }
 
 enum TeamStatus {
@@ -655,6 +745,8 @@ enum TeamStatus {
   APPROVED
   REJECTED
   BANNED
+
+  @@map("team_status")
 }
 
 enum LinkType {
@@ -668,6 +760,8 @@ enum LinkType {
   BUYMEACOFFEE
   DONATELLO
   SITE
+
+  @@map("link_type")
 }
 
 enum TeamRole {
@@ -675,17 +769,23 @@ enum TeamRole {
   TRANSLATOR
   CLEANER
   TYPER
+
+  @@map("team_role")
 }
 
 enum PersonRole {
   AUTHOR
   ARTIST
+
+  @@map("person_role")
 }
 
 enum TitleEditProposalStatus {
   PENDING
   ACCEPTED
   REJECTED
+
+  @@map("title_edit_proposal_status")
 }
 
 enum TitleType {
@@ -695,6 +795,8 @@ enum TitleType {
   MALOPUS
   COMIC
   WEBCOMIC
+
+  @@map("title_type")
 }
 
 enum TitleStatus {
@@ -703,6 +805,8 @@ enum TitleStatus {
   PAUSED
   LICENSED
   ANNOUNCEMENT
+
+  @@map("title_status")
 }
 
 enum TranslationStatus {
@@ -710,6 +814,8 @@ enum TranslationStatus {
   ENDED
   FREEZED
   DROPPED
+
+  @@map("translation_status")
 }
 
 enum AgeRestriction {
@@ -718,6 +824,8 @@ enum AgeRestriction {
   TWELVE_PLUS
   SIXTEEN_PLUS
   EIGHTEEN_PLUS
+
+  @@map("age_restriction")
 }
 
 enum NotificationType {
@@ -728,6 +836,8 @@ enum NotificationType {
   PROPOSAL_ACCEPTED
   PROPOSAL_REJECTED
   USER_BANNED
+
+  @@map("notification_type")
 }
 
 enum ReportReason {
@@ -739,12 +849,16 @@ enum ReportReason {
   CONFLICTS // Провокація конфліктів
   OFFTOPIC // Не по темі
   OTHER
+
+  @@map("report_reason")
 }
 
 enum TitleApprovalStatus {
   PENDING
   APPROVED
   REJECTED
+
+  @@map("title_approval_status")
 }
 
 enum SystemFolderType {
@@ -753,9 +867,41 @@ enum SystemFolderType {
   ON_HOLD
   DROPPED
   PLAN_TO_READ
+
+  @@map("system_folder_type")
 }
 
 enum PersonVerificationStatus {
   PENDING
   APPROVED
+
+  @@map("person_verification_status")
+}
+
+enum TitleFieldName {
+  coverUrl
+  backgroundUrl
+  nameUkr
+  nameEng
+  alternativeNames
+  description
+  type
+  titleStatus
+  translationStatus
+  ageRestriction
+  releaseYear
+  genres
+  tags
+  authors
+  artists
+  sources
+
+  @@map("title_field_name")
+}
+
+enum ProposedRelationAction {
+  ADD
+  REMOVE
+
+  @@map("proposed_relation_action")
 }
