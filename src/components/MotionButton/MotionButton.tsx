@@ -12,9 +12,14 @@ export const tapAnimation: MotionProps = {
   },
 }
 
-function MotionButton({ children, ...props }: MotionButtonProps) {
+function MotionButton({ children, disabled, ...props }: MotionButtonProps) {
   return (
-    <MotionBaseButton {...tapAnimation} {...props}>
+    <MotionBaseButton
+      {...tapAnimation}
+      {...props}
+      disabled={disabled}
+      whileTap={disabled ? undefined : tapAnimation.whileTap}
+    >
       {children}
     </MotionBaseButton>
   )
