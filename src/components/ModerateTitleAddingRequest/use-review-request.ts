@@ -1,6 +1,7 @@
+import { TitleFieldName } from '@/generated/prisma/enums'
 import { Api } from '@/lib/api-client'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
-import { teamsMutations } from '@/services/mutations'
+import { titlesMutations } from '@/services/mutations'
 import { teamsQueries, titlesQueries } from '@/services/queries'
 import { Treaty } from '@elysiajs/eden'
 import {
@@ -9,25 +10,46 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
 
 type AnyEndpointError = Treaty.Error<
-  | Api['teams']['approve-team-request']['patch']
-  | Api['teams']['revise-team-request']['patch']
-  | Api['teams']['decline-team-request']['delete']
+  | Api['titles']['approve-title-request']['patch']
+  | Api['titles']['revise-title-request']['patch']
+  | Api['titles']['decline-title-request']['delete']
 >
 
-export function useReviewRequest(workId: string) {
-  const { data } = useSuspenseQuery(titlesQueries.getTitleAddingRequest(workId))
+type ReviewDialogType = 'approve' | 'revise' | 'decline' | null
+
+export function useReviewRequest(titleId: string) {
+  const [activeDialog, setActiveDialog] = useState<ReviewDialogType>(null)
+  const [message, setMessage] = useState('')
+
+  const { data } = useSuspenseQuery(
+    titlesQueries.getTitleAddingRequest(titleId),
+  )
+
+  const serverLockedFields = data.lockedFields.map((f) => f.fieldName)
+
+  const [lockedFields, setLockedFields] = useState<TitleFieldName[]>(
+    serverLockedFields ?? [],
+  )
+
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
+  const closeDialog = () => {
+    setActiveDialog(null)
+    setMessage('')
+  }
+
   function handleMutationSuccess() {
+    closeDialog()
     queryClient.invalidateQueries({ queryKey: teamsQueries.lists() })
     showTimedToast(
       { type: 'success', title: 'Успіх', description: 'Запит розглянуто' },
       4000,
     )
-    navigate({ to: '/moderation', search: { type: 'teams' } })
+    navigate({ to: '/moderation', search: { type: 'titles' } })
   }
 
   function handleMutationError(error: AnyEndpointError) {
@@ -45,6 +67,28 @@ export function useReviewRequest(workId: string) {
       case 401:
         showAuthToast()
         break
+      case 404:
+        showTimedToast(
+          {
+            type: 'error',
+            title: 'Помилка',
+            description: error.value,
+          },
+          4000,
+        )
+        navigate({ to: '/moderation', search: { type: 'titles' } })
+        break
+      case 409:
+        showTimedToast(
+          {
+            type: 'error',
+            title: 'Помилка',
+            description: error.value,
+          },
+          4000,
+        )
+        navigate({ to: '/moderation', search: { type: 'titles' } })
+        break
       default:
         showTimedToast(
           {
@@ -58,53 +102,49 @@ export function useReviewRequest(workId: string) {
   }
 
   const approveMutation = useMutation({
-    ...teamsMutations.approve(),
+    ...titlesMutations.approve(),
     onSuccess: handleMutationSuccess,
     onError: handleMutationError,
   })
 
   const reviseMutation = useMutation({
-    ...teamsMutations.revise(),
+    ...titlesMutations.revise(),
     onSuccess: handleMutationSuccess,
     onError: handleMutationError,
   })
 
   const declineMutation = useMutation({
-    ...teamsMutations.decline(),
+    ...titlesMutations.decline(),
     onSuccess: handleMutationSuccess,
     onError: handleMutationError,
   })
 
-  const isPending =
-    approveMutation.isPending ||
-    reviseMutation.isPending ||
-    declineMutation.isPending
-
-  function handleApprove() {
-    approveMutation.mutate(workId)
-  }
-
-  function handleRevise(message: string) {
-    reviseMutation.mutate({ id: workId, message })
-  }
-
-  function handleDecline(message: string) {
-    declineMutation.mutate({
-      id: workId,
-      message,
-      coverUrl: data.currentVersion.coverUrl,
-      backgroundUrl: data.currentVersion.backgroundUrl,
-    })
-  }
-
   return {
     data,
-    isPending,
-    handleApprove,
-    handleRevise,
-    handleDecline,
+    isPending:
+      approveMutation.isPending ||
+      reviseMutation.isPending ||
+      declineMutation.isPending,
+    handleApprove: () => approveMutation.mutate(titleId),
+    handleRevise: () =>
+      reviseMutation.mutate({ id: titleId, message, lockedFields }),
+    handleDecline: () =>
+      declineMutation.mutate({
+        id: titleId,
+        message,
+        coverUrl: data.currentVersion.coverUrl,
+        backgroundUrl: data.currentVersion.backgroundUrl,
+      }),
     approveMutation,
     reviseMutation,
     declineMutation,
+    activeDialog,
+    setActiveDialog,
+    message,
+    setMessage,
+    serverLockedFields,
+    lockedFields,
+    setLockedFields,
+    closeDialog,
   }
 }

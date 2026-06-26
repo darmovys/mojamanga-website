@@ -1,0 +1,97 @@
+.CheckboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--6px);
+}
+
+.CheckboxWrapper {
+  display: flex;
+  gap: var(--10px);
+  font-size: var(--14px);
+  font-weight: 500;
+  color: var(--sys-primary);
+  align-items: center;
+  position: relative;
+}
+
+.Checkbox {
+  --size: var(--24px);
+  display: flex;
+  flex-shrink: 0;
+  inline-size: var(--size);
+  block-size: var(--size);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--4px);
+  outline: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  box-shadow: var(--inset-shadow);
+  z-index: 1; /* For checkbox to be above tree lines */
+  cursor: pointer;
+
+  &[data-unchecked] {
+    background-color: var(--sys-surface-low);
+  }
+
+  &[data-checked],
+  &[data-indeterminate] {
+    background-color: var(--blue-400);
+    color: oklch(97.614% 0.00011 271.152);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 0.1875rem var(--state-primary-opacity-12);
+    outline-offset: 1px;
+    outline: 2px solid var(--blue-400);
+    border: 1px solid var(--blue-400);
+  }
+}
+
+.Indicator {
+  transform: scale(0);
+  transition: 0.15s transform cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &[data-checked],
+  &[data-indeterminate] {
+    transform: scale(0.8);
+  }
+}
+
+.FieldName {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.ScrollAreaScrollbar {
+  display: flex;
+  justify-content: center;
+  background-color: transparent;
+  inline-size: var(--10px);
+  margin-inline: -4.4px;
+  opacity: 0;
+  transition: opacity 150ms;
+  pointer-events: none;
+  padding-inline-start: var(--4px);
+
+  &[data-scrolling] {
+    transition-duration: 0ms;
+  }
+
+  &[data-hovering],
+  &[data-scrolling] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.ScrollAreaThumb {
+  inline-size: 100%;
+  background-color: var(--scrollbar-color);
+  border-radius: 100vmax;
+}

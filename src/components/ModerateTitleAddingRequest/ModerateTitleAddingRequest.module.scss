@@ -587,3 +587,72 @@
   flex: 1;
   user-select: none;
 }
+
+.MessageField {
+  inline-size: 100%;
+  min-block-size: var(--128px);
+  resize: vertical;
+  border: none;
+  outline: none;
+  border-radius: var(--4px);
+  padding: var(--8px) var(--12px);
+  margin-block-start: var(--6px);
+  background-color: var(--sys-surface-low);
+  color: var(--sys-on-surface-highest-variant);
+  box-shadow: var(--inset-shadow);
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    color: var(--sys-on-surface);
+  }
+}
+
+.CheckboxGroupWrapper {
+  padding: var(--8px);
+}
+
+.ScrollArea {
+  block-size: var(--160px);
+  border: 1px solid var(--sys-outline);
+  margin-block: var(--8px);
+  border-radius: var(--4px);
+}
+
+.ScrollArea__Viewport {
+  block-size: 100%;
+
+  &:focus-visible {
+    border-radius: var(--2px);
+    outline: 2px solid var(--blue-400);
+  }
+}
+
+.ScrollArea__Scrollbar {
+  display: flex;
+  justify-content: center;
+  background-color: transparent;
+  inline-size: var(--10px);
+  margin-inline: 3.5px;
+  margin-block: 4.5px;
+  opacity: 0;
+  transition: opacity 150ms;
+  pointer-events: none;
+  padding-inline-start: var(--4px);
+
+  &[data-scrolling] {
+    transition-duration: 0ms;
+  }
+
+  &[data-hovering],
+  &[data-scrolling] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.ScrollArea__Thumb {
+  inline-size: 100%;
+  background-color: var(--scrollbar-thumb-hover-color);
+  border-radius: 100vmax;
+}

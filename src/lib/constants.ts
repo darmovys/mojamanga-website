@@ -15,6 +15,7 @@ import {
   TranslationStatus,
   TitleStatus,
   TitleType,
+  TitleFieldName,
 } from '@/generated/prisma/enums'
 
 import { Globe } from 'lucide-react'
@@ -56,6 +57,25 @@ export const AGE_RESTRICTION_LABELS: Record<AgeRestriction, string> = {
   [AgeRestriction.TWELVE_PLUS]: '12+',
   [AgeRestriction.SIXTEEN_PLUS]: '16+',
   [AgeRestriction.EIGHTEEN_PLUS]: '18+',
+}
+
+export const FIELD_LABELS: Record<TitleFieldName, string> = {
+  [TitleFieldName.coverUrl]: 'Обкладинка',
+  [TitleFieldName.backgroundUrl]: 'Фонове зображення',
+  [TitleFieldName.nameUkr]: 'Назва українською',
+  [TitleFieldName.nameEng]: 'Назва англійською',
+  [TitleFieldName.alternativeNames]: 'Альтернативні назви',
+  [TitleFieldName.description]: 'Опис',
+  [TitleFieldName.type]: 'Тип',
+  [TitleFieldName.titleStatus]: 'Статус твору',
+  [TitleFieldName.translationStatus]: 'Статус перекладу',
+  [TitleFieldName.ageRestriction]: 'Вікові обмеження',
+  [TitleFieldName.releaseYear]: 'Рік випуску',
+  [TitleFieldName.genres]: 'Жанри',
+  [TitleFieldName.tags]: 'Теги',
+  [TitleFieldName.authors]: 'Автори',
+  [TitleFieldName.artists]: 'Художники',
+  [TitleFieldName.sources]: 'Джерела',
 }
 
 export const LINK_META: Record<LinkType, LinkMeta> = {

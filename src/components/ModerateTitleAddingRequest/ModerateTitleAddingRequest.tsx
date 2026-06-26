@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { getRouteApi, Link } from '@tanstack/react-router'
 import { useGoBack } from '@/hooks/use-go-back'
-import { Button, Separator } from '@base-ui/react'
+import { Button, ScrollArea, Separator } from '@base-ui/react'
 import ClickTargetHelper from '../ClickTargetHelper'
 import { ArrowLeft, Check, Copy, ImageOff, Info, Link2Icon } from 'lucide-react'
 import MotionButton from '../MotionButton'
@@ -20,12 +20,14 @@ import HelperDialog from '../HelperDialog'
 import { useReviewRequest } from './use-review-request'
 import Skeleton from '../Skeleton'
 import ConfirmDialog from '../ConfirmDialog'
-import styles from './ModerateTitleAddingRequest.module.scss'
 import { useHelperDialog } from '@/hooks/use-helper-dialog'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { AnimatePresence, motion } from 'motion/react'
 import { isTrustedHostname, range } from '@/lib/utils'
 import AwayDialog from '../AwayDialog'
+import { TitleFieldName } from '@/generated/prisma/enums'
+import LockedFiedlsCheckboxGroup from '../LockedFieldsCheckboxGroup'
+import styles from './ModerateTitleAddingRequest.module.scss'
 
 const routeApi = getRouteApi('/moderation/title-review/$titleId')
 
@@ -46,6 +48,13 @@ function ModerateTitleAddingRequest() {
     approveMutation,
     reviseMutation,
     declineMutation,
+    activeDialog,
+    setActiveDialog,
+    message,
+    setMessage,
+    serverLockedFields,
+    lockedFields,
+    setLockedFields,
   } = useReviewRequest(titleId)
 
   const currentVersionData = data.currentVersion
@@ -343,58 +352,114 @@ function ModerateTitleAddingRequest() {
         <div className={styles.Card}>
           <h2 className={styles.CardTitle}>Посилання на зовнішні ресурси</h2>
           <div className={styles.SourcesGroup}>
-            {currentVersionData.sources.map((source) => (
-              <Source key={source.id} id={source.id} url={source.url} />
-            ))}
+            {currentVersionData.sources.length > 0
+              ? currentVersionData.sources.map((source) => (
+                  <Source key={source.id} id={source.id} url={source.url} />
+                ))
+              : 'Відсутні'}
           </div>
         </div>
 
         <footer className={clsx(styles.Card, styles.Footer)}>
           <div className={styles.Actions}>
+            <MotionButton
+              className={clsx(styles.ApproveButton, 'Gradient', {
+                [styles.Pending]: isPending,
+              })}
+              onClick={() => setActiveDialog('approve')}
+              disabled={isPending}
+            >
+              {approveMutation.isPending ? 'Обробка...' : 'Схвалити'}
+            </MotionButton>
             <ConfirmDialog
-              trigger={(openDialog) => (
-                <MotionButton
-                  className={clsx(styles.ApproveButton, 'Gradient', {
-                    [styles.Pending]: isPending,
-                  })}
-                  onClick={openDialog}
-                  disabled={isPending}
-                >
-                  {approveMutation.isPending ? 'Обробка...' : 'Схвалити'}
-                </MotionButton>
-              )}
-              type="approve"
-              onConfirm={() => handleApprove()}
+              description="Ви точно хочете схвалити запит?"
+              isOpen={activeDialog === 'approve'}
+              onIsOpenChange={(open) =>
+                setActiveDialog(open ? 'approve' : null)
+              }
+              onConfirm={handleApprove}
             />
+            <MotionButton
+              className={clsx(styles.RejectButton, 'Gradient', {
+                [styles.Pending]: isPending,
+              })}
+              onClick={() => setActiveDialog('revise')}
+              disabled={isPending}
+            >
+              {reviseMutation.isPending ? 'Обробка...' : 'Доопрацювати'}
+            </MotionButton>
             <ConfirmDialog
-              trigger={(openDialog) => (
-                <MotionButton
-                  className={clsx(styles.RejectButton, 'Gradient', {
-                    [styles.Pending]: isPending,
-                  })}
-                  onClick={openDialog}
-                  disabled={isPending}
-                >
-                  {reviseMutation.isPending ? 'Обробка...' : 'Доопрацювати'}
-                </MotionButton>
-              )}
-              type="revise"
-              onConfirm={(message) => handleRevise(message)}
+              description={
+                'Виберіть всі поля, що пройшли перевірку. Вони будуть заблоковані для внесення змін'
+              }
+              isOpen={activeDialog === 'revise'}
+              onIsOpenChange={(open) => {
+                setActiveDialog(open ? 'revise' : null)
+                if (!open) setLockedFields(serverLockedFields)
+              }}
+              onConfirm={handleRevise}
+              children={
+                <>
+                  <ScrollArea.Root className={styles.ScrollArea}>
+                    <ScrollArea.Viewport
+                      className={styles.ScrollArea__Viewport}
+                    >
+                      <ScrollArea.Content
+                        className={styles.ScrollArea__Content}
+                      >
+                        <LockedFiedlsCheckboxGroup
+                          value={lockedFields}
+                          onValueChange={(val) =>
+                            setLockedFields(val as TitleFieldName[])
+                          }
+                          className={styles.CheckboxGroupWrapper}
+                        />
+                      </ScrollArea.Content>
+                    </ScrollArea.Viewport>
+                    <ScrollArea.Scrollbar
+                      className={styles.ScrollArea__Scrollbar}
+                    >
+                      <ScrollArea.Thumb className={styles.ScrollArea__Thumb} />
+                    </ScrollArea.Scrollbar>
+                  </ScrollArea.Root>
+
+                  <textarea
+                    name="message"
+                    id="message"
+                    placeholder="Опишіть причину (рекомендовано)"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className={styles.MessageField}
+                  />
+                </>
+              }
             />
+            <MotionButton
+              className={clsx(styles.HardRejectButton, {
+                [styles.Pending]: isPending,
+              })}
+              onClick={() => setActiveDialog('decline')}
+              disabled={isPending}
+            >
+              {declineMutation.isPending ? 'Обробка...' : 'Відхилити'}
+            </MotionButton>
             <ConfirmDialog
-              trigger={(openDialog) => (
-                <MotionButton
-                  className={clsx(styles.HardRejectButton, {
-                    [styles.Pending]: isPending,
-                  })}
-                  onClick={openDialog}
-                  disabled={isPending}
-                >
-                  {declineMutation.isPending ? 'Обробка...' : 'Відхилити'}
-                </MotionButton>
-              )}
-              type="decline"
-              onConfirm={(message) => handleDecline(message)}
+              description={'Ви точно хочете відхилити запит?'}
+              isOpen={activeDialog === 'decline'}
+              onIsOpenChange={(open) =>
+                setActiveDialog(open ? 'decline' : null)
+              }
+              onConfirm={handleDecline}
+              children={
+                <textarea
+                  name="message"
+                  id="message"
+                  placeholder="Опишіть причину (рекомендовано)"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className={styles.MessageField}
+                />
+              }
             />
           </div>
         </footer>

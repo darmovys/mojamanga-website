@@ -5,8 +5,9 @@ import { createId } from '@paralleldrive/cuid2'
 import { moveS3File } from '@/lib/utils'
 import { S3 } from '@/lib/s3-client'
 import { addTitleSchema } from '@/schemas/titles'
-import { DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { DeleteObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
 import { z } from 'zod'
+import { TitleFieldName } from '@/generated/prisma/enums'
 
 const titleSchema = z.object({
   id: z.string(),
@@ -28,6 +29,15 @@ const titlesSchema = z.object({
   totalPages: z.number(),
   currentPage: z.number(),
 })
+
+async function getTitleOrFail(id: string) {
+  const title = await prisma.title.findUnique({ where: { id } })
+
+  if (!title) return 'NOT_FOUND' as const
+  if (title.approvalStatus !== 'PENDING') return 'NOT_PENDING' as const
+
+  return title
+}
 
 export const titlesRouter = new Elysia({
   name: 'titles-router',
@@ -327,6 +337,9 @@ export const titlesRouter = new Elysia({
               proposedByUser: {
                 select: { image: true, displayUsername: true },
               },
+              lockedFields: {
+                select: { fieldName: true },
+              },
               currentVersion: {
                 select: {
                   coverUrl: true,
@@ -381,6 +394,124 @@ export const titlesRouter = new Elysia({
           moderator: true,
           params: z.object({
             id: z.string(),
+          }),
+        },
+      )
+      .patch(
+        '/approve-title-request',
+        async ({ status, body }) => {
+          try {
+            const title = await getTitleOrFail(body.id)
+            if (title === 'NOT_FOUND') return status(404, 'Твір не знайдено')
+            if (title === 'NOT_PENDING')
+              return status(409, 'Запит вже оброблено')
+
+            await prisma.title.update({
+              where: { id: body.id },
+              data: { approvalStatus: 'APPROVED' },
+            })
+
+            return { message: 'Запит виконано' }
+          } catch (dbError) {
+            console.error('Помилка БД: ', dbError)
+            return status(500, 'Помилка при збереженні даних')
+          }
+        },
+        {
+          moderator: true,
+          body: z.object({ id: z.string() }),
+        },
+      )
+      .patch(
+        '/revise-title-request',
+        async ({ status, body }) => {
+          try {
+            const title = await getTitleOrFail(body.id)
+            if (title === 'NOT_FOUND') return status(404, 'Твір не знайдено')
+            if (title === 'NOT_PENDING')
+              return status(409, 'Запит вже оброблено')
+
+            await prisma.title.update({
+              where: { id: body.id },
+              data: {
+                approvalStatus: 'REJECTED',
+                lockedFields: {
+                  deleteMany: {},
+                  create: body.lockedFields.map((f) => ({ fieldName: f })),
+                },
+                ...(body.message.length && {
+                  moderationFeedback: body.message,
+                }),
+              },
+            })
+
+            return {
+              message: 'Запит виконано',
+            }
+          } catch (dbError) {
+            console.error('Помилка БД: ', dbError)
+            return status(500, 'Помилка при збереженні даних')
+          }
+        },
+        {
+          moderator: true,
+          body: z.object({
+            id: z.string(),
+            message: z.string(),
+            lockedFields: z.array(z.enum(TitleFieldName)),
+          }),
+        },
+      )
+      .delete(
+        '/decline-title-request',
+        async ({ status, body }) => {
+          const title = await getTitleOrFail(body.id)
+          if (title === 'NOT_FOUND') return status(404, 'Твір не знайдено')
+          if (title === 'NOT_PENDING') return status(409, 'Запит вже оброблено')
+
+          try {
+            await prisma.title.delete({
+              where: { id: body.id },
+            })
+          } catch (dbError) {
+            console.error('Помилка БД: ', dbError)
+            return status(500, 'Помилка при збереженні даних')
+          }
+
+          try {
+            const rawKeys = [body.coverUrl, body.backgroundUrl]
+            const validKeys = rawKeys.filter(
+              (key): key is string =>
+                typeof key === 'string' && key.trim() !== '',
+            )
+
+            if (validKeys.length > 0) {
+              const objectsPayload = validKeys.map((key) => ({ Key: key }))
+
+              const command = new DeleteObjectsCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Delete: {
+                  Objects: objectsPayload,
+                  Quiet: true,
+                },
+              })
+
+              await S3.send(command)
+            }
+
+            return { message: 'Запит виконано' }
+          } catch (s3Error) {
+            console.error('Помилка S3 (файли могли залишитися): ', s3Error)
+            return status(500, 'Помилка при спробі видалити зображення')
+          }
+        },
+        {
+          moderator: true,
+          body: z.object({
+            id: z.string(),
+            message: z.string(),
+            coverUrl: z.string().nullable(),
+            backgroundUrl: z.string().nullable(),
           }),
         },
       )
