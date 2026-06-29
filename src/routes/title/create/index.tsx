@@ -3,6 +3,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import { allHelperInfos } from 'content-collections'
 
 export const Route = createFileRoute('/title/create/')({
+  component: CreateTitleForm,
   beforeLoad: async ({ context, location }) => {
     if (!context.authState.isAuthenticated) {
       throw redirect({
@@ -18,9 +19,4 @@ export const Route = createFileRoute('/title/create/')({
     if (!helperInfo) throw new Error('Не знайдено файлу "create-title"')
     return helperInfo
   },
-  component: RouteComponent,
 })
-
-function RouteComponent() {
-  return <CreateTitleForm />
-}

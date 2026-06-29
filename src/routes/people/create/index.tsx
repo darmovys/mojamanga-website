@@ -3,7 +3,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import { allHelperInfos } from 'content-collections'
 
 export const Route = createFileRoute('/people/create/')({
-  component: RouteComponent,
+  component: CreatePersonForm,
   beforeLoad: async ({ context, location }) => {
     if (!context.authState.isAuthenticated) {
       throw redirect({
@@ -20,7 +20,3 @@ export const Route = createFileRoute('/people/create/')({
     return helperInfo
   },
 })
-
-function RouteComponent() {
-  return <CreatePersonForm />
-}

@@ -6,7 +6,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { allHelperInfos } from 'content-collections'
 
 export const Route = createFileRoute('/moderation/team-review/$teamId')({
-  component: RouteComponent,
+  component: ModerateTeamCreationRequest,
+  pendingComponent: ModerateTeamCreationRequestSkeleton,
   loader: async ({ params, context }) => {
     await context.queryClient.ensureQueryData(
       teamsQueries.getTeamRequest(params.teamId),
@@ -18,11 +19,4 @@ export const Route = createFileRoute('/moderation/team-review/$teamId')({
       throw new Error('Не знайдено файлу "review-team-creation-request"')
     return helperInfo
   },
-  pendingComponent: () => {
-    return <ModerateTeamCreationRequestSkeleton />
-  },
 })
-
-function RouteComponent() {
-  return <ModerateTeamCreationRequest />
-}

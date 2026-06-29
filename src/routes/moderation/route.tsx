@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/moderation')({
-  component: RouteComponent,
+  component: Outlet,
   beforeLoad: async ({ context, location }) => {
     if (!context.authState.isAuthenticated) {
       throw redirect({
@@ -19,7 +19,3 @@ export const Route = createFileRoute('/moderation')({
     }
   },
 })
-
-function RouteComponent() {
-  return <Outlet />
-}

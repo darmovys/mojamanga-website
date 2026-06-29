@@ -3,7 +3,7 @@ import CreateTeamForm from '@/components/CreateTeamForm'
 import { allHelperInfos } from 'content-collections'
 
 export const Route = createFileRoute('/team/create/')({
-  component: RouteComponent,
+  component: CreateTeamForm,
   beforeLoad: async ({ context, location }) => {
     if (!context.authState.isAuthenticated) {
       throw redirect({
@@ -20,7 +20,3 @@ export const Route = createFileRoute('/team/create/')({
     return helperInfo
   },
 })
-
-function RouteComponent() {
-  return <CreateTeamForm />
-}

@@ -10,8 +10,9 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import { produce } from 'immer'
 
 export const Route = createFileRoute('/moderation/')({
+  component: ModerationMenu,
+  pendingComponent: ModerationMenuSkeleton,
   validateSearch: moderationMenuSchema,
-  component: RouteComponent,
   loaderDeps: ({ search: { type, page } }) => ({
     search: {
       type,
@@ -66,11 +67,4 @@ export const Route = createFileRoute('/moderation/')({
       }
     }
   },
-  pendingComponent: () => {
-    return <ModerationMenuSkeleton />
-  },
 })
-
-function RouteComponent() {
-  return <ModerationMenu />
-}
