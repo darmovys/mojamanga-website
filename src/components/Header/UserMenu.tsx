@@ -65,7 +65,7 @@ export function UserMenu({ user }: UserMenuProps) {
             </Menu.Arrow>
             <Menu.Item
               className={clsx(styles.UserItem)}
-              render={<Link to="/about" />}
+              render={<Link to="/user/$id" params={{ id: user.id }} />}
             >
               <Image
                 src={

@@ -20,6 +20,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TitleIndexRouteImport } from './routes/title/index'
 import { Route as TeamIndexRouteImport } from './routes/team/index'
 import { Route as ModerationIndexRouteImport } from './routes/moderation/index'
+import { Route as UserIdRouteImport } from './routes/user/$id'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as TitleCreateIndexRouteImport } from './routes/title/create/index'
 import { Route as TeamCreateIndexRouteImport } from './routes/team/create/index'
@@ -84,6 +85,11 @@ const ModerationIndexRoute = ModerationIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ModerationRouteRoute,
 } as any)
+const UserIdRoute = UserIdRouteImport.update({
+  id: '/user/$id',
+  path: '/user/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/user/$id': typeof UserIdRoute
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
   '/title/': typeof TitleIndexRoute
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/user/$id': typeof UserIdRoute
   '/moderation': typeof ModerationIndexRoute
   '/team': typeof TeamIndexRoute
   '/title': typeof TitleIndexRoute
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/user/$id': typeof UserIdRoute
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
   '/title/': typeof TitleIndexRoute
@@ -208,6 +217,7 @@ export interface FileRouteTypes {
     | '/forbidden'
     | '/notifications'
     | '/api/$'
+    | '/user/$id'
     | '/moderation/'
     | '/team/'
     | '/title/'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/forbidden'
     | '/notifications'
     | '/api/$'
+    | '/user/$id'
     | '/moderation'
     | '/team'
     | '/title'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/forbidden'
     | '/notifications'
     | '/api/$'
+    | '/user/$id'
     | '/moderation/'
     | '/team/'
     | '/title/'
@@ -273,6 +285,7 @@ export interface RootRouteChildren {
   ForbiddenRoute: typeof ForbiddenRoute
   NotificationsRoute: typeof NotificationsRoute
   ApiSplatRoute: typeof ApiSplatRoute
+  UserIdRoute: typeof UserIdRoute
   TeamIndexRoute: typeof TeamIndexRoute
   TitleIndexRoute: typeof TitleIndexRoute
   PeopleCreateIndexRoute: typeof PeopleCreateIndexRoute
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/moderation/'
       preLoaderRoute: typeof ModerationIndexRouteImport
       parentRoute: typeof ModerationRouteRoute
+    }
+    '/user/$id': {
+      id: '/user/$id'
+      path: '/user/$id'
+      fullPath: '/user/$id'
+      preLoaderRoute: typeof UserIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/$': {
       id: '/api/$'
@@ -467,6 +487,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForbiddenRoute: ForbiddenRoute,
   NotificationsRoute: NotificationsRoute,
   ApiSplatRoute: ApiSplatRoute,
+  UserIdRoute: UserIdRoute,
   TeamIndexRoute: TeamIndexRoute,
   TitleIndexRoute: TitleIndexRoute,
   PeopleCreateIndexRoute: PeopleCreateIndexRoute,

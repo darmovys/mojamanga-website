@@ -165,3 +165,24 @@ export const titlesQueries = {
       },
     }),
 }
+
+export const usersQueries = {
+  all: ['users'] as const,
+  lists: () => [...usersQueries.all, 'lists'] as const,
+  getUserInfo: (id: string) =>
+    queryOptions({
+      queryKey: [...usersQueries.all, id] as const,
+      queryFn: async () => {
+        const response = await api().users.user({ id }).get()
+        const { error } = response
+        if (error) {
+          if (error.status === 404) {
+            throw notFound()
+          } else {
+            throw error
+          }
+        }
+        return response.data
+      },
+    }),
+}

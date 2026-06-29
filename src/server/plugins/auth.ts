@@ -39,12 +39,26 @@ export const betterAuthPlugin = new Elysia({
 
         const { role } = session.user
         if (role !== 'ADMIN' && role !== 'MODERATOR') {
-          return status(403, 'Доступ заборонено: потрібні права модератора або адміна')
+          return status(
+            403,
+            'Доступ заборонено: потрібні права модератора або адміна',
+          )
         }
 
         return {
           user: session.user,
           session: session.session,
+        }
+      },
+    },
+    optionalAuth: {
+      async resolve() {
+        const headers = getRequestHeaders()
+        const userSession = await auth.api.getSession({ headers: headers })
+
+        return {
+          user: userSession?.user ?? null,
+          session: userSession?.session ?? null,
         }
       },
     },

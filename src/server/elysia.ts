@@ -9,6 +9,7 @@ import { peopleRouter } from './routes/people'
 import { tagsRouter } from './routes/tags'
 import { genresRouter } from './routes/genres'
 import { titlesRouter } from './routes/titles'
+import { usersRouter } from './routes/users'
 
 export const app = new Elysia({
   prefix: '/api',
@@ -29,4 +30,5 @@ export const app = new Elysia({
   .use(tagsRouter)
   .use(genresRouter)
   .use(titlesRouter)
+  .use(usersRouter)
   .use(cronJobsPlugin)

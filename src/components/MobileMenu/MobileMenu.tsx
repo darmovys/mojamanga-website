@@ -231,7 +231,8 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                       ) : (
                         <div className={styles.UserCard}>
                           <Link
-                            to="/about"
+                            to="/user/$id"
+                            params={{ id: authState.user.id }}
                             className={styles.UserAvatarWrapper}
                           >
                             <Image
