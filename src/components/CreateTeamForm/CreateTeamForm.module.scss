@@ -619,6 +619,21 @@
   }
 }
 
+.Tooltip {
+  inset-block-start: -0.125rem;
+  inset-inline-start: -0.175rem;
+}
+
+.RedTooltip {
+  composes: Tooltip;
+  color: var(--danger);
+}
+
+.YellowTooltip {
+  composes: Tooltip;
+  color: var(--warning);
+}
+
 @keyframes marching-ants {
   to {
     stroke-dashoffset: -28;

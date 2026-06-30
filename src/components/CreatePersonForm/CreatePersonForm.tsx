@@ -3,6 +3,7 @@ import { useGoBack } from '@/hooks/use-go-back'
 import ClickTargetHelper from '../ClickTargetHelper'
 import {
   ArrowLeft,
+  Asterisk,
   CircleAlert,
   Info,
   LoaderCircle,
@@ -203,7 +204,13 @@ function CreatePersonForm() {
             <div>
               <label htmlFor="nameUkr" className={styles.Label}>
                 Ім'я українською
-                <Tooltip text="Обов'язкове поле" align="start" />
+                <Tooltip
+                  className={styles.RedTooltip}
+                  text="Обов'язкове поле"
+                  align="start"
+                >
+                  <Asterisk size={14} />
+                </Tooltip>
               </label>
               <form.Field
                 name="nameUkr"
@@ -225,7 +232,13 @@ function CreatePersonForm() {
             <div>
               <label htmlFor="nameLat" className={styles.Label}>
                 Ім'я латиною (Романджі, Піньїнь і т.п.)
-                <Tooltip text="Обов'язкове поле" align="start" />
+                <Tooltip
+                  className={styles.RedTooltip}
+                  text="Обов'язкове поле"
+                  align="start"
+                >
+                  <Asterisk size={14} />
+                </Tooltip>
               </label>
               <form.Field
                 name="nameLat"

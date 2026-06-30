@@ -363,20 +363,26 @@
     background-color var(--leave-time) ease;
 
   @media (hover: hover) {
-    &:hover {
-      transition:
-        color var(--enter-time) ease,
-        background-color var(--leave-time) ease;
+    &:not([data-disabled]) {
+      &:hover {
+        transition:
+          color var(--enter-time) ease,
+          background-color var(--leave-time) ease;
 
-      background-color: var(--state-on-surface-opacity-variant-3);
-      color: var(--sys-on-surface);
-      border-color: var(--sys-on-surface);
+        background-color: var(--state-on-surface-opacity-variant-3);
+        color: var(--sys-on-surface);
+        border-color: var(--sys-on-surface);
+      }
     }
   }
 
   &:focus-visible {
     outline: 2px solid var(--blue-400);
     outline-offset: 2px;
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
   }
 }
 
@@ -816,6 +822,21 @@
   color: var(--danger);
   padding: var(--4px) var(--8px);
   border-radius: var(--6px);
+}
+
+.Tooltip {
+  inset-block-start: -0.125rem;
+  inset-inline-start: -0.175rem;
+}
+
+.RedTooltip {
+  composes: Tooltip;
+  color: var(--danger);
+}
+
+.YellowTooltip {
+  composes: Tooltip;
+  color: var(--warning);
 }
 
 @keyframes marching-ants {

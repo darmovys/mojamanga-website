@@ -1,16 +1,22 @@
 import { Tooltip as BaseUITooltip, Button } from '@base-ui/react'
 import styles from './Tooltip.module.scss'
-import { Asterisk } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import ClickTargetHelper from '../ClickTargetHelper'
+import clsx from 'clsx'
 
 interface TooltipProps {
   text: string
-  color?: 'red' | 'yellow'
+  className?: string
   align?: 'start' | 'end' | 'center'
+  children: React.ReactNode
 }
 
-function Tooltip({ text, color = 'red', align = 'center' }: TooltipProps) {
+function Tooltip({
+  text,
+  className,
+  align = 'center',
+  children,
+}: TooltipProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isCoarse, setIsCoarse] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -56,12 +62,7 @@ function Tooltip({ text, color = 'red', align = 'center' }: TooltipProps) {
       >
         <BaseUITooltip.Trigger
           ref={triggerRef}
-          style={
-            {
-              '--color': color === 'red' ? 'var(--danger)' : 'var(--warning)',
-            } as React.CSSProperties
-          }
-          className={styles.Button}
+          className={clsx(styles.Button, className)}
           render={<Button />}
           onClick={() => {
             if (isCoarse) {
@@ -70,7 +71,7 @@ function Tooltip({ text, color = 'red', align = 'center' }: TooltipProps) {
           }}
         >
           <ClickTargetHelper />
-          <Asterisk size={14} />
+          {children}
         </BaseUITooltip.Trigger>
 
         <BaseUITooltip.Portal>

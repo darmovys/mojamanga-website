@@ -1,5 +1,6 @@
 import {
   ArrowLeft,
+  Asterisk,
   ChevronUp,
   CircleAlert,
   Info,
@@ -27,9 +28,9 @@ import HelperDialog from '../HelperDialog'
 import { useHelperDialog } from '@/hooks/use-helper-dialog'
 import { useGoBack } from '@/hooks/use-go-back'
 import { LINK_META } from '@/lib/constants'
-import styles from './CreateTeamForm.module.scss'
 import Tooltip from '../Tooltip'
 import { getRouteApi } from '@tanstack/react-router'
+import styles from './CreateTeamForm.module.scss'
 
 const MAX_DESCRIPTION_LENGTH = 500
 
@@ -111,7 +112,13 @@ function CreateTeamForm() {
               <div>
                 <span className={styles.Label}>
                   Обкладинка
-                  <Tooltip text="Обов'язкове поле" align="start" />
+                  <Tooltip
+                    className={styles.RedTooltip}
+                    text="Обов'язкове поле"
+                    align="start"
+                  >
+                    <Asterisk size={14} />
+                  </Tooltip>
                 </span>
                 <div className={styles.UploadAvatarWrapper}>
                   {!avatar.fileState && (
@@ -345,7 +352,13 @@ function CreateTeamForm() {
             <div>
               <label htmlFor="title" className={styles.Label}>
                 Назва
-                <Tooltip text="Обов'язкове поле" align="start" />
+                <Tooltip
+                  className={styles.RedTooltip}
+                  text="Обов'язкове поле"
+                  align="start"
+                >
+                  <Asterisk size={14} />
+                </Tooltip>
               </label>
               <form.Field
                 name="title"
@@ -454,10 +467,12 @@ function CreateTeamForm() {
                       <span className={styles.Label}>
                         Посилання
                         <Tooltip
+                          className={styles.YellowTooltip}
                           text="Наполегливо просимо надати принаймні одне посилання на групу чи сайт команди"
-                          color="yellow"
                           align="start"
-                        />
+                        >
+                          <Asterisk size={14} />
+                        </Tooltip>
                       </span>
                       <AnimatePresence>
                         {activeLinks.length > 1 && (

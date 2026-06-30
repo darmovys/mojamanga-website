@@ -27,6 +27,7 @@ import { isValidUrl } from '@/lib/utils'
 import { useId } from 'react'
 import {
   ArrowLeft,
+  Asterisk,
   ChevronUp,
   CircleAlert,
   Info,
@@ -82,7 +83,7 @@ function CreateTitleForm() {
           <ArrowLeft size={20} />
           <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
         </Button>
-        <h1 className={styles.GoBackHeading}>Створення твору</h1>
+        <h1 className={styles.GoBackHeading}>Додавання твору</h1>
         <HelperDialog
           title={title}
           content={content}
@@ -101,7 +102,7 @@ function CreateTitleForm() {
       <div className={styles.Wrapper}>
         <div className={styles.Content}>
           <div className={styles.ContentHeaderWrapper}>
-            <h1 className={styles.ContentTitle}>Створення твору</h1>
+            <h1 className={styles.ContentTitle}>Додавання твору</h1>
             <HelperDialog
               title={title}
               content={content}
@@ -140,7 +141,13 @@ function CreateTitleForm() {
                       className={styles.Label}
                     >
                       Обкладинка
-                      <Tooltip text="Обов'язкове поле" align="start" />
+                      <Tooltip
+                        className={styles.RedTooltip}
+                        text="Обов'язкове поле"
+                        align="start"
+                      >
+                        <Asterisk size={14} />
+                      </Tooltip>
                     </Field.Label>
                     <div className={styles.UploadAvatarWrapper}>
                       {!cover.fileState && (
@@ -408,7 +415,13 @@ function CreateTitleForm() {
                 >
                   <Field.Label htmlFor="ukrName" className={styles.Label}>
                     Назва українською
-                    <Tooltip text="Обов'язкове поле" align="start" />
+                    <Tooltip
+                      className={styles.RedTooltip}
+                      text="Обов'язкове поле"
+                      align="start"
+                    >
+                      <Asterisk size={14} />
+                    </Tooltip>
                   </Field.Label>
                   <Field.Control
                     id="ukrName"
@@ -435,7 +448,13 @@ function CreateTitleForm() {
                 >
                   <Field.Label htmlFor="enName" className={styles.Label}>
                     Назва англійською
-                    <Tooltip text="Обов'язкове поле" align="start" />
+                    <Tooltip
+                      className={styles.RedTooltip}
+                      text="Обов'язкове поле"
+                      align="start"
+                    >
+                      <Asterisk size={14} />
+                    </Tooltip>
                   </Field.Label>
                   <Field.Control
                     id="enName"
@@ -466,10 +485,12 @@ function CreateTitleForm() {
                   >
                     Альтернативні назви
                     <Tooltip
-                      color="yellow"
+                      className={styles.YellowTooltip}
                       text='Назви вказуйте за допомогою роздільника "/" через пробіл (назва 1 / назва 2 / назва 3)'
                       align="start"
-                    />
+                    >
+                      <Asterisk size={14} />
+                    </Tooltip>
                   </Field.Label>
                   <Field.Control
                     id="alternativeNames"
@@ -528,7 +549,13 @@ function CreateTitleForm() {
               <h3 className={styles.MetadataHeading}>
                 <span>Метадані</span>
                 <ShiftBy x={1} y={1.5}>
-                  <Tooltip text="Усі поля обов'язкові" align="start" />
+                  <Tooltip
+                    className={styles.RedTooltip}
+                    text="Усі поля обов'язкові"
+                    align="start"
+                  >
+                    <Asterisk size={14} />
+                  </Tooltip>
                 </ShiftBy>
               </h3>
               <form.Field
@@ -745,7 +772,13 @@ function CreateTitleForm() {
                       className={styles.Label}
                     >
                       Автори
-                      <Tooltip text="Обов'язкове поле" align="start" />
+                      <Tooltip
+                        className={styles.RedTooltip}
+                        text="Обов'язкове поле"
+                        align="start"
+                      >
+                        <Asterisk size={14} />
+                      </Tooltip>
                     </Field.Label>
                     <Link className={styles.Link} to="/people/create">
                       Створити нового автора
@@ -775,7 +808,13 @@ function CreateTitleForm() {
                       className={styles.Label}
                     >
                       Художники
-                      <Tooltip text="Обов'язкове поле" align="start" />
+                      <Tooltip
+                        className={styles.RedTooltip}
+                        text="Обов'язкове поле"
+                        align="start"
+                      >
+                        <Asterisk size={14} />
+                      </Tooltip>
                     </Field.Label>
                     <Link className={styles.Link} to="/people/create">
                       Створити нового художника
@@ -847,10 +886,12 @@ function CreateTitleForm() {
                       >
                         Посилання на зовнішні ресруси
                         <Tooltip
-                          color="yellow"
+                          className={styles.YellowTooltip}
                           text="Обов'язково вказуйте на початку https://"
                           align="start"
-                        />
+                        >
+                          <Asterisk size={14} />
+                        </Tooltip>
                       </Field.Label>
                       <AnimatePresence>
                         {visibleFields.length > 1 && (
@@ -946,16 +987,8 @@ function CreateTitleForm() {
                           {!maxFieldsReached && (
                             <MotionButton
                               type="button"
-                              focusableWhenDisabled={true}
                               disabled={hasEmptyFields}
-                              style={{
-                                pointerEvents: hasEmptyFields ? 'none' : 'auto',
-                              }}
-                              tabIndex={hasEmptyFields ? -1 : 0}
-                              onClick={(e) => {
-                                e.preventDefault()
-                                handleAddSource()
-                              }}
+                              onClick={handleAddSource}
                               className={styles.AddSourceButton}
                             >
                               <span>Додати посилання</span>
@@ -987,9 +1020,12 @@ function CreateTitleForm() {
                     >
                       Команди
                       <Tooltip
+                        className={styles.RedTooltip}
                         text="Повинна бути обрана хоча б одна команда"
                         align="start"
-                      />
+                      >
+                        <Asterisk size={14} />
+                      </Tooltip>
                     </Field.Label>
                     <Link className={styles.Link} to="/team/create">
                       Створити нову команду
