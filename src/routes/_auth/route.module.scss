@@ -76,6 +76,7 @@
 .MainSection {
   display: flex;
   flex: 1;
+  container-type: inline-size;
 
   @media (min-width: 32rem) {
     flex: revert;

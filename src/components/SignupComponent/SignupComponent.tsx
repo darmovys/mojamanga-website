@@ -17,10 +17,12 @@ import { PasswordConditionsContent } from './PasswordConditions'
 import { authClient } from '@/lib/auth-client'
 import { useTheme } from '@/lib/theme-provider'
 import { useSignup } from './use-signup'
+import { useMediaQuery } from '@/hooks/use-media-query'
 import styles from './SignupComponent.module.scss'
 
 function SignupComponent() {
   const { theme } = useTheme()
+  const matches = useMediaQuery('(min-width: 32rem)')
   const {
     form,
     isPending,
@@ -251,6 +253,7 @@ function SignupComponent() {
                   siteKey={import.meta.env.VITE_FAKE_TURNSTILE_SITEKEY}
                   options={{
                     theme: theme,
+                    size: matches ? 'normal' : 'compact',
                   }}
                   onError={() => {
                     setTurnstileError(

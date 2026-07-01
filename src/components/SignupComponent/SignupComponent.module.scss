@@ -132,11 +132,19 @@
 }
 
 .TurnstileWrapper {
-  block-size: 72px; // to preserve space for turnstile captcha
+  block-size: 145px; // to preserve space for turnstile captcha
   padding-block-start: 2px;
 
   &:has(> .Error) {
-    margin-block-end: var(--16px);
+    margin-block-end: var(--28px);
+
+    @media (min-width: 32rem) {
+      margin-block-end: var(--16px);
+    }
+  }
+
+  @media (min-width: 32rem) {
+    block-size: 72px;
   }
 }
 
@@ -178,10 +186,16 @@
 .LoginText {
   margin-block-start: var(--10px);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   gap: var(--8px);
   color: var(--sys-primary);
   font-size: var(--14px);
+
+  @container (min-width: 23.625rem) {
+    flex-direction: revert;
+    justify-content: center;
+  }
 }
 
 .LoginLink {

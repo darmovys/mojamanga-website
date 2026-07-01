@@ -125,7 +125,7 @@
 .Checkbox {
   --size: var(--24px);
   display: flex;
-  inline-size: var(--size);
+  flex: 0 0 var(--size);
   block-size: var(--size);
   align-items: center;
   justify-content: center;
@@ -171,15 +171,20 @@
 }
 
 .TurnstileWrapper {
-  block-size: 72px; // to preserve space for turnstile captcha
+  block-size: 145px; // to preserve space for turnstile captcha
   margin-block-end: auto;
+
+  &:has(> .Error) {
+    margin-block-end: var(--28px);
+
+    @media (min-width: 32rem) {
+      margin-block-end: var(--16px);
+    }
+  }
 
   @media (min-width: 32rem) {
     margin-block: auto;
-  }
-
-  &:has(> .Error) {
-    margin-block-end: var(--16px);
+    block-size: 72px;
   }
 }
 
@@ -230,10 +235,16 @@
 .SignupText {
   margin-block: var(--10px);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   gap: var(--8px);
   color: var(--sys-primary);
   font-size: var(--14px);
+
+  @container (min-width: 23.625rem) {
+    flex-direction: revert;
+    justify-content: center;
+  }
 }
 
 .SignupLink {

@@ -14,10 +14,13 @@ import ClickTargetHelper from '../ClickTargetHelper'
 import { Turnstile } from '@marsidev/react-turnstile'
 import clsx from 'clsx'
 import { useLogin } from './use-login'
+import { useMediaQuery } from '@/hooks/use-media-query'
 import styles from './LoginComponent.module.scss'
 
 function LoginComponent() {
   const { theme } = useTheme()
+  const matches = useMediaQuery('(min-width: 32rem)')
+
   const {
     form,
     isPending,
@@ -197,6 +200,7 @@ function LoginComponent() {
                   siteKey={import.meta.env.VITE_FAKE_TURNSTILE_SITEKEY}
                   options={{
                     theme: theme,
+                    size: matches ? 'normal' : 'compact',
                   }}
                   onError={() => {
                     setTurnstileError(
