@@ -465,12 +465,12 @@ model PublishingVersion {
 }
 
 model Chapter {
-  id              String              @id @default(cuid(2))
+  id              String                @id @default(cuid(2))
   name            String?
-  volumeNum       Float               @map("volume_num")
-  chapterNum      Float               @map("chapter_num")
-  approvalStatus  TitleApprovalStatus @default(PENDING) @map("approval_status")
-  rejectionReason String?             @map("rejection_reason")
+  volumeNum       Float                 @map("volume_num")
+  chapterNum      Float                 @map("chapter_num")
+  approvalStatus  ChapterApprovalStatus @default(PENDING) @map("approval_status")
+  rejectionReason String?               @map("rejection_reason")
 
   publishingVersionId String            @map("publishing_version_id")
   publishingVersion   PublishingVersion @relation(fields: [publishingVersionId], references: [id], onDelete: Cascade)
@@ -859,6 +859,14 @@ enum TitleApprovalStatus {
   REJECTED
 
   @@map("title_approval_status")
+}
+
+enum ChapterApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("chapter_approval_status")
 }
 
 enum SystemFolderType {
