@@ -2,6 +2,99 @@ import { S3 } from '@/lib/s3-client'
 import { CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { createClientOnlyFn } from '@tanstack/react-start'
 
+// ============================================================================
+// РОБОТА З МАСИВАМИ ТА ЧИСЛАМИ
+// ============================================================================
+
+/**
+ * Генерує масив чисел у заданому діапазоні.
+ * @param start - Початкове значення (або кінцеве, якщо параметр end не передано)
+ * @param end - Кінцеве значення (не включно)
+ * @param step - Крок генерації (за замовчуванням 1)
+ * @returns Масив чисел
+ */
+export function range(start: number, end?: number, step: number = 1): number[] {
+  let output: number[] = []
+  if (typeof end === 'undefined') {
+    end = start
+    start = 0
+  }
+  for (let i = start; i < end; i += step) {
+    output.push(i)
+  }
+  return output
+}
+
+// ============================================================================
+// РОБОТА З ТЕКСТОМ ТА ЛОКАЛІЗАЦІЄЮ
+// ============================================================================
+
+/**
+ * Конвертація українського тексту в латиницю за системою Максима Прудеуса.
+ *
+ * Абетка:
+ * A=а  B=б  C=ц  Č=ч  D=д  E=е  F=ф
+ * G=г  Ĝ=ґ  H=х  I=і  J=й  K=к  L=л
+ * M=м  N=н  O=о  P=п  R=р  S=с  Š=ш
+ * T=т  U=у  V=в  Y=и  Z=з  Ž=ж
+ * ' = ь (м'який знак) та апостроф — спільний символ
+ *
+ * Комбіновані літери:
+ * Є = JE,  Ї = JI,  Ю = JU,  Я = JA, Щ = ŠČ
+ */
+// prettier-ignore
+const UKRAINIAN_TO_LATIN: Record<string, string> = {
+  // ─── Малі літери ───
+  а: 'a', б: 'b', в: 'v', г: 'g', ґ: 'ĝ', д: 'd', е: 'e', є: 'je', ж: 'ž',
+  з: 'z', и: 'y', і: 'i', ї: 'ji', й: 'j', к: 'k', л: 'l', м: 'm', н: 'n',
+  о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'c',
+  ч: 'č', ш: 'š', щ: 'šč', ь: "'", ю: 'ju', я: 'ja',
+  // ─── Великі літери ───
+  А: 'A', Б: 'B', В: 'V', Г: 'G', Ґ: 'Ĝ', Д: 'D', Е: 'E', Є: 'JE', Ж: 'Ž',
+  З: 'Z', И: 'Y', І: 'I', Ї: 'JI', Й: 'J', К: 'K', Л: 'L', М: 'M', Н: 'N',
+  О: 'O', П: 'P', Р: 'R', С: 'S', Т: 'T', У: 'U', Ф: 'F', Х: 'H', Ц: 'C',
+  Ч: 'Č', Ш: 'Š', Щ: 'ŠČ', Ь: "'", Ю: 'JU', Я: 'JA',
+  // ─── Апостроф ───
+  '\u2019': "'", // '
+  '\u0027': "'", // '
+}
+
+/**
+ * Транслітерує український текст у латиницю.
+ * * @param text - Рядок з українським текстом
+ * @returns Рядок латиницею
+ */
+export function ukrainianToLatin(text: string): string {
+  return [...text].map((char) => UKRAINIAN_TO_LATIN[char] ?? char).join('')
+}
+
+// ============================================================================
+// ВАЛІДАЦІЯ
+// ============================================================================
+
+/**
+ * Перевіряє, чи є рядок валідним HTTP/HTTPS URL-посиланням.
+ * * @param value - Рядок для перевірки
+ * @returns true, якщо рядок є валідним URL, інакше false
+ */
+export function isValidUrl(value: string) {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'http:' || url.protocol === 'https:'
+  } catch (e) {
+    return false
+  }
+}
+
+// ============================================================================
+// РОБОТА З ФАЙЛАМИ ТА МЕДІА (DOM)
+// ============================================================================
+
+/**
+ * Отримує фізичні розміри зображення (ширину та висоту) з об'єкта File.
+ * * @param file - Об'єкт файлу зображення
+ * @returns Promise з об'єктом, що містить width та height
+ */
 export const getImageDimensions = (
   file: File,
 ): Promise<{ width: number; height: number }> => {
@@ -23,112 +116,58 @@ export const getImageDimensions = (
   })
 }
 
+// ============================================================================
+// РОБОТА З LOCAL STORAGE (CLIENT ONLY)
+// ============================================================================
+
+const STORAGE_KEY = 'trusted_hostnames'
+
 /**
- * Конвертація українського тексту в латиницю за системою Максима Прудеуса.
- *
- * Абетка:
- *   A=а  B=б  C=ц  Č=ч  D=д  E=е  F=ф
- *   G=г  Ĝ=ґ  H=х  I=і  J=й  K=к  L=л
- *   M=м  N=н  O=о  P=п  R=р  S=с  Š=ш
- *   T=т  U=у  V=в  Y=и  Z=з  Ž=ж
- *   ' = ь (м'який знак) та апостроф — спільний символ
- *
- * Комбіновані літери:
- *   Є = JE,  Ї = JI,  Ю = JU,  Я = JA, Щ = ŠČ
+ * Отримує масив довірених доменів (хостнеймів) з localStorage.
+ * Виконується виключно на клієнті.
+ * * @returns Масив рядків з довіреними доменами
  */
+export const getTrustedHostnames = createClientOnlyFn((): string[] => {
+  const raw = localStorage.getItem(STORAGE_KEY)
+  return raw ? JSON.parse(raw) : []
+})
 
-const UKRAINIAN_TO_LATIN: Record<string, string> = {
-  // ─── Малі літери ───
-  а: 'a',
-  б: 'b',
-  в: 'v',
-  г: 'g',
-  ґ: 'ĝ',
-  д: 'd',
-  е: 'e',
-  є: 'je',
-  ж: 'ž',
-  з: 'z',
-  и: 'y',
-  і: 'i',
-  ї: 'ji',
-  й: 'j',
-  к: 'k',
-  л: 'l',
-  м: 'm',
-  н: 'n',
-  о: 'o',
-  п: 'p',
-  р: 'r',
-  с: 's',
-  т: 't',
-  у: 'u',
-  ф: 'f',
-  х: 'h',
-  ц: 'c',
-  ч: 'č',
-  ш: 'š',
-  щ: 'šč',
-  ь: "'",
-  ю: 'ju',
-  я: 'ja',
+/**
+ * Додає новий домен до списку довірених у localStorage (без дублікатів).
+ * Виконується виключно на клієнті.
+ * * @param hostname - Назва домену для додавання
+ */
+export const addTrustedHostname = createClientOnlyFn(
+  (hostname: string): void => {
+    const current = getTrustedHostnames()
+    if (!current.includes(hostname)) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...current, hostname]))
+    }
+  },
+)
 
-  // ─── Великі літери ───
-  А: 'A',
-  Б: 'B',
-  В: 'V',
-  Г: 'G',
-  Ґ: 'Ĝ',
-  Д: 'D',
-  Е: 'E',
-  Є: 'JE',
-  Ж: 'Ž',
-  З: 'Z',
-  И: 'Y',
-  І: 'I',
-  Ї: 'JI',
-  Й: 'J',
-  К: 'K',
-  Л: 'L',
-  М: 'M',
-  Н: 'N',
-  О: 'O',
-  П: 'P',
-  Р: 'R',
-  С: 'S',
-  Т: 'T',
-  У: 'U',
-  Ф: 'F',
-  Х: 'H',
-  Ц: 'C',
-  Ч: 'Č',
-  Ш: 'Š',
-  Щ: 'ŠČ',
-  Ь: "'",
-  Ю: 'JU',
-  Я: 'JA',
+/**
+ * Перевіряє, чи міститься домен у списку довірених збережених доменів.
+ * Виконується виключно на клієнті.
+ * * @param hostname - Назва домену для перевірки
+ * @returns true, якщо домен є в списку
+ */
+export const isTrustedHostname = createClientOnlyFn(
+  (hostname: string): boolean => {
+    return getTrustedHostnames().includes(hostname)
+  },
+)
 
-  // ─── Апостроф ───
-  '\u2019': "'", // '
-  '\u0027': "'", // '
-}
+// ============================================================================
+// AWS S3 / БЕКЕНД СЕРВІСИ
+// ============================================================================
 
-export function ukrainianToLatin(text: string): string {
-  return [...text].map((char) => UKRAINIAN_TO_LATIN[char] ?? char).join('')
-}
-
-export function range(start: number, end?: number, step: number = 1): number[] {
-  let output: number[] = []
-  if (typeof end === 'undefined') {
-    end = start
-    start = 0
-  }
-  for (let i = start; i < end; i += step) {
-    output.push(i)
-  }
-  return output
-}
-
+/**
+ * Переміщує файл всередині S3 бакету (копіює на нове місце і видаляє старий).
+ * * @param sourceKey - Поточний шлях до файлу (ключ)
+ * @param destinationKey - Новий шлях до файлу (ключ)
+ * @returns true у разі успіху, інакше false
+ */
 export async function moveS3File(sourceKey: string, destinationKey: string) {
   try {
     await S3.send(
@@ -147,38 +186,7 @@ export async function moveS3File(sourceKey: string, destinationKey: string) {
     )
     return true
   } catch (error) {
-    console.error('Помилка переміщення файлу в S3: error')
+    console.error('Помилка переміщення файлу в S3:', error)
     return false
   }
 }
-
-export function isValidUrl(value: string) {
-  try {
-    const url = new URL(value)
-    return url.protocol === 'http:' || url.protocol === 'https:'
-  } catch (e) {
-    return false
-  }
-}
-
-const STORAGE_KEY = 'trusted_hostnames'
-
-export const getTrustedHostnames = createClientOnlyFn((): string[] => {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  return raw ? JSON.parse(raw) : []
-})
-
-export const addTrustedHostname = createClientOnlyFn(
-  (hostname: string): void => {
-    const current = getTrustedHostnames()
-    if (!current.includes(hostname)) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([...current, hostname]))
-    }
-  },
-)
-
-export const isTrustedHostname = createClientOnlyFn(
-  (hostname: string): boolean => {
-    return getTrustedHostnames().includes(hostname)
-  },
-)
