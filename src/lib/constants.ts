@@ -16,6 +16,7 @@ import {
   TitleStatus,
   TitleType,
   TitleFieldName,
+  UserRole,
 } from '@/generated/prisma/enums'
 
 import { Globe } from 'lucide-react'
@@ -25,6 +26,11 @@ type LinkMeta = {
   icon: React.FC<React.SVGProps<SVGSVGElement>>
   tone: string
   toneDark?: string
+}
+
+type RoleMeta = {
+  label: string
+  tone: string
 }
 
 export const TITLE_TYPE_LABELS: Record<TitleType, string> = {
@@ -76,6 +82,21 @@ export const FIELD_LABELS: Record<TitleFieldName, string> = {
   [TitleFieldName.authors]: 'Автори',
   [TitleFieldName.artists]: 'Художники',
   [TitleFieldName.sources]: 'Джерела',
+}
+
+export const USER_ROLES: Record<UserRole, RoleMeta> = {
+  [UserRole.USER]: {
+    label: 'Користувач',
+    tone: 'blue',
+  },
+  [UserRole.MODERATOR]: {
+    label: 'Модератор',
+    tone: '#07ca38',
+  },
+  [UserRole.ADMIN]: {
+    label: 'Адмін',
+    tone: '#ffae52',
+  },
 }
 
 export const LINK_META: Record<LinkType, LinkMeta> = {

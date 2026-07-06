@@ -1,0 +1,425 @@
+@use '../../styles/breakpoints' as *;
+
+.Wrapper {
+  --padding: var(--12px);
+  flex: 1;
+  background-color: var(--sys-surface-low);
+  padding-inline: var(--padding);
+  color: var(--sys-primary);
+
+  @include up('laptop') {
+    --padding: var(--40px);
+  }
+}
+
+.GoBackHeader {
+  position: sticky;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  inset-inline-start: 0;
+  z-index: 10;
+  color: var(--sys-on-surface);
+  background-color: oklch(from var(--sys-surface) l c h / 0.8);
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  padding: var(--14px) var(--8px);
+  backdrop-filter: blur(5px);
+  box-shadow: var(--shadow-border);
+
+  @include up('tablet') {
+    display: none;
+  }
+}
+
+.GoBackHeading {
+  font-size: var(--16px);
+  font-weight: 460;
+}
+
+.GoBackHeaderButton {
+  block-size: var(--32px);
+  inline-size: var(--32px);
+  border-radius: 100vmax;
+  outline-offset: 2px;
+  position: relative; // for click target helper
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
+
+.SettingsButton {
+  composes: GoBackHeaderButton;
+  color: inherit;
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Background {
+  --height: var(--mobile-height);
+  background-image: var(--background-url);
+  background-size: cover;
+  background-position: 50%;
+  position: relative;
+  block-size: var(--height);
+  margin-inline: calc(var(--padding) * -1);
+
+  &:after {
+    content: '';
+    background: linear-gradient(
+      0deg,
+      oklch(from var(--sys-surface-low) l c h / 1) 0%,
+      oklch(from var(--sys-surface-low) l c h / 0) 100%
+    );
+    block-size: var(--height);
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+  }
+
+  @include up('laptop') {
+    --height: var(--pc-height);
+
+    .Wrapper[data-no-background='false'] &:after {
+      background: linear-gradient(
+        oklch(8.597% 0.00556 285.155 / 0.1) 0%,
+        oklch(8.597% 0.00556 285.155 / 0.4) 100%
+      );
+    }
+  }
+}
+
+.UsernameSection {
+  isolation: isolate;
+  margin-block-start: calc(var(--32px) * -1);
+  display: grid;
+  grid-template-columns: var(--72px) 1fr;
+  grid-template-areas:
+    'avatar badge'
+    'avatar name'
+    'stats stats';
+  gap: var(--8px) var(--18px);
+
+  @include up('laptop') {
+    grid-template-columns: calc(var(--96px) + var(--4px)) 1fr;
+    margin-block-start: calc((var(--140px) + var(--2px)) * -1);
+    grid-template-areas:
+      'avatar name'
+      'avatar stats';
+    row-gap: var(--2px);
+    margin-block-end: var(--24px);
+
+    .Wrapper[data-no-background='false'] & {
+      margin-block-end: var(--40px);
+    }
+  }
+}
+
+.CoverWrapper {
+  grid-area: avatar;
+
+  img {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+}
+
+.Username {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--6px);
+  padding-block-end: var(--8px);
+  min-width: 0;
+  user-select: none;
+
+  grid-area: name;
+
+  @include up('laptop') {
+    padding-block-end: revert;
+    gap: var(--12px);
+  }
+}
+
+.TruncatedText {
+  font-weight: 700;
+  font-size: var(--18px);
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
+
+  @include up('laptop') {
+    line-height: 1;
+    font-size: var(--48px);
+  }
+}
+
+.UsernameTooltip {
+  display: block;
+  min-width: 0;
+
+  @include up('laptop') {
+    transform: translateX(-2px);
+
+    .Wrapper[data-no-background='false'] & {
+      color: var(--tone-12);
+    }
+  }
+}
+
+.SettingsButtonTablet {
+  display: none;
+
+  @include up('tablet') {
+    display: flex;
+    align-items: center;
+    gap: var(--4px);
+    text-decoration: none;
+    background-color: var(--sys-primary);
+    color: var(--sys-surface);
+    padding: var(--2px) var(--6px);
+    border-radius: var(--8px);
+    font-size: var(--14px);
+    margin-inline-start: auto;
+    outline: none;
+
+    &::before {
+      border-radius: var(--8px) !important;
+    }
+  }
+
+  @include up('laptop') {
+    display: none;
+  }
+}
+
+.SettingsButtonLaptop {
+  display: none;
+
+  @include up('laptop') {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    gap: var(--4px);
+    text-decoration: none;
+    background-color: var(--sys-primary);
+    color: var(--sys-surface);
+    padding: var(--4px) var(--8px);
+    border-radius: var(--8px);
+    font-size: var(--14px);
+    margin-inline-start: auto;
+    outline: none;
+
+    &::before {
+      border-radius: var(--8px) !important;
+    }
+  }
+}
+
+.Badge {
+  font-weight: 700;
+  justify-self: start;
+  background-color: var(--background-color);
+  padding: var(--2px) var(--4px);
+  border-radius: var(--4px);
+  font-size: var(--10px);
+  text-transform: uppercase;
+  color: var(--tone-3);
+  user-select: none;
+
+  @include up('laptop') {
+    font-size: var(--16px);
+    padding-inline: var(--6px);
+  }
+}
+
+.UsernameMeta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: var(--14px);
+  grid-area: stats;
+  color: var(--sys-on-surface-variant);
+  line-height: 1.45;
+  margin-block-end: var(--12px);
+
+  @include up('laptop') {
+    color: var(--sys-primary);
+
+    .Wrapper[data-no-background='false'] & {
+      color: var(--tone-11);
+    }
+  }
+}
+
+.StatisticsTitle {
+  &:first-child {
+    flex-basis: 100%;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  &:not(:last-child, :nth-child(4))::after {
+    content: '•';
+    font-weight: 900;
+    margin-inline: var(--8px);
+  }
+
+  @include up('laptop') {
+    &:first-child {
+      flex-basis: revert;
+
+      &::after {
+        display: revert;
+      }
+    }
+  }
+}
+
+.StatisticsTooltip {
+  display: inline-block;
+}
+
+.LaptopUp {
+  display: none;
+  @include up('laptop') {
+    display: block;
+  }
+}
+
+.TabletDown {
+  display: block;
+  justify-self: start;
+  @include up('laptop') {
+    display: none;
+  }
+}
+
+.NavigationContainer {
+  position: relative;
+  background-color: var(--sys-surface-highest);
+  margin-inline: calc(var(--padding) * -1);
+  padding-inline: var(--20px);
+}
+
+.Navigation {
+  background-color: var(--sys-surface-highest);
+  display: flex;
+  gap: var(--28px);
+  overflow-x: auto;
+
+  // Приховування горизонтальної прокрутки на Firefox
+  scrollbar-width: none;
+
+  // Приховування горизонтальної прокрутки на всіх інших браузерах
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @include up('laptop') {
+    padding-inline: var(--padding);
+  }
+}
+
+.NavLink {
+  color: var(--sys-on-surface);
+  text-decoration: none;
+  font-size: var(--14px);
+  font-weight: 400;
+  white-space: nowrap;
+
+  position: relative;
+  padding: var(--10px) 0 var(--14px);
+
+  transition: color 0.2s var(--bg-animation);
+
+  @include up('laptop') {
+    padding: var(--20px) 0 calc(var(--20px) + var(--2px));
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--blue-400);
+    }
+  }
+}
+
+.Indicator {
+  block-size: var(--4px);
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  background-color: var(--blue-400);
+}
+
+.ChevronWrapper {
+  position: absolute;
+  inset-block-start: 0;
+  inset-block-end: 0;
+  z-index: 10;
+  inline-size: var(--96px);
+  display: flex;
+  align-items: center;
+  padding: var(--6px);
+  pointer-events: none;
+  background: linear-gradient(
+    var(--direction),
+    oklch(from var(--sys-surface-low) l c h / 1) 20%,
+    oklch(from var(--sys-surface-low) l c h / 0) 85%
+  );
+}
+
+.LeftChevronWrapper {
+  composes: ChevronWrapper;
+  --direction: to right;
+  inset-inline-start: 0;
+}
+
+.RightChevronWrapper {
+  composes: ChevronWrapper;
+  --direction: to left;
+  inset-inline-end: 0;
+  justify-content: flex-end;
+}
+
+.Chevron {
+  border-radius: 50%;
+  color: var(--sys-on-surface);
+  pointer-events: auto;
+  transform: translateY(-2px);
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+  }
+
+  @include up('laptop') {
+    transform: translateY(0);
+  }
+}
+
+.Main {
+  padding-block-start: var(--18px);
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}

@@ -26,7 +26,13 @@ export const usersRouter = new Elysia({
           },
           include: {
             _count: {
-              select: { bookmarks: true, comments: true, likes: true },
+              select: {
+                bookmarks: true,
+                comments: true,
+                likes: true,
+                titleAddings: { where: { approvalStatus: 'APPROVED' } },
+                uploadedChapters: { where: { approvalStatus: 'APPROVED' } },
+              },
             },
           },
         })
