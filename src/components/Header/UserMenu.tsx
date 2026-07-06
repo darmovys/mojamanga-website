@@ -69,8 +69,9 @@ export function UserMenu({ user }: UserMenuProps) {
             >
               <Image
                 src={
-                  user.image ??
-                  `https://api.dicebear.com/9.x/glass/svg?seed=${user.displayUsername}`
+                  user.image
+                    ? `${import.meta.env.VITE_STORAGE_URL}${user.image}`
+                    : `https://api.dicebear.com/9.x/glass/svg?seed=${user.displayUsername}`
                 }
                 alt={user.name}
                 layout="constrained"

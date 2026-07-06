@@ -252,7 +252,9 @@
 .UserAvatar {
   inline-size: var(--45px);
   block-size: var(--45px);
-  border-radius: var(--10px);
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
 }
 
 .UserCardLinks {

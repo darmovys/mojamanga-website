@@ -103,7 +103,10 @@
   }
 
   img {
+    object-fit: cover;
     border-radius: var(--border-radius);
+    block-size: var(--48px);
+    inline-size: var(--48px);
   }
 }
 

@@ -103,7 +103,10 @@
   border-radius: var(--8px);
 
   img {
-    border-radius: var(--4px);
+    object-fit: cover;
+    border-radius: 50%;
+    block-size: var(--48px);
+    inline-size: var(--48px);
   }
 
   margin-block-end: var(--8px);

@@ -91,7 +91,7 @@ export const addContentLinks = linkOptions([
     },
   },
   {
-    title: 'Додати команду',
+    title: 'Створити команду',
     icon: Users,
     to: '/team/create',
     activeOptions: {

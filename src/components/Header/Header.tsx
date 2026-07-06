@@ -104,8 +104,9 @@ function Header() {
                 >
                   <Image
                     src={
-                      authState.user.image ??
-                      `https://api.dicebear.com/9.x/glass/svg?seed=${authState.user.displayUsername}`
+                      authState.user.image
+                        ? `${import.meta.env.VITE_STORAGE_URL}${authState.user.image}`
+                        : `https://api.dicebear.com/9.x/glass/svg?seed=${authState.user.displayUsername}`
                     }
                     alt={authState.user.name}
                     layout="fullWidth"
