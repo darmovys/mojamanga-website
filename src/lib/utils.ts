@@ -25,9 +25,76 @@ export function range(start: number, end?: number, step: number = 1): number[] {
   return output
 }
 
+/**
+ * Генерує випадкове число у заданому діапазоні.
+ * @param min - Мінімальне можливе значення
+ * @param max - Максимальне можливе значення (включно)
+ * @returns Число
+ */
+export function getRandom(min: number, max: number) {
+  const floatRandom = Math.random()
+
+  const difference = max - min
+
+  const random = Math.round(difference * floatRandom)
+
+  const randomWithinRange = random + min
+
+  return randomWithinRange
+}
+
 // ============================================================================
 // РОБОТА З ТЕКСТОМ ТА ЛОКАЛІЗАЦІЄЮ
 // ============================================================================
+
+const ukPluralRules = new Intl.PluralRules('uk-UA')
+
+/**
+ * Функція для плюралізації слів на основі числа.
+ * * @param count - Кількість (число)
+ * @param forms - Масив з трьох форм: [для 1, для 2-4, для 5+] (наприклад: ['коментар', 'коментарі', 'коментарів'])
+ * @param isCompact - Чи відображається число у компактному форматі (тис., млн). За замовчуванням false.
+ * @returns Відповідна форма слова
+ */
+export function pluralize(
+  count: number,
+  forms: string[],
+  isCompact: boolean = false,
+): string {
+  if (isCompact && Math.abs(count) >= 1000) {
+    return forms[2]
+  }
+
+  const rule = ukPluralRules.select(count)
+
+  switch (rule) {
+    case 'one':
+      return forms[0]
+    case 'few':
+      return forms[1]
+    case 'many':
+    case 'other':
+    default:
+      return forms[2]
+  }
+}
+
+/**
+ * Форматує число у компактний вигляд (наприклад, 1500 -> 1,5 тис.).
+ * * @param number - Число для форматування
+ * @param accuracy - Кількість символів після коми (за замовчуванням: 1)
+ * @returns Відформатоване число у вигляді рядка
+ */
+export function formatCompactNumber(
+  number: number,
+  accuracy: number = 1,
+): string {
+  return new Intl.NumberFormat('uk-UA', {
+    notation: 'compact',
+    compactDisplay: 'short',
+    maximumFractionDigits: accuracy,
+  }).format(number)
+}
 
 /**
  * Конвертація українського тексту в латиницю за системою Максима Прудеуса.
