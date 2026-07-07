@@ -1,0 +1,139 @@
+@use '../../styles/breakpoints' as *;
+
+.Main {
+  flex: 1;
+  margin-block-start: var(--18px);
+  display: flex;
+  flex-direction: column;
+}
+
+.SectionHeading {
+  font-size: var(--20px);
+  margin-block-end: var(--6px);
+}
+
+.NoTeam {
+  font-size: var(--14px);
+  color: var(--sys-on-surface-variant);
+}
+
+.TeamsList {
+  --card-width: var(--128px);
+  list-style-type: none;
+  padding-inline-start: 0;
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(var(--card-width), 100%), 1fr)
+  );
+  gap: var(--16px);
+  margin-block-end: var(--16px);
+
+  @include up('tablet') {
+    --card-width: var(--160px);
+  }
+}
+
+.TeamItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--8px);
+}
+
+.ImageWrapper {
+  position: relative;
+  border-radius: var(--6px);
+  overflow: hidden;
+  aspect-ratio: 3 / 4.2;
+  user-select: none;
+
+  &[data-no-image='true'] {
+    outline: 0.3px solid var(--sys-outline-variant);
+  }
+}
+
+.StatusCover {
+  position: absolute;
+  inset: 0;
+  background-color: var(--default-overlay-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: var(--20px);
+  color: var(--tone-12);
+  user-select: none;
+}
+
+.StatusRejectedCover {
+  composes: StatusCover;
+  background-color: oklch(from var(--danger) l c h / 0.4);
+  flex-direction: column;
+}
+
+.ReviseButton {
+  position: absolute !important; // Щоб перекрити position: relative від класу Gradient
+  inset-block-start: 50%;
+  text-decoration: none;
+  transform: translateY(60%);
+  background-color: var(--sys-on-surface-highest);
+  color: var(--sys-on-surface);
+  font-size: var(--14px);
+  padding: var(--4px) var(--8px);
+  border-radius: var(--8px);
+
+  &:focus-visible {
+    outline-offset: 1px;
+    outline: 2px solid var(--blue-400);
+  }
+}
+
+.TeamCover {
+  object-fit: cover;
+}
+
+.NoImage {
+  block-size: 100%;
+  background-color: var(--sys-surface-low);
+  box-shadow: var(--inset-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--4px);
+  color: var(--sys-on-surface-variant);
+}
+
+.TeamName {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  border-radius: var(--4px);
+  padding: var(--2px) var(--8px);
+  background-color: var(--sys-surface-highest);
+  flex: 1;
+  font-weight: 450;
+}
+
+.TeamNameLink {
+  color: inherit;
+  text-decoration: none;
+  transition:
+    box-shadow 0.2s,
+    color 0.2s;
+  position: relative; // Для ClickTargetHelper
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--blue-400);
+      box-shadow: 0 1.5px 0 var(--blue-400);
+    }
+  }
+
+  &:focus-visible {
+    border-radius: var(--2px);
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+  }
+}

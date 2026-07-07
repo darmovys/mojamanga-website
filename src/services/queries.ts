@@ -185,4 +185,20 @@ export const usersQueries = {
         return response.data
       },
     }),
+  getUserTeams: (id: string) =>
+    queryOptions({
+      queryKey: [...usersQueries.all, 'lists'] as const,
+      queryFn: async () => {
+        const response = await api().users.user({ id }).teams.get()
+        const { error } = response
+        if (error) {
+          if (error.status === 404) {
+            throw notFound()
+          } else {
+            throw error
+          }
+        }
+        return response.data
+      },
+    }),
 }

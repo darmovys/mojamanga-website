@@ -21,6 +21,7 @@ import { Route as TitleIndexRouteImport } from './routes/title/index'
 import { Route as TeamIndexRouteImport } from './routes/team/index'
 import { Route as ModerationIndexRouteImport } from './routes/moderation/index'
 import { Route as UserIdRouteImport } from './routes/user/$id'
+import { Route as TeamIdRouteImport } from './routes/team/$id'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as UserIdIndexRouteImport } from './routes/user/$id.index'
 import { Route as TitleCreateIndexRouteImport } from './routes/title/create/index'
@@ -37,6 +38,8 @@ import { Route as UserIdAboutRouteImport } from './routes/user/$id.about'
 import { Route as ModerationTitleReviewTitleIdRouteImport } from './routes/moderation/title-review/$titleId'
 import { Route as ModerationTeamReviewTeamIdRouteImport } from './routes/moderation/team-review/$teamId'
 import { Route as ModerationPersonReviewPersonIdRouteImport } from './routes/moderation/person-review/$personId'
+import { Route as UserIdReviseTeamIndexRouteImport } from './routes/user/$id_.revise-team/index'
+import { Route as UserIdReviseTeamTeamIdRouteImport } from './routes/user/$id_.revise-team/$teamId'
 
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
@@ -95,6 +98,11 @@ const ModerationIndexRoute = ModerationIndexRouteImport.update({
 const UserIdRoute = UserIdRouteImport.update({
   id: '/user/$id',
   path: '/user/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamIdRoute = TeamIdRouteImport.update({
+  id: '/team/$id',
+  path: '/team/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
@@ -180,6 +188,16 @@ const ModerationPersonReviewPersonIdRoute =
     path: '/person-review/$personId',
     getParentRoute: () => ModerationRouteRoute,
   } as any)
+const UserIdReviseTeamIndexRoute = UserIdReviseTeamIndexRouteImport.update({
+  id: '/user/$id_/revise-team/',
+  path: '/user/$id/revise-team/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserIdReviseTeamTeamIdRoute = UserIdReviseTeamTeamIdRouteImport.update({
+  id: '/user/$id_/revise-team/$teamId',
+  path: '/user/$id/revise-team/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -190,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/team/$id': typeof TeamIdRoute
   '/user/$id': typeof UserIdRouteWithChildren
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
@@ -209,6 +228,8 @@ export interface FileRoutesByFullPath {
   '/team/create/': typeof TeamCreateIndexRoute
   '/title/create/': typeof TitleCreateIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
+  '/user/$id/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
+  '/user/$id/revise-team/': typeof UserIdReviseTeamIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -218,6 +239,7 @@ export interface FileRoutesByTo {
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/team/$id': typeof TeamIdRoute
   '/moderation': typeof ModerationIndexRoute
   '/team': typeof TeamIndexRoute
   '/title': typeof TitleIndexRoute
@@ -236,6 +258,8 @@ export interface FileRoutesByTo {
   '/team/create': typeof TeamCreateIndexRoute
   '/title/create': typeof TitleCreateIndexRoute
   '/user/$id': typeof UserIdIndexRoute
+  '/user/$id/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
+  '/user/$id/revise-team': typeof UserIdReviseTeamIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -248,6 +272,7 @@ export interface FileRoutesById {
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/api/$': typeof ApiSplatRoute
+  '/team/$id': typeof TeamIdRoute
   '/user/$id': typeof UserIdRouteWithChildren
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
@@ -267,6 +292,8 @@ export interface FileRoutesById {
   '/team/create/': typeof TeamCreateIndexRoute
   '/title/create/': typeof TitleCreateIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
+  '/user/$id_/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
+  '/user/$id_/revise-team/': typeof UserIdReviseTeamIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -279,6 +306,7 @@ export interface FileRouteTypes {
     | '/forbidden'
     | '/notifications'
     | '/api/$'
+    | '/team/$id'
     | '/user/$id'
     | '/moderation/'
     | '/team/'
@@ -298,6 +326,8 @@ export interface FileRouteTypes {
     | '/team/create/'
     | '/title/create/'
     | '/user/$id/'
+    | '/user/$id/revise-team/$teamId'
+    | '/user/$id/revise-team/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -307,6 +337,7 @@ export interface FileRouteTypes {
     | '/forbidden'
     | '/notifications'
     | '/api/$'
+    | '/team/$id'
     | '/moderation'
     | '/team'
     | '/title'
@@ -325,6 +356,8 @@ export interface FileRouteTypes {
     | '/team/create'
     | '/title/create'
     | '/user/$id'
+    | '/user/$id/revise-team/$teamId'
+    | '/user/$id/revise-team'
   id:
     | '__root__'
     | '/'
@@ -336,6 +369,7 @@ export interface FileRouteTypes {
     | '/forbidden'
     | '/notifications'
     | '/api/$'
+    | '/team/$id'
     | '/user/$id'
     | '/moderation/'
     | '/team/'
@@ -355,6 +389,8 @@ export interface FileRouteTypes {
     | '/team/create/'
     | '/title/create/'
     | '/user/$id/'
+    | '/user/$id_/revise-team/$teamId'
+    | '/user/$id_/revise-team/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -367,6 +403,7 @@ export interface RootRouteChildren {
   ForbiddenRoute: typeof ForbiddenRoute
   NotificationsRoute: typeof NotificationsRoute
   ApiSplatRoute: typeof ApiSplatRoute
+  TeamIdRoute: typeof TeamIdRoute
   UserIdRoute: typeof UserIdRouteWithChildren
   TeamIndexRoute: typeof TeamIndexRoute
   TitleIndexRoute: typeof TitleIndexRoute
@@ -374,6 +411,8 @@ export interface RootRouteChildren {
   PeopleCreateIndexRoute: typeof PeopleCreateIndexRoute
   TeamCreateIndexRoute: typeof TeamCreateIndexRoute
   TitleCreateIndexRoute: typeof TitleCreateIndexRoute
+  UserIdReviseTeamTeamIdRoute: typeof UserIdReviseTeamTeamIdRoute
+  UserIdReviseTeamIndexRoute: typeof UserIdReviseTeamIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -460,6 +499,13 @@ declare module '@tanstack/react-router' {
       path: '/user/$id'
       fullPath: '/user/$id'
       preLoaderRoute: typeof UserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/team/$id': {
+      id: '/team/$id'
+      path: '/team/$id'
+      fullPath: '/team/$id'
+      preLoaderRoute: typeof TeamIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/$': {
@@ -574,6 +620,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModerationPersonReviewPersonIdRouteImport
       parentRoute: typeof ModerationRouteRoute
     }
+    '/user/$id_/revise-team/': {
+      id: '/user/$id_/revise-team/'
+      path: '/user/$id/revise-team'
+      fullPath: '/user/$id/revise-team/'
+      preLoaderRoute: typeof UserIdReviseTeamIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/$id_/revise-team/$teamId': {
+      id: '/user/$id_/revise-team/$teamId'
+      path: '/user/$id/revise-team/$teamId'
+      fullPath: '/user/$id/revise-team/$teamId'
+      preLoaderRoute: typeof UserIdReviseTeamTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -640,6 +700,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForbiddenRoute: ForbiddenRoute,
   NotificationsRoute: NotificationsRoute,
   ApiSplatRoute: ApiSplatRoute,
+  TeamIdRoute: TeamIdRoute,
   UserIdRoute: UserIdRouteWithChildren,
   TeamIndexRoute: TeamIndexRoute,
   TitleIndexRoute: TitleIndexRoute,
@@ -647,6 +708,8 @@ const rootRouteChildren: RootRouteChildren = {
   PeopleCreateIndexRoute: PeopleCreateIndexRoute,
   TeamCreateIndexRoute: TeamCreateIndexRoute,
   TitleCreateIndexRoute: TitleCreateIndexRoute,
+  UserIdReviseTeamTeamIdRoute: UserIdReviseTeamTeamIdRoute,
+  UserIdReviseTeamIndexRoute: UserIdReviseTeamIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
