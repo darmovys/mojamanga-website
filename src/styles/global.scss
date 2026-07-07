@@ -78,7 +78,7 @@ h6 {
   display: flex;
   flex-direction: column;
   min-block-size: 100vh; /* Fallback option for old browsers */
-  min-block-size: 100dvh;
+  min-block-size: 100svh;
 }
 
 /*

@@ -3,13 +3,10 @@ import { usersQueries } from '@/services/queries'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { formatDistanceToNowStrict } from 'date-fns'
 import { uk } from 'date-fns/locale'
-import { useEffect, useRef, useState, type MouseEvent } from 'react'
+import { type MouseEvent } from 'react'
 
 function useProfile(id: string) {
   const { data } = useSuspenseQuery(usersQueries.getUserInfo(id))
-  const [isLeftChevronVisible, setIsLeftChevronVisible] = useState(false)
-  const [isRightChevronVisible, setIsRightChevronVisible] = useState(false)
-  const navRef = useRef<HTMLElement>(null)
 
   const { label, tone } = USER_ROLES[data.user.role]
 
@@ -28,41 +25,6 @@ function useProfile(id: string) {
       label: `Про ${data.isMe ? 'себе' : 'користувача'}`,
     },
   ] as const
-
-  function checkScrollVisibility() {
-    if (!navRef.current) return
-
-    const { scrollLeft, scrollWidth, clientWidth } = navRef.current
-
-    if (scrollWidth <= clientWidth) {
-      setIsLeftChevronVisible(false)
-      setIsRightChevronVisible(false)
-      return
-    }
-
-    setIsLeftChevronVisible(scrollLeft > 0)
-    setIsRightChevronVisible(Math.ceil(scrollLeft + clientWidth) < scrollWidth)
-  }
-
-  useEffect(() => {
-    checkScrollVisibility()
-
-    const observer = new ResizeObserver(() => checkScrollVisibility())
-    if (navRef.current) {
-      observer.observe(navRef.current)
-    }
-
-    return () => observer.disconnect()
-  })
-
-  function scrollNav(direction: 'left' | 'right') {
-    if (!navRef.current) return
-    const scrollAmount = 300
-    navRef.current.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
-      behavior: 'smooth',
-    })
-  }
 
   function handleItemClick(e: MouseEvent<HTMLAnchorElement>) {
     e.currentTarget.scrollIntoView({
@@ -99,15 +61,10 @@ function useProfile(id: string) {
 
   return {
     data,
-    isLeftChevronVisible,
-    isRightChevronVisible,
     label,
     tone,
     timeElapsed,
     navItems,
-    navRef,
-    scrollNav,
-    checkScrollVisibility,
     handleItemClick,
     primaryStats,
     secondaryStats,

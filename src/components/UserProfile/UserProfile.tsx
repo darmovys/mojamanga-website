@@ -4,23 +4,19 @@ import { useGoBack } from '@/hooks/use-go-back'
 import { Button } from '@base-ui/react'
 import VisuallyHidden from '../VisuallyHidden'
 import ClickTargetHelper from '../ClickTargetHelper'
-import {
-  ArrowLeft,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  SettingsIcon,
-} from 'lucide-react'
+import { ArrowLeft, SettingsIcon } from 'lucide-react'
 import { Image } from '@unpic/react'
 import MobileNavigation from '../MobileNavigation'
 import Tooltip from '../Tooltip'
 import ShiftBy from '../ShiftBy/ShiftBy'
 import MotionButton from '../MotionButton'
 import clsx from 'clsx'
-import { AnimatePresence, motion } from 'motion/react'
+import { motion } from 'motion/react'
 import { useId } from 'react'
 import { formatCompactNumber, getRandom, pluralize, range } from '@/lib/utils'
 import useProfile from './use-profile'
 import Skeleton from '../Skeleton'
+
 const routeApi = getRouteApi('/user/$id')
 
 type RenderStatItemProps = {
@@ -41,13 +37,8 @@ function UserProfile() {
     timeElapsed,
     primaryStats,
     secondaryStats,
-    isLeftChevronVisible,
-    isRightChevronVisible,
-    scrollNav,
     navItems,
-    navRef,
     handleItemClick,
-    checkScrollVisibility,
   } = useProfile(id)
 
   const renderStatItem = ({ count, words, prefix }: RenderStatItemProps) => {
@@ -70,31 +61,31 @@ function UserProfile() {
 
   return (
     <>
-      <div className={styles.GoBackHeader}>
-        <Button onClick={handleGoBack} className={styles.GoBackHeaderButton}>
-          <ClickTargetHelper />
-          <ArrowLeft size={20} />
-          <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
-        </Button>
-        <h1 className={styles.GoBackHeading}>Профіль користувача</h1>
-        {data.isMe && (
-          <Button
-            nativeButton={false}
-            render={
-              <Link to="/user/$id/settings" params={{ id: data.user.id }} />
-            }
-            className={styles.SettingsButton}
-          >
-            <ClickTargetHelper />
-            <SettingsIcon size={20} />
-            <VisuallyHidden>Налаштування профілю</VisuallyHidden>
-          </Button>
-        )}
-      </div>
       <div
         className={styles.Wrapper}
         data-no-background={!data.user.backgroundUrl}
       >
+        <div className={styles.GoBackHeader}>
+          <Button onClick={handleGoBack} className={styles.GoBackHeaderButton}>
+            <ClickTargetHelper />
+            <ArrowLeft size={20} />
+            <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
+          </Button>
+          <h1 className={styles.GoBackHeading}>Профіль користувача</h1>
+          {data.isMe && (
+            <Button
+              nativeButton={false}
+              render={
+                <Link to="/user/$id/settings" params={{ id: data.user.id }} />
+              }
+              className={styles.SettingsButton}
+            >
+              <ClickTargetHelper />
+              <SettingsIcon size={20} />
+              <VisuallyHidden>Налаштування профілю</VisuallyHidden>
+            </Button>
+          )}
+        </div>
         <div
           className={styles.Background}
           style={
@@ -182,26 +173,7 @@ function UserProfile() {
           </div>
         </div>
         <div className={styles.NavigationContainer}>
-          <NavScrollButton
-            isVisible={isLeftChevronVisible}
-            direction="left"
-            onClick={() => scrollNav('left')}
-            wrapperClassName={styles.LeftChevronWrapper}
-            buttonClassName={styles.Chevron}
-          />
-
-          <NavScrollButton
-            isVisible={isRightChevronVisible}
-            direction="right"
-            onClick={() => scrollNav('right')}
-            wrapperClassName={styles.RightChevronWrapper}
-            buttonClassName={styles.Chevron}
-          />
-          <nav
-            className={styles.Navigation}
-            ref={navRef}
-            onScroll={checkScrollVisibility}
-          >
+          <nav className={styles.Navigation}>
             {navItems.map((item) => (
               <Link
                 key={item.to}
@@ -247,9 +219,7 @@ function UserProfile() {
             )}
           </nav>
         </div>
-        <main className={styles.Main}>
-          <Outlet />
-        </main>
+        <Outlet />
       </div>
       <MobileNavigation />
     </>
@@ -334,49 +304,6 @@ export function UserProfileSkeleton() {
       </div>
       <MobileNavigation />
     </>
-  )
-}
-
-const chevronAnimation = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0, filter: 'blur(4px)' },
-  transition: { type: 'spring', duration: 0.45, bounce: 0 },
-} as const
-
-interface NavButtonProps {
-  isVisible: boolean
-  direction: 'left' | 'right'
-  onClick: () => void
-  wrapperClassName: string
-  buttonClassName: string
-}
-
-function NavScrollButton({
-  isVisible,
-  direction,
-  onClick,
-  wrapperClassName,
-  buttonClassName,
-}: NavButtonProps) {
-  const Icon = direction === 'left' ? ChevronLeftIcon : ChevronRightIcon
-  const hiddenText =
-    direction === 'left'
-      ? 'Прогорнути навігацію назад'
-      : 'Прогорнути навігацію вперед'
-
-  return (
-    <AnimatePresence mode="popLayout">
-      {isVisible && (
-        <motion.div {...chevronAnimation} className={wrapperClassName}>
-          <Button className={buttonClassName} onClick={onClick}>
-            <Icon size={24} />
-            <ClickTargetHelper />
-            <VisuallyHidden>{hiddenText}</VisuallyHidden>
-          </Button>
-        </motion.div>
-      )}
-    </AnimatePresence>
   )
 }
 

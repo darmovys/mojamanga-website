@@ -15,8 +15,7 @@
 .GoBackHeader {
   position: sticky;
   inset-block-start: 0;
-  inset-inline-end: 0;
-  inset-inline-start: 0;
+  margin-inline: calc(var(--padding) * -1);
   z-index: 10;
   color: var(--sys-on-surface);
   background-color: oklch(from var(--sys-surface) l c h / 0.8);
@@ -343,6 +342,7 @@
   font-size: var(--14px);
   font-weight: 400;
   white-space: nowrap;
+  outline: none;
 
   position: relative;
   padding: var(--10px) 0 var(--14px);
@@ -358,6 +358,17 @@
       color: var(--blue-400);
     }
   }
+
+  span:first-of-type {
+    border-radius: var(--2px);
+  }
+
+  &:focus-visible {
+    span:first-of-type {
+      outline-offset: 2px;
+      outline: 2px solid var(--blue-400);
+    }
+  }
 }
 
 .Indicator {
@@ -367,59 +378,4 @@
   inset-inline-start: 0;
   inset-inline-end: 0;
   background-color: var(--blue-400);
-}
-
-.ChevronWrapper {
-  position: absolute;
-  inset-block-start: 0;
-  inset-block-end: 0;
-  z-index: 10;
-  inline-size: var(--96px);
-  display: flex;
-  align-items: center;
-  padding: var(--6px);
-  pointer-events: none;
-  background: linear-gradient(
-    var(--direction),
-    oklch(from var(--sys-surface-low) l c h / 1) 20%,
-    oklch(from var(--sys-surface-low) l c h / 0) 85%
-  );
-}
-
-.LeftChevronWrapper {
-  composes: ChevronWrapper;
-  --direction: to right;
-  inset-inline-start: 0;
-}
-
-.RightChevronWrapper {
-  composes: ChevronWrapper;
-  --direction: to left;
-  inset-inline-end: 0;
-  justify-content: flex-end;
-}
-
-.Chevron {
-  border-radius: 50%;
-  color: var(--sys-on-surface);
-  pointer-events: auto;
-  transform: translateY(-2px);
-
-  &:focus-visible {
-    outline: 2px solid var(--blue-400);
-  }
-
-  @include up('laptop') {
-    transform: translateY(0);
-  }
-}
-
-.Main {
-  padding-block-start: var(--18px);
-}
-
-@keyframes skeleton-pulse {
-  50% {
-    opacity: 0.5;
-  }
 }
