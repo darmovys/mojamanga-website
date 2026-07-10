@@ -20,6 +20,7 @@ model User {
   username        String     @unique
   displayUsername String     @map("display_username")
   status          UserStatus @default(NORMAL)
+  description     String?
 
   sessions Session[]
   accounts Account[]
