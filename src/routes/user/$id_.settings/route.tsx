@@ -1,4 +1,5 @@
-import { createFileRoute, redirect, Outlet } from '@tanstack/react-router'
+import SettingsLayout from '@/components/UserSettings'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/user/$id_/settings')({
   beforeLoad: async ({ params: { id }, context, location }) => {
@@ -10,5 +11,5 @@ export const Route = createFileRoute('/user/$id_/settings')({
       })
     }
   },
-  component: Outlet,
+  component: SettingsLayout,
 })

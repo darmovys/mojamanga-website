@@ -1,5 +1,4 @@
 import { getRouteApi, Link, Outlet } from '@tanstack/react-router'
-import styles from './UserProfile.module.scss'
 import { useGoBack } from '@/hooks/use-go-back'
 import { Button } from '@base-ui/react'
 import VisuallyHidden from '../VisuallyHidden'
@@ -16,6 +15,8 @@ import { useId } from 'react'
 import { formatCompactNumber, getRandom, pluralize, range } from '@/lib/utils'
 import useProfile from './use-profile'
 import Skeleton from '../Skeleton'
+import { useMediaQuery } from '@/hooks/use-media-query'
+import styles from './UserProfile.module.scss'
 
 const routeApi = getRouteApi('/user/$id')
 
@@ -29,6 +30,11 @@ function UserProfile() {
   const { handleGoBack } = useGoBack()
   const layoutId = useId()
   const { id } = routeApi.useParams()
+  // Має збігатися з tablet breakpoint
+  const isTabletOrUp = useMediaQuery('(min-width: 40.625rem)')
+  const settingsRoute = isTabletOrUp
+    ? '/user/$id/settings/profile'
+    : '/user/$id/settings/root'
 
   const {
     data,
@@ -75,9 +81,7 @@ function UserProfile() {
           {data.isMe && (
             <Button
               nativeButton={false}
-              render={
-                <Link to="/user/$id/settings" params={{ id: data.user.id }} />
-              }
+              render={<Link to={settingsRoute} params={{ id: data.user.id }} />}
               className={styles.SettingsButton}
             >
               <ClickTargetHelper />
@@ -152,7 +156,7 @@ function UserProfile() {
               <MotionButton
                 nativeButton={false}
                 render={
-                  <Link to="/user/$id/settings" params={{ id: data.user.id }} />
+                  <Link to={settingsRoute} params={{ id: data.user.id }} />
                 }
                 className={clsx(styles.SettingsButtonTablet, 'Gradient')}
               >
@@ -210,7 +214,7 @@ function UserProfile() {
               <MotionButton
                 nativeButton={false}
                 render={
-                  <Link to="/user/$id/settings" params={{ id: data.user.id }} />
+                  <Link to={settingsRoute} params={{ id: data.user.id }} />
                 }
                 className={clsx(styles.SettingsButtonLaptop, 'Gradient')}
               >

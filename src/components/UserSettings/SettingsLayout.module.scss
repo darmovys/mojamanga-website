@@ -1,0 +1,198 @@
+@use '../../styles/breakpoints' as *;
+
+.Wrapper {
+  --padding: var(--12px);
+  flex: 1;
+  background-color: var(--sys-surface-low);
+  color: var(--sys-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.GoBackHeader {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 10;
+  color: var(--sys-on-surface);
+  background-color: oklch(from var(--sys-surface) l c h / 0.8);
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  padding: var(--14px) var(--8px);
+  backdrop-filter: blur(5px);
+  box-shadow: var(--shadow-border);
+
+  @include up('tablet') {
+    display: none;
+  }
+}
+
+.GoBackHeading {
+  font-size: var(--16px);
+  font-weight: 460;
+}
+
+.GoBackHeaderButton {
+  block-size: var(--32px);
+  inline-size: var(--32px);
+  border-radius: 100vmax;
+  outline-offset: 2px;
+  position: relative; // for click target helper
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
+
+.Grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'main';
+  gap: var(--10px) var(--20px);
+  padding: var(--16px) var(--padding);
+
+  .Wrapper[data-is-root='true'] & {
+    grid-template-areas: 'nav';
+  }
+
+  .Wrapper[data-is-root='false'] & {
+    padding: var(--16px) var(--padding);
+  }
+
+  @include up('tablet') {
+    grid-template-columns: var(--320px) 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'username username'
+      'nav main';
+  }
+
+  @include up('laptop') {
+    --padding: var(--40px);
+  }
+}
+
+.Username {
+  display: none;
+
+  @include up('tablet') {
+    grid-area: username;
+    text-decoration: none;
+    color: inherit;
+    font-size: var(--24px);
+    display: flex;
+    align-items: center;
+    gap: var(--4px);
+    font-weight: 600;
+    justify-self: start;
+    padding: 0.1875rem var(--14px) var(--4px) var(--8px);
+    border-radius: 100vmax;
+    transition: background-color 0.2s var(--bg-animation);
+
+    svg {
+      stroke-width: 2.2px;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: var(--sys-surface-highest);
+      }
+    }
+
+    &:focus-visible {
+      outline-offset: 2px;
+      outline: 2px solid var(--blue-400);
+    }
+  }
+}
+
+.Nav {
+  grid-area: nav;
+  display: flex;
+  flex-direction: column;
+  gap: var(--6px);
+
+  .Wrapper[data-is-root='false'] & {
+    display: none;
+
+    @include up('tablet') {
+      display: flex;
+    }
+  }
+}
+
+.NavLink {
+  border-radius: var(--4px);
+  padding: var(--8px) var(--12px);
+  text-decoration: none;
+  font-weight: 450;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: var(--10px);
+  transition: background-color 0.2s var(--bg-animation);
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &.Active {
+    position: relative;
+    background-color: var(--sys-surface-highest);
+    box-shadow: var(--shadow-border);
+
+    svg {
+      transition: color 0.2s var(--bg-animation);
+      color: var(--blue-400);
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block-start: 0;
+      inset-block-end: 0;
+      inset-inline-start: 0.1px;
+      inline-size: var(--2px);
+      background-color: var(--blue-400);
+      clip-path: polygon(0% 50%, 100% 50%, 100% 50%, 0% 50%);
+      transition: clip-path 250ms;
+      border-radius: 100vmax;
+      animation: indicatorAppear 250ms var(--emulate-spring) both;
+    }
+  }
+}
+
+.Main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+
+  .Wrapper[data-is-root='true'] & {
+    display: none;
+
+    @include up('tablet') {
+      display: flex;
+    }
+  }
+}
+
+@keyframes indicatorAppear {
+  to {
+    clip-path: polygon(0% 30%, 100% 30%, 100% 70%, 0% 70%);
+  }
+}

@@ -3,7 +3,7 @@ import { api } from '@/lib/api-client'
 import { notFound } from '@tanstack/react-router'
 
 export const authQueries = {
-  all: ['auth'],
+  all: ['auth'] as const,
   user: () =>
     queryOptions({
       queryKey: [...authQueries.all, 'user'],
@@ -169,6 +169,7 @@ export const titlesQueries = {
 export const usersQueries = {
   all: ['users'] as const,
   lists: () => [...usersQueries.all, 'lists'] as const,
+  settings: () => [...usersQueries.all, 'settings'] as const,
   getUserInfo: (id: string) =>
     queryOptions({
       queryKey: [...usersQueries.all, id] as const,
@@ -187,9 +188,25 @@ export const usersQueries = {
     }),
   getUserTeams: (id: string) =>
     queryOptions({
-      queryKey: [...usersQueries.all, 'lists'] as const,
+      queryKey: [...usersQueries.lists(), 'teams', id] as const,
       queryFn: async () => {
         const response = await api().users.user({ id }).teams.get()
+        const { error } = response
+        if (error) {
+          if (error.status === 404) {
+            throw notFound()
+          } else {
+            throw error
+          }
+        }
+        return response.data
+      },
+    }),
+  getUserProfileSettingsInfo: (id: string) =>
+    queryOptions({
+      queryKey: [...usersQueries.settings(), 'profile', id] as const,
+      queryFn: async () => {
+        const response = await api().users.user({ id }).settings.profile.get()
         const { error } = response
         if (error) {
           if (error.status === 404) {
