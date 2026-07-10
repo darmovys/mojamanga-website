@@ -10,7 +10,6 @@ import clsx from 'clsx'
 import { Image } from '@unpic/react'
 import { MAX_NUMBER_OF_SOURCE_FIELDS, useTitleForm } from './use-title-form'
 import CropImageDialog from '../CropImageDialog'
-import { showTimedToast } from '@/lib/toast'
 import { SelectField } from './SelectField'
 import ShiftBy from '../ShiftBy/ShiftBy'
 import { PersonComboboxField } from './PersonComboboxField'
@@ -240,21 +239,12 @@ function CreateTitleForm() {
                           <CropImageDialog
                             src={cover.cropImageUrl}
                             originalName={cover.imageToCrop.name}
+                            fileType={cover.imageToCrop.type}
+                            originalFile={cover.imageToCrop}
                             croppedWidth={cover.croppedWidth}
                             croppedHeight={cover.croppedHeight}
                             onCropped={(file) => {
-                              if (!file) {
-                                showTimedToast(
-                                  {
-                                    type: 'error',
-                                    title: 'Помилка',
-                                    description:
-                                      'Не вдалося обрізати зображення',
-                                  },
-                                  3000,
-                                )
-                                return
-                              }
+                              if (!file) return
                               cover.uploadFile(file)
                             }}
                             onClose={() => {
@@ -375,21 +365,12 @@ function CreateTitleForm() {
                           <CropImageDialog
                             src={background.cropImageUrl}
                             originalName={background.imageToCrop.name}
+                            fileType={background.imageToCrop.type}
+                            originalFile={background.imageToCrop}
                             croppedWidth={background.croppedWidth}
                             croppedHeight={background.croppedHeight}
                             onCropped={(file) => {
-                              if (!file) {
-                                showTimedToast(
-                                  {
-                                    type: 'error',
-                                    title: 'Помилка',
-                                    description:
-                                      'Не вдалося обрізати зображення',
-                                  },
-                                  3000,
-                                )
-                                return
-                              }
+                              if (!file) return
                               background.uploadFile(file)
                             }}
                             onClose={() => {

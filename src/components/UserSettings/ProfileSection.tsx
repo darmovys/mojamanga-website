@@ -10,7 +10,6 @@ import { Image } from '@unpic/react'
 import ClickTargetHelper from '../ClickTargetHelper'
 import VisuallyHidden from '../VisuallyHidden'
 import CropImageDialog from '../CropImageDialog'
-import { showTimedToast } from '@/lib/toast'
 import clsx from 'clsx'
 import styles from './ProfileSection.module.scss'
 
@@ -164,20 +163,12 @@ function ProfileSection() {
                       <CropImageDialog
                         src={avatar.cropImageUrl}
                         originalName={avatar.imageToCrop.name}
+                        fileType={avatar.imageToCrop.type}
+                        originalFile={avatar.imageToCrop}
                         croppedWidth={avatar.croppedWidth}
                         croppedHeight={avatar.croppedHeight}
                         onCropped={(file) => {
-                          if (!file) {
-                            showTimedToast(
-                              {
-                                type: 'error',
-                                title: 'Помилка',
-                                description: 'Не вдалося обрізати зображення',
-                              },
-                              3000,
-                            )
-                            return
-                          }
+                          if (!file) return
                           avatar.uploadFile(file)
                         }}
                         onClose={() => {
@@ -334,20 +325,12 @@ function ProfileSection() {
                       <CropImageDialog
                         src={background.cropImageUrl}
                         originalName={background.imageToCrop.name}
+                        fileType={background.imageToCrop.type}
+                        originalFile={background.imageToCrop}
                         croppedWidth={background.croppedWidth}
                         croppedHeight={background.croppedHeight}
                         onCropped={(file) => {
-                          if (!file) {
-                            showTimedToast(
-                              {
-                                type: 'error',
-                                title: 'Помилка',
-                                description: 'Не вдалося обрізати зображення',
-                              },
-                              3000,
-                            )
-                            return
-                          }
+                          if (!file) return
                           background.uploadFile(file)
                         }}
                         onClose={() => {

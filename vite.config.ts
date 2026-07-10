@@ -28,6 +28,11 @@ const config = defineConfig({
   optimizeDeps: {
     include: ['@tanstack/react-form-start'], // solves use-sync-external-store error with tanstack form
   },
+  build: {
+    rollupOptions: {
+      external: ['sharp'],
+    },
+  },
 })
 
 export default config

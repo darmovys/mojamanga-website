@@ -28,7 +28,6 @@ export function useImageUpload({
 }: ImageUploadConfig) {
   const [fileState, setFileState] = useState<FileState | null>(null)
   const [imageToCrop, setImageToCrop] = useState<File | null>(null)
-
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null)
 
   useEffect(() => {
@@ -55,7 +54,6 @@ export function useImageUpload({
 
   function clearFile() {
     if (!fileState) return
-
     if (fileState.objectUrl) URL.revokeObjectURL(fileState.objectUrl)
     setFileState(null)
   }
@@ -224,16 +222,20 @@ export function useImageUpload({
   }
 
   function cropFile(file: File) {
-    Resizer.imageFileResizer(
-      file,
-      99999,
-      99999,
-      'webp',
-      100,
-      0,
-      (uri) => setImageToCrop(uri as File),
-      'file',
-    )
+    if (file.type === 'image/gif') {
+      setImageToCrop(file)
+    } else {
+      Resizer.imageFileResizer(
+        file,
+        99999,
+        99999,
+        'webp',
+        100,
+        0,
+        (uri) => setImageToCrop(uri as File),
+        'file',
+      )
+    }
   }
 
   const onDrop = useCallback(
@@ -242,18 +244,7 @@ export function useImageUpload({
         const receivedFile = acceptedFiles[0]
         try {
           const dimensions = await getImageDimensions(receivedFile)
-          if (dimensions.width === width && dimensions.height === height) {
-            Resizer.imageFileResizer(
-              receivedFile,
-              99999,
-              99999,
-              'webp',
-              100,
-              0,
-              (uri) => uploadFile(uri as File),
-              'file',
-            )
-          } else if (dimensions.height < height) {
+          if (dimensions.height < height) {
             showTimedToast(
               {
                 type: 'warning',
@@ -263,7 +254,8 @@ export function useImageUpload({
               4000,
             )
             return
-          } else if (dimensions.width < width) {
+          }
+          if (dimensions.width < width) {
             showTimedToast(
               {
                 type: 'warning',
@@ -273,6 +265,22 @@ export function useImageUpload({
               4000,
             )
             return
+          }
+          if (dimensions.width === width && dimensions.height === height) {
+            if (receivedFile.type === 'image/gif') {
+              uploadFile(receivedFile)
+            } else {
+              Resizer.imageFileResizer(
+                receivedFile,
+                99999,
+                99999,
+                'webp',
+                100,
+                0,
+                (uri) => uploadFile(uri as File),
+                'file',
+              )
+            }
           } else {
             cropFile(receivedFile)
           }

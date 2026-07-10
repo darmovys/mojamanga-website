@@ -46,6 +46,11 @@
   &:hover {
     outline: none;
   }
+
+  &.Processing {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 }
 
 .CancelButton {

@@ -19,7 +19,6 @@ import clsx from 'clsx'
 import { Image } from '@unpic/react'
 import { usePersonForm } from './use-person-form'
 import CropImageDialog from '../CropImageDialog'
-import { showTimedToast } from '@/lib/toast'
 import { useHelperDialog } from '@/hooks/use-helper-dialog'
 import { getRouteApi } from '@tanstack/react-router'
 import HelperDialog from '../HelperDialog'
@@ -176,20 +175,12 @@ function CreatePersonForm() {
                     <CropImageDialog
                       src={cover.cropImageUrl}
                       originalName={cover.imageToCrop.name}
+                      fileType={cover.imageToCrop.type}
+                      originalFile={cover.imageToCrop}
                       croppedWidth={cover.croppedWidth}
                       croppedHeight={cover.croppedHeight}
                       onCropped={(file) => {
-                        if (!file) {
-                          showTimedToast(
-                            {
-                              type: 'error',
-                              title: 'Помилка',
-                              description: 'Не вдалося обрізати зображення',
-                            },
-                            3000,
-                          )
-                          return
-                        }
+                        if (!file) return
                         cover.uploadFile(file)
                       }}
                       onClose={() => {
