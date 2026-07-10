@@ -1,6 +1,6 @@
 import { Menu, Separator } from '@base-ui/react'
 import { Link, useRouter } from '@tanstack/react-router'
-import { userLinks } from '@/lib/navigation-links'
+import { getUserLinks } from '@/lib/navigation-links'
 import clsx from 'clsx'
 import { Image } from '@unpic/react'
 import { User } from '@/lib/auth'
@@ -11,6 +11,7 @@ import { ArrowSvg } from './ArrowSvg'
 import styles from './DropdownMenu.module.scss'
 import { useQueryClient } from '@tanstack/react-query'
 import { authQueries } from '@/services/queries'
+import { useMediaQuery } from '@/hooks/use-media-query'
 
 export const userMenuHandle = Menu.createHandle()
 
@@ -21,6 +22,7 @@ interface UserMenuProps {
 export function UserMenu({ user }: UserMenuProps) {
   const queryClient = useQueryClient()
   const router = useRouter()
+  const isTabletOrUp = useMediaQuery('(min-width: 40.625rem)')
   async function handleLogout() {
     await authClient.signOut({
       fetchOptions: {
@@ -54,6 +56,8 @@ export function UserMenu({ user }: UserMenuProps) {
       },
     })
   }
+
+  const userLinks = getUserLinks(user.id, isTabletOrUp)
 
   return (
     <Menu.Root handle={userMenuHandle}>
@@ -102,7 +106,7 @@ export function UserMenu({ user }: UserMenuProps) {
               } else {
                 return (
                   <Menu.Item
-                    render={<Link to={link.to} />}
+                    render={<Link to={link.to} params={{ id: user.id }} />}
                     key={link.title}
                     className={styles.UserMenuItem}
                   >

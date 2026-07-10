@@ -108,46 +108,42 @@ export const addContentLinks = linkOptions([
   },
 ])
 
-export const userLinks = linkOptions([
-  {
-    title: 'Сповіщення',
-    icon: Bell,
-    to: '/about',
-    activeOptions: {
-      exact: true,
+export const getUserLinks = (userId: string, desktopLinks: boolean = true) => {
+  return linkOptions([
+    {
+      title: 'Сповіщення',
+      icon: Bell,
+      to: '/user/$id/notifications',
+      params: { id: userId },
+      activeOptions: { exact: true },
     },
-  },
-  {
-    title: 'Коментарі',
-    icon: MessageSquare,
-    to: '/about',
-    activeOptions: {
-      exact: true,
+    {
+      title: 'Коментарі',
+      icon: MessageSquare,
+      to: '/user/$id/comments',
+      params: { id: userId },
+      activeOptions: { exact: true },
     },
-  },
-  {
-    title: 'Закладки',
-    icon: Bookmark,
-    to: '/about',
-    activeOptions: {
-      exact: true,
+    {
+      title: 'Закладки',
+      icon: Bookmark,
+      to: '/user/$id/bookmarks',
+      params: { id: userId },
+      activeOptions: { exact: true },
     },
-  },
-  {
-    title: 'Модераторска',
-    icon: Shield,
-    to: '/moderation',
-    search: { type: 'titles' },
-    activeOptions: {
-      exact: true,
+    {
+      title: 'Модераторска',
+      icon: Shield,
+      to: '/moderation',
+      search: { type: 'titles' },
+      activeOptions: { exact: true },
     },
-  },
-  {
-    title: 'Налаштування',
-    icon: Settings,
-    to: '/about',
-    activeOptions: {
-      exact: true,
+    {
+      title: 'Налаштування',
+      icon: Settings,
+      to: `/user/$id/settings/${desktopLinks ? 'profile' : 'root'}`,
+      params: { id: userId },
+      activeOptions: { exact: true },
     },
-  },
-])
+  ])
+}

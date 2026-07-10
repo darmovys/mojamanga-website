@@ -108,6 +108,14 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
     })
   }
 
+  function handleMenuClick(event: React.MouseEvent<HTMLDivElement>) {
+    const target = event.target as HTMLElement
+
+    if (target.closest('a')) {
+      setShowMobileMenu(false)
+    }
+  }
+
   return (
     <Dialog.Root open={showMobileMenu} onOpenChange={setShowMobileMenu}>
       {trigger(() => setShowMobileMenu(true))}
@@ -170,7 +178,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
               </div>
               <ScrollArea.Root className={styles.ScrollArea}>
                 <ScrollArea.Viewport className={styles.Viewport}>
-                  <ScrollArea.Content>
+                  <ScrollArea.Content onClick={handleMenuClick}>
                     <div className={styles.TopSection}>
                       <div className={styles.FlexRow}>
                         <MotionButton
@@ -209,7 +217,19 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                           )}
                         </MotionButton>
                         {authState.user && (
-                          <MotionButton className={styles.SecondaryButton}>
+                          <MotionButton
+                            nativeButton={false}
+                            render={
+                              <Link
+                                to="/user/$id/settings/root"
+                                params={{ id: authState.user.id }}
+                              />
+                            }
+                            className={clsx(
+                              styles.SecondaryButton,
+                              styles.isLink,
+                            )}
+                          >
                             <Settings size={20} />
                             <span className={styles.Text}>Налаштування</span>
                           </MotionButton>
@@ -250,20 +270,26 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                             </div>
                           </Link>
                           <div className={styles.UserCardLinks}>
-                            <Link to="/" className={styles.UserCardLink}>
+                            <Link
+                              to="/user/$id/comments"
+                              params={{ id: authState.user.id }}
+                              className={styles.UserCardLink}
+                            >
                               <VisuallyHidden>Коментарі</VisuallyHidden>
                               <MessageSquare size={20} />
                             </Link>
 
                             <Link
-                              to="/bookmarks"
+                              to="/user/$id/bookmarks"
+                              params={{ id: authState.user.id }}
                               className={styles.UserCardLink}
                             >
                               <VisuallyHidden>Закладки</VisuallyHidden>
                               <Bookmark size={20} />
                             </Link>
                             <Link
-                              to="/notifications"
+                              to="/user/$id/notifications"
+                              params={{ id: authState.user.id }}
                               className={styles.UserCardLink}
                             >
                               <VisuallyHidden>Сповіщення</VisuallyHidden>
@@ -330,9 +356,6 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                             activeOptions={item.activeOptions}
                                             to={item.to}
                                             className={styles.AccordionLink}
-                                            onClick={() =>
-                                              setShowMobileMenu(false)
-                                            }
                                           >
                                             <item.icon size={16} />
                                             <span>{item.title}</span>
@@ -360,9 +383,6 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                           }}
                                           to={item.to}
                                           className={styles.AccordionLink}
-                                          onClick={() =>
-                                            setShowMobileMenu(false)
-                                          }
                                         >
                                           <item.icon size={16} />
                                           <span>{item.title}</span>
@@ -395,7 +415,6 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
                                       to={item.to}
                                       search={item.search}
                                       className={styles.AccordionLink}
-                                      onClick={() => setShowMobileMenu(false)}
                                     >
                                       <span>{item.title}</span>
                                     </Link>
