@@ -9,7 +9,7 @@ import { range } from '@/lib/utils'
 import Skeleton from '../Skeleton'
 import styles from './TeamsSection.module.scss'
 
-const routeApi = getRouteApi('/user/$id')
+const routeApi = getRouteApi('/user/$id/teams')
 
 function TeamsSection() {
   const { id: userId } = routeApi.useParams()
