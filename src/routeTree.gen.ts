@@ -29,7 +29,6 @@ import { Route as TeamCreateIndexRouteImport } from './routes/team/create/index'
 import { Route as PeopleCreateIndexRouteImport } from './routes/people/create/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
-import { Route as UserIdSettingsRouteImport } from './routes/user/$id_.settings'
 import { Route as UserIdTeamsRouteImport } from './routes/user/$id.teams'
 import { Route as UserIdNotificationsRouteImport } from './routes/user/$id.notifications'
 import { Route as UserIdCommentsRouteImport } from './routes/user/$id.comments'
@@ -38,7 +37,13 @@ import { Route as UserIdAboutRouteImport } from './routes/user/$id.about'
 import { Route as ModerationTitleReviewTitleIdRouteImport } from './routes/moderation/title-review/$titleId'
 import { Route as ModerationTeamReviewTeamIdRouteImport } from './routes/moderation/team-review/$teamId'
 import { Route as ModerationPersonReviewPersonIdRouteImport } from './routes/moderation/person-review/$personId'
+import { Route as UserIdSettingsRouteRouteImport } from './routes/user/$id_.settings/route'
+import { Route as UserIdSettingsIndexRouteImport } from './routes/user/$id_.settings/index'
 import { Route as UserIdReviseTeamIndexRouteImport } from './routes/user/$id_.revise-team/index'
+import { Route as UserIdSettingsSecurityRouteImport } from './routes/user/$id_.settings/security'
+import { Route as UserIdSettingsRootRouteImport } from './routes/user/$id_.settings/root'
+import { Route as UserIdSettingsProfileRouteImport } from './routes/user/$id_.settings/profile'
+import { Route as UserIdSettingsNotificationsRouteImport } from './routes/user/$id_.settings/notifications'
 import { Route as UserIdReviseTeamTeamIdRouteImport } from './routes/user/$id_.revise-team/$teamId'
 
 const NotificationsRoute = NotificationsRouteImport.update({
@@ -140,11 +145,6 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const UserIdSettingsRoute = UserIdSettingsRouteImport.update({
-  id: '/user/$id_/settings',
-  path: '/user/$id/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const UserIdTeamsRoute = UserIdTeamsRouteImport.update({
   id: '/teams',
   path: '/teams',
@@ -188,11 +188,42 @@ const ModerationPersonReviewPersonIdRoute =
     path: '/person-review/$personId',
     getParentRoute: () => ModerationRouteRoute,
   } as any)
+const UserIdSettingsRouteRoute = UserIdSettingsRouteRouteImport.update({
+  id: '/user/$id_/settings',
+  path: '/user/$id/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserIdSettingsIndexRoute = UserIdSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => UserIdSettingsRouteRoute,
+} as any)
 const UserIdReviseTeamIndexRoute = UserIdReviseTeamIndexRouteImport.update({
   id: '/user/$id_/revise-team/',
   path: '/user/$id/revise-team/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserIdSettingsSecurityRoute = UserIdSettingsSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => UserIdSettingsRouteRoute,
+} as any)
+const UserIdSettingsRootRoute = UserIdSettingsRootRouteImport.update({
+  id: '/root',
+  path: '/root',
+  getParentRoute: () => UserIdSettingsRouteRoute,
+} as any)
+const UserIdSettingsProfileRoute = UserIdSettingsProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => UserIdSettingsRouteRoute,
+} as any)
+const UserIdSettingsNotificationsRoute =
+  UserIdSettingsNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => UserIdSettingsRouteRoute,
+  } as any)
 const UserIdReviseTeamTeamIdRoute = UserIdReviseTeamTeamIdRouteImport.update({
   id: '/user/$id_/revise-team/$teamId',
   path: '/user/$id/revise-team/$teamId',
@@ -213,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
   '/title/': typeof TitleIndexRoute
+  '/user/$id/settings': typeof UserIdSettingsRouteRouteWithChildren
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/moderation/title-review/$titleId': typeof ModerationTitleReviewTitleIdRoute
@@ -221,7 +253,6 @@ export interface FileRoutesByFullPath {
   '/user/$id/comments': typeof UserIdCommentsRoute
   '/user/$id/notifications': typeof UserIdNotificationsRoute
   '/user/$id/teams': typeof UserIdTeamsRoute
-  '/user/$id/settings': typeof UserIdSettingsRoute
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
   '/people/create/': typeof PeopleCreateIndexRoute
@@ -229,7 +260,12 @@ export interface FileRoutesByFullPath {
   '/title/create/': typeof TitleCreateIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
   '/user/$id/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
+  '/user/$id/settings/notifications': typeof UserIdSettingsNotificationsRoute
+  '/user/$id/settings/profile': typeof UserIdSettingsProfileRoute
+  '/user/$id/settings/root': typeof UserIdSettingsRootRoute
+  '/user/$id/settings/security': typeof UserIdSettingsSecurityRoute
   '/user/$id/revise-team/': typeof UserIdReviseTeamIndexRoute
+  '/user/$id/settings/': typeof UserIdSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -251,7 +287,6 @@ export interface FileRoutesByTo {
   '/user/$id/comments': typeof UserIdCommentsRoute
   '/user/$id/notifications': typeof UserIdNotificationsRoute
   '/user/$id/teams': typeof UserIdTeamsRoute
-  '/user/$id/settings': typeof UserIdSettingsRoute
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
   '/people/create': typeof PeopleCreateIndexRoute
@@ -259,7 +294,12 @@ export interface FileRoutesByTo {
   '/title/create': typeof TitleCreateIndexRoute
   '/user/$id': typeof UserIdIndexRoute
   '/user/$id/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
+  '/user/$id/settings/notifications': typeof UserIdSettingsNotificationsRoute
+  '/user/$id/settings/profile': typeof UserIdSettingsProfileRoute
+  '/user/$id/settings/root': typeof UserIdSettingsRootRoute
+  '/user/$id/settings/security': typeof UserIdSettingsSecurityRoute
   '/user/$id/revise-team': typeof UserIdReviseTeamIndexRoute
+  '/user/$id/settings': typeof UserIdSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -277,6 +317,7 @@ export interface FileRoutesById {
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
   '/title/': typeof TitleIndexRoute
+  '/user/$id_/settings': typeof UserIdSettingsRouteRouteWithChildren
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/moderation/title-review/$titleId': typeof ModerationTitleReviewTitleIdRoute
@@ -285,7 +326,6 @@ export interface FileRoutesById {
   '/user/$id/comments': typeof UserIdCommentsRoute
   '/user/$id/notifications': typeof UserIdNotificationsRoute
   '/user/$id/teams': typeof UserIdTeamsRoute
-  '/user/$id_/settings': typeof UserIdSettingsRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
   '/people/create/': typeof PeopleCreateIndexRoute
@@ -293,7 +333,12 @@ export interface FileRoutesById {
   '/title/create/': typeof TitleCreateIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
   '/user/$id_/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
+  '/user/$id_/settings/notifications': typeof UserIdSettingsNotificationsRoute
+  '/user/$id_/settings/profile': typeof UserIdSettingsProfileRoute
+  '/user/$id_/settings/root': typeof UserIdSettingsRootRoute
+  '/user/$id_/settings/security': typeof UserIdSettingsSecurityRoute
   '/user/$id_/revise-team/': typeof UserIdReviseTeamIndexRoute
+  '/user/$id_/settings/': typeof UserIdSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -311,6 +356,7 @@ export interface FileRouteTypes {
     | '/moderation/'
     | '/team/'
     | '/title/'
+    | '/user/$id/settings'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/moderation/title-review/$titleId'
@@ -319,7 +365,6 @@ export interface FileRouteTypes {
     | '/user/$id/comments'
     | '/user/$id/notifications'
     | '/user/$id/teams'
-    | '/user/$id/settings'
     | '/login/'
     | '/signup/'
     | '/people/create/'
@@ -327,7 +372,12 @@ export interface FileRouteTypes {
     | '/title/create/'
     | '/user/$id/'
     | '/user/$id/revise-team/$teamId'
+    | '/user/$id/settings/notifications'
+    | '/user/$id/settings/profile'
+    | '/user/$id/settings/root'
+    | '/user/$id/settings/security'
     | '/user/$id/revise-team/'
+    | '/user/$id/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -349,7 +399,6 @@ export interface FileRouteTypes {
     | '/user/$id/comments'
     | '/user/$id/notifications'
     | '/user/$id/teams'
-    | '/user/$id/settings'
     | '/login'
     | '/signup'
     | '/people/create'
@@ -357,7 +406,12 @@ export interface FileRouteTypes {
     | '/title/create'
     | '/user/$id'
     | '/user/$id/revise-team/$teamId'
+    | '/user/$id/settings/notifications'
+    | '/user/$id/settings/profile'
+    | '/user/$id/settings/root'
+    | '/user/$id/settings/security'
     | '/user/$id/revise-team'
+    | '/user/$id/settings'
   id:
     | '__root__'
     | '/'
@@ -374,6 +428,7 @@ export interface FileRouteTypes {
     | '/moderation/'
     | '/team/'
     | '/title/'
+    | '/user/$id_/settings'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/moderation/title-review/$titleId'
@@ -382,7 +437,6 @@ export interface FileRouteTypes {
     | '/user/$id/comments'
     | '/user/$id/notifications'
     | '/user/$id/teams'
-    | '/user/$id_/settings'
     | '/_auth/login/'
     | '/_auth/signup/'
     | '/people/create/'
@@ -390,7 +444,12 @@ export interface FileRouteTypes {
     | '/title/create/'
     | '/user/$id/'
     | '/user/$id_/revise-team/$teamId'
+    | '/user/$id_/settings/notifications'
+    | '/user/$id_/settings/profile'
+    | '/user/$id_/settings/root'
+    | '/user/$id_/settings/security'
     | '/user/$id_/revise-team/'
+    | '/user/$id_/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -407,7 +466,7 @@ export interface RootRouteChildren {
   UserIdRoute: typeof UserIdRouteWithChildren
   TeamIndexRoute: typeof TeamIndexRoute
   TitleIndexRoute: typeof TitleIndexRoute
-  UserIdSettingsRoute: typeof UserIdSettingsRoute
+  UserIdSettingsRouteRoute: typeof UserIdSettingsRouteRouteWithChildren
   PeopleCreateIndexRoute: typeof PeopleCreateIndexRoute
   TeamCreateIndexRoute: typeof TeamCreateIndexRoute
   TitleCreateIndexRoute: typeof TitleCreateIndexRoute
@@ -557,13 +616,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/user/$id_/settings': {
-      id: '/user/$id_/settings'
-      path: '/user/$id/settings'
-      fullPath: '/user/$id/settings'
-      preLoaderRoute: typeof UserIdSettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/user/$id/teams': {
       id: '/user/$id/teams'
       path: '/teams'
@@ -620,12 +672,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModerationPersonReviewPersonIdRouteImport
       parentRoute: typeof ModerationRouteRoute
     }
+    '/user/$id_/settings': {
+      id: '/user/$id_/settings'
+      path: '/user/$id/settings'
+      fullPath: '/user/$id/settings'
+      preLoaderRoute: typeof UserIdSettingsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/$id_/settings/': {
+      id: '/user/$id_/settings/'
+      path: '/'
+      fullPath: '/user/$id/settings/'
+      preLoaderRoute: typeof UserIdSettingsIndexRouteImport
+      parentRoute: typeof UserIdSettingsRouteRoute
+    }
     '/user/$id_/revise-team/': {
       id: '/user/$id_/revise-team/'
       path: '/user/$id/revise-team'
       fullPath: '/user/$id/revise-team/'
       preLoaderRoute: typeof UserIdReviseTeamIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/user/$id_/settings/security': {
+      id: '/user/$id_/settings/security'
+      path: '/security'
+      fullPath: '/user/$id/settings/security'
+      preLoaderRoute: typeof UserIdSettingsSecurityRouteImport
+      parentRoute: typeof UserIdSettingsRouteRoute
+    }
+    '/user/$id_/settings/root': {
+      id: '/user/$id_/settings/root'
+      path: '/root'
+      fullPath: '/user/$id/settings/root'
+      preLoaderRoute: typeof UserIdSettingsRootRouteImport
+      parentRoute: typeof UserIdSettingsRouteRoute
+    }
+    '/user/$id_/settings/profile': {
+      id: '/user/$id_/settings/profile'
+      path: '/profile'
+      fullPath: '/user/$id/settings/profile'
+      preLoaderRoute: typeof UserIdSettingsProfileRouteImport
+      parentRoute: typeof UserIdSettingsRouteRoute
+    }
+    '/user/$id_/settings/notifications': {
+      id: '/user/$id_/settings/notifications'
+      path: '/notifications'
+      fullPath: '/user/$id/settings/notifications'
+      preLoaderRoute: typeof UserIdSettingsNotificationsRouteImport
+      parentRoute: typeof UserIdSettingsRouteRoute
     }
     '/user/$id_/revise-team/$teamId': {
       id: '/user/$id_/revise-team/$teamId'
@@ -690,6 +784,25 @@ const UserIdRouteChildren: UserIdRouteChildren = {
 const UserIdRouteWithChildren =
   UserIdRoute._addFileChildren(UserIdRouteChildren)
 
+interface UserIdSettingsRouteRouteChildren {
+  UserIdSettingsNotificationsRoute: typeof UserIdSettingsNotificationsRoute
+  UserIdSettingsProfileRoute: typeof UserIdSettingsProfileRoute
+  UserIdSettingsRootRoute: typeof UserIdSettingsRootRoute
+  UserIdSettingsSecurityRoute: typeof UserIdSettingsSecurityRoute
+  UserIdSettingsIndexRoute: typeof UserIdSettingsIndexRoute
+}
+
+const UserIdSettingsRouteRouteChildren: UserIdSettingsRouteRouteChildren = {
+  UserIdSettingsNotificationsRoute: UserIdSettingsNotificationsRoute,
+  UserIdSettingsProfileRoute: UserIdSettingsProfileRoute,
+  UserIdSettingsRootRoute: UserIdSettingsRootRoute,
+  UserIdSettingsSecurityRoute: UserIdSettingsSecurityRoute,
+  UserIdSettingsIndexRoute: UserIdSettingsIndexRoute,
+}
+
+const UserIdSettingsRouteRouteWithChildren =
+  UserIdSettingsRouteRoute._addFileChildren(UserIdSettingsRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
@@ -704,7 +817,7 @@ const rootRouteChildren: RootRouteChildren = {
   UserIdRoute: UserIdRouteWithChildren,
   TeamIndexRoute: TeamIndexRoute,
   TitleIndexRoute: TitleIndexRoute,
-  UserIdSettingsRoute: UserIdSettingsRoute,
+  UserIdSettingsRouteRoute: UserIdSettingsRouteRouteWithChildren,
   PeopleCreateIndexRoute: PeopleCreateIndexRoute,
   TeamCreateIndexRoute: TeamCreateIndexRoute,
   TitleCreateIndexRoute: TitleCreateIndexRoute,
