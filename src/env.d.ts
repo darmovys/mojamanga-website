@@ -18,6 +18,7 @@ declare global {
     interface ProcessEnv {
       readonly SITE_URL: string
       readonly DATABASE_URL: string
+      readonly RESEND_API_KEY: string
       readonly BETTER_AUTH_SECRET: string
       readonly TURNSTILE_FAKE_SECRET_KEY: string
       readonly TURNSTILE_SECRET_KEY: string
