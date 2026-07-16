@@ -1,0 +1,21 @@
+@use 'sass:math';
+@use 'sass:list';
+
+$base-font-size: 16px !default;
+
+@function rem($values) {
+  $result: ();
+
+  @each $value in $values {
+    @if $value == 0 {
+      $result: list.append($result, 0);
+    } @else {
+      @if math.is-unitless($value) {
+        $value: $value * 1px;
+      }
+      $result: list.append($result, math.div($value, $base-font-size) * 1rem);
+    }
+  }
+
+  @return $result;
+}
