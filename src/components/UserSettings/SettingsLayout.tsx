@@ -8,6 +8,8 @@ import ShiftBy from '../ShiftBy/ShiftBy'
 import MobileNavigation from '../MobileNavigation'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { authQueries } from '@/services/queries'
+import { useSearchFieldScrollStore } from '@/stores/search-field-scroll-store'
+import { motion } from 'motion/react'
 import styles from './SettingsLayout.module.scss'
 
 const routeApi = getRouteApi('/user/$id_/settings')
@@ -17,6 +19,9 @@ function SettingsLayout() {
   const { handleGoBack } = useGoBack()
   const location = useLocation()
   const { data: authState } = useSuspenseQuery(authQueries.user())
+  const isSearchFieldVisible = useSearchFieldScrollStore(
+    (s) => s.isContentVisible,
+  )
 
   const isRootPath = location.pathname === `/user/${id}/settings/root`
 
@@ -52,7 +57,11 @@ function SettingsLayout() {
               <span>{authState.user?.displayUsername}</span>
             </ShiftBy>
           </Link>
-          <nav className={styles.Nav}>
+          <motion.nav
+            className={styles.Nav}
+            animate={{ top: isSearchFieldVisible ? '135px' : '80px' }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+          >
             <Link
               className={styles.NavLink}
               activeProps={{ className: styles.Active }}
@@ -88,7 +97,7 @@ function SettingsLayout() {
               <BellIcon size={18} />
               <span>Сповіщення</span>
             </Link>
-          </nav>
+          </motion.nav>
           <main className={styles.Main}>
             <Outlet />
           </main>
