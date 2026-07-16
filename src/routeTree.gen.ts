@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as ForbiddenRouteImport } from './routes/forbidden'
 import { Route as CatalogRouteImport } from './routes/catalog'
@@ -46,6 +47,11 @@ import { Route as UserIdSettingsProfileRouteImport } from './routes/user/$id_.se
 import { Route as UserIdSettingsNotificationsRouteImport } from './routes/user/$id_.settings/notifications'
 import { Route as UserIdReviseTeamTeamIdRouteImport } from './routes/user/$id_.revise-team/$teamId'
 
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -238,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/catalog': typeof CatalogRoute
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/api/$': typeof ApiSplatRoute
   '/team/$id': typeof TeamIdRoute
   '/user/$id': typeof UserIdRouteWithChildren
@@ -274,6 +281,7 @@ export interface FileRoutesByTo {
   '/catalog': typeof CatalogRoute
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/api/$': typeof ApiSplatRoute
   '/team/$id': typeof TeamIdRoute
   '/moderation': typeof ModerationIndexRoute
@@ -311,6 +319,7 @@ export interface FileRoutesById {
   '/catalog': typeof CatalogRoute
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/api/$': typeof ApiSplatRoute
   '/team/$id': typeof TeamIdRoute
   '/user/$id': typeof UserIdRouteWithChildren
@@ -350,6 +359,7 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/forbidden'
     | '/notifications'
+    | '/verify-email'
     | '/api/$'
     | '/team/$id'
     | '/user/$id'
@@ -386,6 +396,7 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/forbidden'
     | '/notifications'
+    | '/verify-email'
     | '/api/$'
     | '/team/$id'
     | '/moderation'
@@ -422,6 +433,7 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/forbidden'
     | '/notifications'
+    | '/verify-email'
     | '/api/$'
     | '/team/$id'
     | '/user/$id'
@@ -461,6 +473,7 @@ export interface RootRouteChildren {
   CatalogRoute: typeof CatalogRoute
   ForbiddenRoute: typeof ForbiddenRoute
   NotificationsRoute: typeof NotificationsRoute
+  VerifyEmailRoute: typeof VerifyEmailRoute
   ApiSplatRoute: typeof ApiSplatRoute
   TeamIdRoute: typeof TeamIdRoute
   UserIdRoute: typeof UserIdRouteWithChildren
@@ -476,6 +489,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/notifications': {
       id: '/notifications'
       path: '/notifications'
@@ -812,6 +832,7 @@ const rootRouteChildren: RootRouteChildren = {
   CatalogRoute: CatalogRoute,
   ForbiddenRoute: ForbiddenRoute,
   NotificationsRoute: NotificationsRoute,
+  VerifyEmailRoute: VerifyEmailRoute,
   ApiSplatRoute: ApiSplatRoute,
   TeamIdRoute: TeamIdRoute,
   UserIdRoute: UserIdRouteWithChildren,

@@ -7,6 +7,8 @@ import { i18n } from '@better-auth/i18n'
 import { loginSchema, signupSchema } from '@/schemas/auth'
 import { createAuthMiddleware } from 'better-auth/api'
 import { UserRole, UserStatus } from '@/generated/prisma/enums'
+import { sendEmail } from './email'
+import ConfirmEmail from '@/components/emails/ConfirmEmail'
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -18,6 +20,17 @@ export const auth = betterAuth({
     maxPasswordLength: Infinity,
     enabled: true,
     autoSignIn: false,
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    async sendVerificationEmail({ user, url }) {
+      await sendEmail({
+        to: user.email,
+        subject: 'Підтвердження електронної пошти',
+        react: ConfirmEmail({ url, baseUrl: import.meta.env.VITE_SITE_URL }),
+      })
+    },
   },
   user: {
     additionalFields: {

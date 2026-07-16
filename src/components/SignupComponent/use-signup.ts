@@ -11,7 +11,7 @@ type StrengthScore = 1 | 2 | 3 | 4 | 5
 
 export function useSignup() {
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
+  const navigate = useNavigate({ from: '/signup/' })
   const [isPending, startTransition] = useTransition()
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [isPasswordPopoverOpen, setIsPasswordPopoverOpen] = useState(false)
@@ -58,7 +58,7 @@ export function useSignup() {
               await queryClient.invalidateQueries({
                 queryKey: authQueries.all,
               })
-              navigate({ to: '/' })
+              navigate({ to: '/verify-email' })
               showTimedToast(
                 {
                   type: 'success',

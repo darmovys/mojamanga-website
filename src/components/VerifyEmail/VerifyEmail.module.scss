@@ -1,0 +1,50 @@
+.Wrapper {
+  flex: 1;
+  background-color: var(--sys-surface-low);
+  display: grid;
+  place-content: center;
+  justify-items: center;
+}
+
+.Heading {
+  font-size: var(--24px);
+  margin-block-end: var(--2px);
+  color: var(--sys-primary);
+}
+
+.Paragraph {
+  font-size: var(--14px);
+  color: var(--sys-on-surface-variant);
+  margin-block-end: var(--10px);
+}
+
+.Button {
+  font-size: var(--14px);
+  background-color: var(--success);
+  color: #fff;
+  padding: var(--4px) var(--8px);
+  border-radius: var(--4px);
+
+  overflow: hidden; /* Ховає текст, що вилітає, і блокує появу скролів */
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
+
+.Loader {
+  animation: spin 1000ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
