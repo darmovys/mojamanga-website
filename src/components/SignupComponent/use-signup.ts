@@ -52,6 +52,7 @@ export function useSignup() {
           username: value.username,
           displayUsername: value.username,
           name: value.username,
+          callbackURL: '/email-verified',
           fetchOptions: {
             headers: { 'x-captcha-response': value.cfToken },
             onSuccess: async () => {

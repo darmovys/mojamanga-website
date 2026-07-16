@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as ForbiddenRouteImport } from './routes/forbidden'
+import { Route as EmailVerifiedRouteImport } from './routes/email-verified'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
@@ -60,6 +61,11 @@ const NotificationsRoute = NotificationsRouteImport.update({
 const ForbiddenRoute = ForbiddenRouteImport.update({
   id: '/forbidden',
   path: '/forbidden',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailVerifiedRoute = EmailVerifiedRouteImport.update({
+  id: '/email-verified',
+  path: '/email-verified',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogRoute = CatalogRouteImport.update({
@@ -242,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
+  '/email-verified': typeof EmailVerifiedRoute
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/verify-email': typeof VerifyEmailRoute
@@ -279,6 +286,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
+  '/email-verified': typeof EmailVerifiedRoute
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/verify-email': typeof VerifyEmailRoute
@@ -317,6 +325,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/catalog': typeof CatalogRoute
+  '/email-verified': typeof EmailVerifiedRoute
   '/forbidden': typeof ForbiddenRoute
   '/notifications': typeof NotificationsRoute
   '/verify-email': typeof VerifyEmailRoute
@@ -357,6 +366,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/bookmarks'
     | '/catalog'
+    | '/email-verified'
     | '/forbidden'
     | '/notifications'
     | '/verify-email'
@@ -394,6 +404,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/bookmarks'
     | '/catalog'
+    | '/email-verified'
     | '/forbidden'
     | '/notifications'
     | '/verify-email'
@@ -431,6 +442,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/bookmarks'
     | '/catalog'
+    | '/email-verified'
     | '/forbidden'
     | '/notifications'
     | '/verify-email'
@@ -471,6 +483,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   BookmarksRoute: typeof BookmarksRoute
   CatalogRoute: typeof CatalogRoute
+  EmailVerifiedRoute: typeof EmailVerifiedRoute
   ForbiddenRoute: typeof ForbiddenRoute
   NotificationsRoute: typeof NotificationsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
@@ -508,6 +521,13 @@ declare module '@tanstack/react-router' {
       path: '/forbidden'
       fullPath: '/forbidden'
       preLoaderRoute: typeof ForbiddenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email-verified': {
+      id: '/email-verified'
+      path: '/email-verified'
+      fullPath: '/email-verified'
+      preLoaderRoute: typeof EmailVerifiedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/catalog': {
@@ -830,6 +850,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   BookmarksRoute: BookmarksRoute,
   CatalogRoute: CatalogRoute,
+  EmailVerifiedRoute: EmailVerifiedRoute,
   ForbiddenRoute: ForbiddenRoute,
   NotificationsRoute: NotificationsRoute,
   VerifyEmailRoute: VerifyEmailRoute,

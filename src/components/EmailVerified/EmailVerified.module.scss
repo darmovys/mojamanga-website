@@ -1,0 +1,39 @@
+.Wrapper {
+  flex: 1;
+  background-color: var(--sys-surface-low);
+  display: grid;
+  place-content: center;
+  justify-items: center;
+}
+
+.Heading {
+  font-size: var(--24px);
+  margin-block-end: var(--2px);
+  color: var(--sys-primary);
+}
+
+.Paragraph {
+  font-size: var(--14px);
+  color: var(--sys-on-surface-variant);
+  margin-block-end: var(--10px);
+  font-variant-numeric: tabular-nums;
+}
+
+.Link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--4px);
+
+  font-size: var(--14px);
+  background-color: var(--success);
+  color: #fff;
+  padding: var(--4px) var(--8px);
+  border-radius: var(--4px);
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
