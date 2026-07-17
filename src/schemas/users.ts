@@ -61,5 +61,8 @@ export const changeUserSecuritySchema = z
       const hasNew = !!data.newPassword && data.newPassword.length > 0
       return (hasCurrent && hasNew) || (!hasCurrent && !hasNew)
     },
-    { error: 'Для зміни пароля потрібно заповнити і старий і новий пароль' },
+    {
+      error:
+        'Для зміни пароля потрібно заповнити як новий, так і поточний пароль',
+    },
   )

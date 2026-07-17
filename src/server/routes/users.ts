@@ -408,7 +408,7 @@ export const usersRouter = new Elysia({
                 if (isAPIError(error)) {
                   console.log(error)
                   if (error.body?.code === 'INVALID_PASSWORD') {
-                    return status(500, 'Неправильний старий пароль')
+                    return status(500, 'Неправильний поточний пароль')
                   }
                   return status(500, error.message)
                 } else {

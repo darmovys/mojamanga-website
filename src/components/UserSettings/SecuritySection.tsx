@@ -101,7 +101,7 @@ function SecuritySection() {
                   htmlFor={field.name}
                   className={styles.LabelSecondary}
                 >
-                  Старий пароль
+                  Поточний пароль
                 </Field.Label>
                 <PasswordField
                   name={field.name}
