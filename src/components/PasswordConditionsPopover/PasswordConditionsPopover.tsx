@@ -2,8 +2,9 @@ import {
   PasswordConditionsContent,
   type PasswordConditions,
 } from './PasswordConditions'
-import { useFloating, offset, shift } from '@floating-ui/react'
+import { useFloating, offset, shift, flip, Placement } from '@floating-ui/react'
 import styles from './PasswordConditionsPopover.module.scss'
+import clsx from 'clsx'
 
 type StrengthScore = 1 | 2 | 3 | 4 | 5
 
@@ -12,18 +13,29 @@ interface Props {
   anchorRef: React.RefObject<HTMLElement | null>
   conditions: PasswordConditions
   strengthScore: StrengthScore
+  placement?: Placement
+  fallbackPlacements?: Placement[]
+  className?: string
 }
 
-export function PasswordConditionsPopover({
+function PasswordConditionsPopover({
   open,
   anchorRef,
   conditions,
   strengthScore,
+  placement = 'right',
+  fallbackPlacements,
+  className,
 }: Props) {
   const { floatingStyles, refs } = useFloating({
     elements: { reference: anchorRef.current },
-    placement: 'right',
-    middleware: [offset(8), shift({ crossAxis: true })],
+    placement: placement,
+
+    middleware: [
+      offset(8),
+      shift({ crossAxis: true }),
+      flip({ fallbackPlacements }),
+    ],
     transform: false,
   })
 
@@ -33,7 +45,7 @@ export function PasswordConditionsPopover({
     <div
       ref={refs.setFloating}
       style={floatingStyles}
-      className={styles.Popup}
+      className={clsx(styles.Popup, className)}
       id="password-conditions"
       role="tooltip"
       aria-live="polite"
@@ -45,3 +57,5 @@ export function PasswordConditionsPopover({
     </div>
   )
 }
+
+export default PasswordConditionsPopover

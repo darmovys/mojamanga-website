@@ -219,6 +219,19 @@
   }
 }
 
+.PasswordPopover {
+  display: none;
+
+  @include up('tablet') {
+    display: revert;
+    inline-size: var(--192px);
+  }
+
+  @include up('laptop') {
+    inline-size: var(--256px);
+  }
+}
+
 @keyframes appearPulse {
   from {
     opacity: 0;

@@ -12,8 +12,8 @@ import VisuallyHidden from '@/components/VisuallyHidden'
 import ClickTargetHelper from '@/components/ClickTargetHelper'
 import { Turnstile } from '@marsidev/react-turnstile'
 import clsx from 'clsx'
-import { PasswordConditionsPopover } from './PasswordConditionsPopover'
-import { PasswordConditionsContent } from './PasswordConditions'
+import PasswordConditionsPopover from '../PasswordConditionsPopover'
+import { PasswordConditionsContent } from '../PasswordConditionsPopover/PasswordConditions'
 import { authClient } from '@/lib/auth-client'
 import { useTheme } from '@/lib/theme-provider'
 import { useSignup } from './use-signup'
@@ -176,6 +176,8 @@ function SignupComponent() {
                   anchorRef={passwordWrapperRef}
                   conditions={passwordConditions}
                   strengthScore={strengthScore}
+                  placement="right"
+                  className={styles.PasswordPopover}
                 />
 
                 <div
