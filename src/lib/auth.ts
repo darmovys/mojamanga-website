@@ -9,6 +9,8 @@ import { createAuthMiddleware } from 'better-auth/api'
 import { UserRole, UserStatus } from '@/generated/prisma/enums'
 import { sendEmail } from './email'
 import ConfirmEmail from '@/components/emails/ConfirmEmail'
+import ConfirmEmailChange from '@/components/emails/ConfirmEmailChange'
+import { useVerificationStore } from '@/stores/email-verification-store'
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -25,10 +27,46 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     async sendVerificationEmail({ user, url }) {
-      await sendEmail({
+      let finalUrl = url
+
+      /**
+       * Оскільки Better Auth не розділяє функції для відправки верифікації при реєстрації,
+       * та при зміні пошти, після схвалення зміни пошти, посилання на шлях /'email-change-accepted
+       * передається й у лист для верифікації нової пошти.
+       * Тому ми власноруч змінюємо значення callbackURL на правильне посилання /email-verified,
+       * у разі якщо трапилася така ситуація.
+       * */
+
+      try {
+        const parsedUrl = new URL(url)
+        const callbackUrlParam = parsedUrl.searchParams.get('callbackURL')
+
+        if (
+          callbackUrlParam &&
+          callbackUrlParam.includes('email-change-accepted')
+        ) {
+          const updatedCallback = callbackUrlParam.replace(
+            'email-change-accepted',
+            'email-verified',
+          )
+          parsedUrl.searchParams.set('callbackURL', updatedCallback)
+
+          finalUrl = parsedUrl.toString()
+        }
+      } catch (error) {
+        console.error('Не вдалося розпарсити URL верифікації:', error)
+      }
+
+      const { setTime } = useVerificationStore.getState()
+      setTime(10)
+
+      void sendEmail({
         to: user.email,
         subject: 'Підтвердження електронної пошти',
-        react: ConfirmEmail({ url, baseUrl: import.meta.env.VITE_SITE_URL }),
+        react: ConfirmEmail({
+          url: finalUrl,
+          baseUrl: import.meta.env.VITE_SITE_URL,
+        }),
       })
     },
   },
@@ -36,6 +74,17 @@ export const auth = betterAuth({
     changeEmail: {
       enabled: true,
       updateEmailWithoutVerification: false,
+      async sendChangeEmailConfirmation({ user, newEmail, url }) {
+        void sendEmail({
+          to: user.email,
+          subject: 'Схваліть зміну електронної пошти',
+          react: ConfirmEmailChange({
+            url,
+            baseUrl: import.meta.env.VITE_SITE_URL,
+            newEmail,
+          }),
+        })
+      },
     },
     additionalFields: {
       role: {

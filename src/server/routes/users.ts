@@ -388,6 +388,7 @@ export const usersRouter = new Elysia({
                   await auth.api.changeEmail({
                     body: {
                       newEmail: body.email,
+                      callbackURL: '/email-change-accepted',
                     },
                     headers,
                   })

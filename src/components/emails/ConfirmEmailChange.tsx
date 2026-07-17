@@ -10,11 +10,13 @@ import {
   Section,
   Font,
   Text,
+  Link,
 } from 'react-email'
 
 interface ConfirmEmailProps {
   url: string
   baseUrl?: string
+  newEmail: string
 }
 
 const colors = {
@@ -28,12 +30,15 @@ const colors = {
   pink: '#e21b70',
 }
 
-const ConfirmEmail = ({
+const ConfirmEmailChange = ({
   url,
   baseUrl = 'https://mojamanga.com',
+  newEmail,
 }: ConfirmEmailProps) => {
   const logoUrl = `${baseUrl}/logo.png`
-  // Залишаємо лише стилі, які неможливо інлайнити (псевдоелементи, ховери та медіазапити)
+  // Абсолютний шлях до шрифту для роботи в сторонніх поштових клієнтах
+  const fontUrl = `${baseUrl}/fonts/FixelVariable/FixelVariable.woff2`
+
   const cssStyles = `
     .submit-button {
       position: relative;
@@ -74,7 +79,6 @@ const ConfirmEmail = ({
     }
   `
 
-  // Об'єкти інлайн-стилів для зручності читання коду
   const bodyStyle = {
     backgroundColor: colors.bg2,
     margin: 0,
@@ -165,7 +169,7 @@ const ConfirmEmail = ({
           fontFamily="FixelText"
           fallbackFontFamily="Verdana"
           webFont={{
-            url: '/fonts/FixelVariable/FixelVariable.woff2',
+            url: fontUrl,
             format: 'woff2',
           }}
           fontWeight={400}
@@ -175,7 +179,7 @@ const ConfirmEmail = ({
       </Head>
 
       <Body style={bodyStyle}>
-        <Preview>Підтвердьте електронну пошту</Preview>
+        <Preview>Підтвердження зміни електронної пошти</Preview>
         <Container className="email-container" style={containerStyle}>
           <Section>
             <Section className="outer-section" style={outerSectionStyle}>
@@ -183,15 +187,17 @@ const ConfirmEmail = ({
                 <Section style={headerSectionStyle}>
                   <Img src={logoUrl} alt="Logo" width={70} style={logoStyle} />
                   <Heading as="h1" style={titleStyle}>
-                    Ще один крок!
+                    Бажаєте змінити електронну пошту?
                   </Heading>
                 </Section>
 
                 <Text style={descriptionStyle}>
-                  Дякуємо, що зареєструвалися на сайті Моя Манга.
+                  Ми отримали запит на зміну вашої поточної електронної пошти на
                   <br />
-                  Щоб верифікувати ваш акаунт, нам необхідно підтвердити вашу
-                  електронну пошту.
+                  <strong>{newEmail}</strong>.
+                  <br />
+                  Якщо ви дійсно бажаєте це зробити, натисніть кнопку нижче.
+                  Після цього ви отримаєте лист із верифікацією на нову адресу.
                 </Text>
 
                 <Section style={buttonSectionStyle}>
@@ -200,14 +206,18 @@ const ConfirmEmail = ({
                     className="submit-button"
                     style={submitButtonStyle}
                   >
-                    Підтвердити пошту
+                    Змінити пошту
                   </Button>
                 </Section>
 
                 <Text style={footerTextStyle}>
-                  Якщо ви не реєстрували акаунт,
-                  <br />
-                  просто проігноруйте цей лист.
+                  Якщо ви не надсилали цей запит, можливо, хтось інший отримав
+                  доступ до вашого акаунта.
+                  <br />У такому разі негайно{' '}
+                  <Link href={`${baseUrl}/change-password`}>
+                    змініть пароль від акаунта
+                  </Link>
+                  .
                 </Text>
               </Section>
             </Section>
@@ -218,4 +228,4 @@ const ConfirmEmail = ({
   )
 }
 
-export default ConfirmEmail
+export default ConfirmEmailChange
