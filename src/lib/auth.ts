@@ -11,6 +11,7 @@ import { sendEmail } from './email'
 import ConfirmEmail from '@/components/emails/ConfirmEmail'
 import ConfirmEmailChange from '@/components/emails/ConfirmEmailChange'
 import { useVerificationStore } from '@/stores/email-verification-store'
+import { directChangePasswordSchema } from '@/schemas/users'
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -192,7 +193,17 @@ export const auth = betterAuth({
         const result = signupSchema.omit({ cfToken: true }).safeParse(ctx.body)
         if (!result.success) {
           throw new APIError('BAD_REQUEST', {
-            message: result.error.message,
+            message: result.error.issues[0].message,
+          })
+        }
+      }
+
+      if (ctx.path === '/change-password') {
+        const result = directChangePasswordSchema.safeParse(ctx.body)
+
+        if (!result.success) {
+          throw new APIError('BAD_REQUEST', {
+            message: result.error.issues[0].message,
           })
         }
       }
@@ -205,7 +216,7 @@ export const auth = betterAuth({
         const result = loginSchema.omit({ cfToken: true }).safeParse(body)
         if (!result.success) {
           throw new APIError('BAD_REQUEST', {
-            message: result.error.message,
+            message: result.error.issues[0].message,
           })
         }
       }

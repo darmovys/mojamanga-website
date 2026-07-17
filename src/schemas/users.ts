@@ -66,3 +66,10 @@ export const changeUserSecuritySchema = z
         'Для зміни пароля потрібно заповнити як новий, так і поточний пароль',
     },
   )
+
+export const directChangePasswordSchema = z.object({
+  currentPassword: z
+    .string()
+    .min(1, { message: 'Поточний пароль обовʼязковий' }),
+  newPassword: newPasswordSchema,
+})
