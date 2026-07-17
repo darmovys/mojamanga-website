@@ -3,11 +3,17 @@ import { betterAuthPlugin } from '../plugins/auth'
 import { prisma } from '@/db'
 import z from 'zod'
 import { TeamStatus } from '@/generated/prisma/enums'
-import { changeUserProfileSchema } from '@/schemas/users'
+import {
+  changeUserProfileSchema,
+  changeUserSecuritySchema,
+} from '@/schemas/users'
 import { moveS3File } from '@/lib/utils'
 import { S3 } from '@/lib/s3-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { auth } from '@/lib/auth'
+import { getRequestHeaders } from '@tanstack/react-start/server'
+import { isAPIError } from 'better-auth/api'
+import { Prisma } from '@/generated/prisma/client'
 
 export const usersRouter = new Elysia({
   name: 'users-router',
@@ -318,6 +324,103 @@ export const usersRouter = new Elysia({
                 id: z.string(),
               }),
               body: changeUserProfileSchema,
+            },
+          )
+          .get(
+            '/security',
+            async ({ user, status, params: { id } }) => {
+              const isMe = id === user.id
+
+              if (!isMe) return status(403, 'Доступ обмежено')
+
+              const userSecurityData = await prisma.user.findUnique({
+                where: { id },
+                select: {
+                  id: true,
+                  email: true,
+                  emailVerified: true,
+                },
+              })
+
+              if (!userSecurityData)
+                return status(404, 'Користувача не знайдено')
+
+              return userSecurityData
+            },
+            {
+              authed: true,
+              params: z.object({
+                id: z.string(),
+              }),
+            },
+          )
+          .patch(
+            '/security',
+            async ({ user, status, body, params: { id } }) => {
+              const isMe = id === user.id
+
+              if (!isMe) return status(403, 'Доступ обмежено')
+
+              const currentUser = await prisma.user.findUnique({
+                where: { id },
+                select: {
+                  email: true,
+                },
+              })
+
+              if (!currentUser) return status(404, 'Користувача не знайдено')
+
+              const headers = await getRequestHeaders()
+
+              try {
+                if (body.currentPassword && body.newPassword) {
+                  await auth.api.changePassword({
+                    body: {
+                      currentPassword: body.currentPassword,
+                      newPassword: body.newPassword,
+                      revokeOtherSessions: false,
+                    },
+                    headers,
+                  })
+                }
+
+                if (body.email !== currentUser.email) {
+                  await auth.api.changeEmail({
+                    body: {
+                      newEmail: body.email,
+                    },
+                    headers,
+                  })
+                }
+
+                return status(200, 'Дані оновлено')
+              } catch (error) {
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                  if (error.code === 'P2002') {
+                    return status(
+                      409,
+                      'Користувач із такою електронною поштою вже існує',
+                    )
+                  }
+                }
+
+                if (isAPIError(error)) {
+                  console.log(error)
+                  if (error.body?.code === 'INVALID_PASSWORD') {
+                    return status(500, 'Неправильний старий пароль')
+                  }
+                  return status(500, error.message)
+                } else {
+                  return status(500, 'Не вдалося оновити дані')
+                }
+              }
+            },
+            {
+              authed: true,
+              params: z.object({
+                id: z.string(),
+              }),
+              body: changeUserSecuritySchema,
             },
           )
       })

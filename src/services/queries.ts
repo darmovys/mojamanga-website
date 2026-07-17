@@ -218,4 +218,20 @@ export const usersQueries = {
         return response.data
       },
     }),
+  getUserSecuritySettingsInfo: (id: string) =>
+    queryOptions({
+      queryKey: [...usersQueries.settings(), 'security', id] as const,
+      queryFn: async () => {
+        const response = await api().users.user({ id }).settings.security.get()
+        const { error } = response
+        if (error) {
+          if (error.status === 404) {
+            throw notFound()
+          } else {
+            throw error
+          }
+        }
+        return response.data
+      },
+    }),
 }

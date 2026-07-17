@@ -222,7 +222,7 @@ html {
   --brand-pink: var(--pink-700);
   --danger: oklch(60.307% 0.22945 27.676);
   --success: oklch(63.226% 0.20525 143.97);
-  --warning: oklch(86.563% 0.17261 92.311);
+  --warning: oklch(0.78 0.18 89.15);
   --danger-background: oklch(from var(--danger) l c h / 0.12);
   --warning-background: oklch(from var(--warning) l c h / 0.35);
   --danger-background-active: oklch(from var(--danger) l c h / 0.2);
