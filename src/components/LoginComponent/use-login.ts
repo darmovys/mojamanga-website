@@ -1,7 +1,7 @@
 import { authClient } from '@/lib/auth-client'
 import { showTimedToast } from '@/lib/toast'
 import { loginSchema } from '@/schemas/auth'
-import { authQueries } from '@/services/queries'
+import { authQueries, usersQueries } from '@/services/queries'
 import { revalidateLogic, useForm } from '@tanstack/react-form-start'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
@@ -40,9 +40,14 @@ export function useLogin() {
             fetchOptions: {
               headers: { 'x-captcha-response': value.cfToken },
               onSuccess: async () => {
-                await queryClient.invalidateQueries({
-                  queryKey: authQueries.all,
-                })
+                await Promise.all([
+                  queryClient.invalidateQueries({
+                    queryKey: authQueries.all,
+                  }),
+                  queryClient.invalidateQueries({
+                    queryKey: usersQueries.settings(),
+                  }),
+                ])
                 navigate({ to: '/' })
                 showTimedToast(
                   {
@@ -72,7 +77,15 @@ export function useLogin() {
             rememberMe: value.rememberMe,
             fetchOptions: {
               headers: { 'x-captcha-response': value.cfToken },
-              onSuccess: () => {
+              onSuccess: async () => {
+                await Promise.all([
+                  queryClient.invalidateQueries({
+                    queryKey: authQueries.all,
+                  }),
+                  queryClient.invalidateQueries({
+                    queryKey: usersQueries.settings(),
+                  }),
+                ])
                 navigate({ to: '/' })
                 showTimedToast(
                   {

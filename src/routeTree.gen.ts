@@ -47,6 +47,7 @@ import { Route as UserIdSettingsSecurityRouteImport } from './routes/user/$id_.s
 import { Route as UserIdSettingsRootRouteImport } from './routes/user/$id_.settings/root'
 import { Route as UserIdSettingsProfileRouteImport } from './routes/user/$id_.settings/profile'
 import { Route as UserIdSettingsNotificationsRouteImport } from './routes/user/$id_.settings/notifications'
+import { Route as UserIdSettingsDevicesRouteImport } from './routes/user/$id_.settings/devices'
 import { Route as UserIdReviseTeamTeamIdRouteImport } from './routes/user/$id_.revise-team/$teamId'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
@@ -242,6 +243,11 @@ const UserIdSettingsNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => UserIdSettingsRouteRoute,
   } as any)
+const UserIdSettingsDevicesRoute = UserIdSettingsDevicesRouteImport.update({
+  id: '/devices',
+  path: '/devices',
+  getParentRoute: () => UserIdSettingsRouteRoute,
+} as any)
 const UserIdReviseTeamTeamIdRoute = UserIdReviseTeamTeamIdRouteImport.update({
   id: '/user/$id_/revise-team/$teamId',
   path: '/user/$id/revise-team/$teamId',
@@ -281,6 +287,7 @@ export interface FileRoutesByFullPath {
   '/title/create/': typeof TitleCreateIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
   '/user/$id/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
+  '/user/$id/settings/devices': typeof UserIdSettingsDevicesRoute
   '/user/$id/settings/notifications': typeof UserIdSettingsNotificationsRoute
   '/user/$id/settings/profile': typeof UserIdSettingsProfileRoute
   '/user/$id/settings/root': typeof UserIdSettingsRootRoute
@@ -318,6 +325,7 @@ export interface FileRoutesByTo {
   '/title/create': typeof TitleCreateIndexRoute
   '/user/$id': typeof UserIdIndexRoute
   '/user/$id/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
+  '/user/$id/settings/devices': typeof UserIdSettingsDevicesRoute
   '/user/$id/settings/notifications': typeof UserIdSettingsNotificationsRoute
   '/user/$id/settings/profile': typeof UserIdSettingsProfileRoute
   '/user/$id/settings/root': typeof UserIdSettingsRootRoute
@@ -360,6 +368,7 @@ export interface FileRoutesById {
   '/title/create/': typeof TitleCreateIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
   '/user/$id_/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
+  '/user/$id_/settings/devices': typeof UserIdSettingsDevicesRoute
   '/user/$id_/settings/notifications': typeof UserIdSettingsNotificationsRoute
   '/user/$id_/settings/profile': typeof UserIdSettingsProfileRoute
   '/user/$id_/settings/root': typeof UserIdSettingsRootRoute
@@ -402,6 +411,7 @@ export interface FileRouteTypes {
     | '/title/create/'
     | '/user/$id/'
     | '/user/$id/revise-team/$teamId'
+    | '/user/$id/settings/devices'
     | '/user/$id/settings/notifications'
     | '/user/$id/settings/profile'
     | '/user/$id/settings/root'
@@ -439,6 +449,7 @@ export interface FileRouteTypes {
     | '/title/create'
     | '/user/$id'
     | '/user/$id/revise-team/$teamId'
+    | '/user/$id/settings/devices'
     | '/user/$id/settings/notifications'
     | '/user/$id/settings/profile'
     | '/user/$id/settings/root'
@@ -480,6 +491,7 @@ export interface FileRouteTypes {
     | '/title/create/'
     | '/user/$id/'
     | '/user/$id_/revise-team/$teamId'
+    | '/user/$id_/settings/devices'
     | '/user/$id_/settings/notifications'
     | '/user/$id_/settings/profile'
     | '/user/$id_/settings/root'
@@ -781,6 +793,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserIdSettingsNotificationsRouteImport
       parentRoute: typeof UserIdSettingsRouteRoute
     }
+    '/user/$id_/settings/devices': {
+      id: '/user/$id_/settings/devices'
+      path: '/devices'
+      fullPath: '/user/$id/settings/devices'
+      preLoaderRoute: typeof UserIdSettingsDevicesRouteImport
+      parentRoute: typeof UserIdSettingsRouteRoute
+    }
     '/user/$id_/revise-team/$teamId': {
       id: '/user/$id_/revise-team/$teamId'
       path: '/user/$id/revise-team/$teamId'
@@ -845,6 +864,7 @@ const UserIdRouteWithChildren =
   UserIdRoute._addFileChildren(UserIdRouteChildren)
 
 interface UserIdSettingsRouteRouteChildren {
+  UserIdSettingsDevicesRoute: typeof UserIdSettingsDevicesRoute
   UserIdSettingsNotificationsRoute: typeof UserIdSettingsNotificationsRoute
   UserIdSettingsProfileRoute: typeof UserIdSettingsProfileRoute
   UserIdSettingsRootRoute: typeof UserIdSettingsRootRoute
@@ -853,6 +873,7 @@ interface UserIdSettingsRouteRouteChildren {
 }
 
 const UserIdSettingsRouteRouteChildren: UserIdSettingsRouteRouteChildren = {
+  UserIdSettingsDevicesRoute: UserIdSettingsDevicesRoute,
   UserIdSettingsNotificationsRoute: UserIdSettingsNotificationsRoute,
   UserIdSettingsProfileRoute: UserIdSettingsProfileRoute,
   UserIdSettingsRootRoute: UserIdSettingsRootRoute,

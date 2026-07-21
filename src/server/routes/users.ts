@@ -14,6 +14,7 @@ import { auth } from '@/lib/auth'
 import { getRequestHeaders } from '@tanstack/react-start/server'
 import { isAPIError } from 'better-auth/api'
 import { Prisma } from '@/generated/prisma/client'
+import Bowser from 'bowser'
 
 export const usersRouter = new Elysia({
   name: 'users-router',
@@ -422,6 +423,84 @@ export const usersRouter = new Elysia({
                 id: z.string(),
               }),
               body: changeUserSecuritySchema,
+            },
+          )
+          .get(
+            '/devices',
+            async ({ status }) => {
+              const currentSession = await auth.api.getSession({
+                headers: getRequestHeaders(),
+              })
+
+              if (!currentSession) {
+                return status(401, 'Ви не авторизовані')
+              }
+
+              const sessions = await auth.api.listSessions({
+                headers: getRequestHeaders(),
+              })
+
+              const formattedDevices = await Promise.all(
+                sessions.map(async (session) => {
+                  const parser = Bowser.getParser(
+                    session.userAgent || 'Невідомо',
+                  )
+
+                  const browser = parser.getBrowser()
+                  const os = parser.getOS()
+                  const platform = parser.getPlatform()
+
+                  const browserName = browser.name || 'Невідомий браузер'
+                  const browserVersion = browser.version
+                    ? browser.version.split('.')[0]
+                    : ''
+                  const osName = os.name || 'Невідома ОС'
+
+                  let deviceName = 'Настільний ПК'
+                  if (platform.model) {
+                    deviceName =
+                      `${platform.vendor || ''} ${platform.model}`.trim()
+                  } else if (platform.type === 'mobile') {
+                    deviceName = 'Мобільний пристрій'
+                  } else if (platform.type === 'tablet') {
+                    deviceName = 'Планшет'
+                  }
+
+                  let location = 'Невідома локація'
+                  const ip = session.ipAddress
+
+                  if (ip && ip !== '127.0.0.1' && ip !== '::1') {
+                    try {
+                      const geoGes = await fetch(`http://ip-api.com/json/${ip}`)
+                      const geoData = await geoGes.json()
+                      if (geoData.status === 'success') {
+                        location = `${geoData.city}, ${geoData.country}`
+                      }
+                    } catch (error) {
+                      console.error('Помилка геолокації', error)
+                    }
+                  } else {
+                    location = 'Localhost'
+                  }
+
+                  return {
+                    id: session.id,
+                    token: session.token,
+                    ipAddress: ip || 'Невідомий IP',
+                    createdAt: session.createdAt,
+                    isCurrent: session.id === currentSession.session.id,
+                    browser: `${browserName} ${browserVersion}`.trim(),
+                    os: osName,
+                    device: deviceName,
+                    location,
+                  }
+                }),
+              )
+
+              return formattedDevices
+            },
+            {
+              authed: true,
             },
           )
       })

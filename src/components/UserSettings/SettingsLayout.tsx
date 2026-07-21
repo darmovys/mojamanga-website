@@ -2,7 +2,13 @@ import { getRouteApi, Link, Outlet, useLocation } from '@tanstack/react-router'
 import { Button } from '@base-ui/react'
 import ClickTargetHelper from '../ClickTargetHelper'
 import VisuallyHidden from '../VisuallyHidden'
-import { ArrowLeft, BellIcon, KeyRoundIcon, UserRoundIcon } from 'lucide-react'
+import {
+  ArrowLeft,
+  BellIcon,
+  KeyRoundIcon,
+  MonitorSmartphoneIcon,
+  UserRoundIcon,
+} from 'lucide-react'
 import { useGoBack } from '@/hooks/use-go-back'
 import ShiftBy from '../ShiftBy/ShiftBy'
 import MobileNavigation from '../MobileNavigation'
@@ -10,6 +16,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { authQueries } from '@/services/queries'
 import { useSearchFieldScrollStore } from '@/stores/search-field-scroll-store'
 import { motion } from 'motion/react'
+import { useMediaQuery } from '@/hooks/use-media-query'
 import styles from './SettingsLayout.module.scss'
 
 const routeApi = getRouteApi('/user/$id_/settings')
@@ -22,6 +29,7 @@ function SettingsLayout() {
   const isSearchFieldVisible = useSearchFieldScrollStore(
     (s) => s.isContentVisible,
   )
+  const matches = useMediaQuery('(min-width: 40.625rem)') // має збігатися з tablet breakpoint
 
   const isRootPath = location.pathname === `/user/${id}/settings/root`
 
@@ -30,6 +38,7 @@ function SettingsLayout() {
     if (path.endsWith('/profile')) return 'Профіль'
     if (path.endsWith('/security')) return 'Безпека та вхід'
     if (path.endsWith('/notifications')) return 'Сповіщення'
+    if (path.endsWith('/devices')) return 'Пристрої'
     return 'Налаштування'
   }
 
@@ -59,7 +68,9 @@ function SettingsLayout() {
           </Link>
           <motion.nav
             className={styles.Nav}
-            animate={{ top: isSearchFieldVisible ? '135px' : '80px' }}
+            animate={
+              matches ? { top: isSearchFieldVisible ? '135px' : '80px' } : false
+            }
             transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
             <Link
@@ -96,6 +107,16 @@ function SettingsLayout() {
             >
               <BellIcon size={18} />
               <span>Сповіщення</span>
+            </Link>
+            <Link
+              className={styles.NavLink}
+              activeProps={{ className: styles.Active }}
+              to="/user/$id/settings/devices"
+              params={{ id }}
+              replace={!isRootPath}
+            >
+              <MonitorSmartphoneIcon size={18} />
+              <span>Пристрої</span>
             </Link>
           </motion.nav>
           <main className={styles.Main}>

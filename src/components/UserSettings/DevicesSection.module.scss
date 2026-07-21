@@ -1,0 +1,120 @@
+.Card {
+  --inner-padding: var(--8px);
+  padding: var(--8px);
+  border-radius: var(--12px);
+  margin-block-end: var(--6px);
+  box-shadow: var(--shadow-border);
+
+  &[data-has-other-sessions='false'] {
+    padding-block-end: var(--12px);
+  }
+}
+
+.CardLabel {
+  display: inline-block;
+  color: var(--blue-400);
+  font-size: var(--12px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-inline: var(--inner-padding);
+  margin-block-end: var(--10px);
+}
+
+.CardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--4px);
+  padding-inline: var(--inner-padding);
+}
+
+.DeviceTitle {
+  font-weight: 700;
+  font-size: var(--16px);
+  color: var(--sys-primary);
+}
+
+.DeviceSubtitle {
+  color: var(--sys-on-surface-variant);
+  font-size: var(--14px);
+}
+
+.DeviceMeta {
+  color: oklch(from var(--sys-on-surface-variant) l c h / 0.85);
+  font-size: var(--12px);
+}
+
+.ButtonBase {
+  transition:
+    opacity 0.2s ease,
+    background-color 0.2s var(--bg-animation);
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+  }
+}
+
+.RevokeAllButton {
+  composes: ButtonBase;
+  margin-block-start: var(--6px);
+  color: var(--danger);
+  font-weight: 500;
+  font-size: var(--14px);
+  padding: var(--4px) var(--inner-padding);
+  border-radius: var(--6px);
+
+  @media (hover: hover) {
+    &:not([data-disabled]):hover {
+      background-color: var(--danger-background);
+    }
+  }
+}
+
+.Front {
+  display: flex;
+  align-items: center;
+  gap: var(--6px);
+}
+
+.Description {
+  font-size: var(--12px);
+  color: oklch(from var(--sys-on-surface-variant) l c h / 0.85);
+
+  margin-block-end: var(--24px);
+  padding-inline: var(--4px);
+}
+
+.SessionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--6px);
+}
+
+.SessionItem {
+  composes: ButtonBase;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--4px);
+  padding: var(--4px) var(--inner-padding);
+  border-radius: var(--6px);
+
+  @media (hover: hover) {
+    &:not([data-disabled]):hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+}
+
+.EmptyText {
+  color: var(--sys-on-surface-variant);
+  font-size: var(--14px);
+  margin-block-start: var(--2px);
+  padding-inline: var(--inner-padding);
+}

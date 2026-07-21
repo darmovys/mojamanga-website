@@ -234,4 +234,16 @@ export const usersQueries = {
         return response.data
       },
     }),
+  getUserSessions: (id: string) =>
+    queryOptions({
+      queryKey: [...usersQueries.settings(), 'sessions', id] as const,
+      queryFn: async () => {
+        const response = await api().users.user({ id }).settings.devices.get()
+        const { error } = response
+        if (error) {
+          throw error
+        }
+        return response.data
+      },
+    }),
 }
