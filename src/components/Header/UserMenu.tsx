@@ -1,5 +1,5 @@
 import { Menu, Separator } from '@base-ui/react'
-import { Link, useRouter } from '@tanstack/react-router'
+import { Link, useNavigate, useRouter } from '@tanstack/react-router'
 import { getUserLinks } from '@/lib/navigation-links'
 import clsx from 'clsx'
 import { Image } from '@unpic/react'
@@ -23,6 +23,7 @@ export function UserMenu({ user }: UserMenuProps) {
   const queryClient = useQueryClient()
   const router = useRouter()
   const isTabletOrUp = useMediaQuery('(min-width: 40.625rem)')
+  const navigate = useNavigate()
   async function handleLogout() {
     await authClient.signOut({
       fetchOptions: {
@@ -42,6 +43,7 @@ export function UserMenu({ user }: UserMenuProps) {
             4000,
           )
           userMenuHandle.close()
+          navigate({ to: '/' })
         },
         onError: ({ error }) => {
           showTimedToast(

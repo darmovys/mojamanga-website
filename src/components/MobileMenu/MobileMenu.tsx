@@ -24,7 +24,7 @@ import {
 import clsx from 'clsx'
 import { useTheme } from '@/lib/theme-provider'
 import { Accordion, Button, ScrollArea, Separator } from '@base-ui/react'
-import { Link, useRouter } from '@tanstack/react-router'
+import { Link, useNavigate, useRouter } from '@tanstack/react-router'
 import useNestedMenuAnimation from './use-nested-menu-animation'
 import Logo from '../Logo'
 import VisuallyHidden from '../VisuallyHidden'
@@ -62,7 +62,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
   const queryClient = useQueryClient()
   const router = useRouter()
   const { data: authState } = useSuspenseQuery(authQueries.user())
-
+  const navigate = useNavigate()
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const shouldReduceMotion = useReducedMotion()
@@ -93,6 +93,7 @@ export default function MobileMenu({ trigger }: MobileMenuProps) {
             4000,
           )
           setShowMobileMenu(false)
+          navigate({ to: '/' })
         },
         onError: ({ error }) => {
           showTimedToast(
