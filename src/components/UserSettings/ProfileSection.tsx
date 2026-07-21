@@ -11,6 +11,8 @@ import ClickTargetHelper from '../ClickTargetHelper'
 import VisuallyHidden from '../VisuallyHidden'
 import CropImageDialog from '../CropImageDialog'
 import clsx from 'clsx'
+import Skeleton from '../Skeleton'
+import { range } from '@/lib/utils'
 import styles from './Section.module.scss'
 
 function ProfileSection() {
@@ -426,6 +428,49 @@ function ProfileSection() {
         )}
       </MotionButton>
     </form>
+  )
+}
+
+export function ProfileSectionSkeleton() {
+  return (
+    <div className={styles.Form}>
+      <div>
+        <span className={styles.Label}>Аватар</span>
+        <div className={styles.AvatarWrapper}>
+          {range(2).map((index) => (
+            <Skeleton
+              key={index}
+              width="var(--128px)"
+              height="var(--128px)"
+              borderRadius="var(--4px)"
+            />
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <span className={styles.Label}>Фонове зображення</span>
+        <Skeleton
+          height="var(--200px)"
+          width="100%"
+          borderRadius="var(--4px)"
+        />
+      </div>
+
+      <div>
+        <span className={styles.Label}>Псевдонім</span>
+        <Skeleton height="var(--40px)" width="100%" borderRadius="var(--4px)" />
+      </div>
+
+      <div>
+        <span className={styles.Label}>Опис</span>
+        <Skeleton
+          height="var(--160px)"
+          width="100%"
+          borderRadius="var(--4px)"
+        />
+      </div>
+    </div>
   )
 }
 

@@ -1,5 +1,4 @@
 import { Button, Field } from '@base-ui/react'
-import styles from './Section.module.scss'
 import { useSecuritySection } from './use-security-section'
 import MotionButton from '../MotionButton'
 import { Eye, EyeClosed, LoaderCircle, MailIcon } from 'lucide-react'
@@ -11,6 +10,8 @@ import ShiftBy from '../ShiftBy/ShiftBy'
 import { Link } from '@tanstack/react-router'
 import PasswordConditionsPopover from '../PasswordConditionsPopover'
 import { PasswordConditionsContent } from '../PasswordConditionsPopover/PasswordConditions'
+import Skeleton from '../Skeleton'
+import styles from './Section.module.scss'
 
 function SecuritySection() {
   const {
@@ -285,6 +286,22 @@ function PasswordField({
         <VisuallyHidden>Показати пароль</VisuallyHidden>
         {isPasswordShown ? <Eye size={16} /> : <EyeClosed size={16} />}
       </Button>
+    </div>
+  )
+}
+
+export function SecuritySectionSkeleton() {
+  return (
+    <div className={styles.Form}>
+      <div>
+        <span className={styles.Label}>Електронна пошта</span>
+        <Skeleton height="var(--40px)" width="100%" borderRadius="var(--4px)" />
+      </div>
+
+      <div>
+        <span className={styles.Label}>Зміна паролю</span>
+        <Skeleton height="10.625rem" width="100%" borderRadius="var(--4px)" />
+      </div>
     </div>
   )
 }

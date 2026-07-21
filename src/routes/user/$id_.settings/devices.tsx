@@ -1,6 +1,15 @@
-import DevicesSection from '@/components/UserSettings/DevicesSection'
+import DevicesSection, {
+  DevicesSectionSkeleton,
+} from '@/components/UserSettings/DevicesSection'
+import { usersQueries } from '@/services/queries'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/user/$id_/settings/devices')({
   component: DevicesSection,
+  pendingComponent: DevicesSectionSkeleton,
+  loader: async ({ params, context }) => {
+    await context.queryClient.ensureQueryData(
+      usersQueries.getUserSessions(params.id),
+    )
+  },
 })

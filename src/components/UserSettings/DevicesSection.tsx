@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import styles from './DevicesSection.module.scss'
 import { useDevicesSection } from './use-devices-section'
 import ConfirmDialog from '../ConfirmDialog'
 import { HandIcon } from 'lucide-react'
 import ShiftBy from '../ShiftBy/ShiftBy'
 import { Button } from '@base-ui/react'
+import Skeleton from '../Skeleton'
+import { range } from '@/lib/utils'
+import styles from './DevicesSection.module.scss'
 
 function DevicesSection() {
   const {
@@ -148,6 +150,61 @@ function SessionItem({
           handleConfirm()
         }}
       />
+    </>
+  )
+}
+
+export function DevicesSectionSkeleton() {
+  return (
+    <>
+      <div className={styles.Card} data-has-other-sessions={false}>
+        <span className={styles.CardLabel}>Цей пристрій</span>
+        <div className={styles.CardInfo}>
+          <Skeleton
+            height="var(--20px)"
+            width="9.375rem"
+            borderRadius="var(--4px)"
+          />
+          <Skeleton
+            height="var(--18px)"
+            width="11.875rem"
+            borderRadius="var(--4px)"
+          />
+          <Skeleton
+            height="var(--14px)"
+            width="8.75rem"
+            borderRadius="var(--4px)"
+          />
+        </div>
+      </div>
+
+      <div style={{ paddingBlockEnd: 'var(--32px)' }}></div>
+
+      <div className={styles.Card} data-has-other-sessions={false}>
+        <span className={styles.CardLabel}>Активні сеанси</span>
+
+        <div className={styles.SessionList}>
+          {range(2).map((index) => (
+            <div key={index} className={styles.SessionItem}>
+              <Skeleton
+                height="var(--20px)"
+                width="9.375rem"
+                borderRadius="var(--4px)"
+              />
+              <Skeleton
+                height="var(--18px)"
+                width="11.875rem"
+                borderRadius="var(--4px)"
+              />
+              <Skeleton
+                height="var(--14px)"
+                width="8.75rem"
+                borderRadius="var(--4px)"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
     </>
   )
 }
