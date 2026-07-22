@@ -15,6 +15,10 @@ import globalCSS from '@/styles/global.scss?url'
 import AppToasts from '@/components/AppToasts'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { authQueries } from '@/services/queries'
+import { api } from '@/lib/api-client'
+
+let lastPingTime = 0
+const PING_INTERVAL = 30_000
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
@@ -41,6 +45,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       const authState = await context.queryClient.ensureQueryData(
         authQueries.user(),
       )
+
+      if (authState.isAuthenticated) {
+        const now = Date.now()
+
+        if (now - lastPingTime > PING_INTERVAL) {
+          lastPingTime = now
+
+          api()
+            .users.ping.post()
+            .then(({ error }) => {
+              if (error) {
+                console.error(error.value)
+              }
+            })
+            .catch((err) => {
+              console.error('Мережева помилка при ping:', err)
+            })
+        }
+      }
 
       return { authState }
     },

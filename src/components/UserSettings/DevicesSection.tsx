@@ -5,7 +5,7 @@ import { HandIcon } from 'lucide-react'
 import ShiftBy from '../ShiftBy/ShiftBy'
 import { Button } from '@base-ui/react'
 import Skeleton from '../Skeleton'
-import { range } from '@/lib/utils'
+import { formatCustomDate, range } from '@/lib/utils'
 import styles from './DevicesSection.module.scss'
 
 function DevicesSection() {
@@ -33,9 +33,7 @@ function DevicesSection() {
             <p className={styles.DeviceSubtitle}>
               {currentDevice.browser}, {currentDevice.os}
             </p>
-            <p className={styles.DeviceMeta}>
-              {currentDevice.location} • {currentDevice.ipAddress}
-            </p>
+            <p className={styles.DeviceMeta}>{currentDevice.location}</p>
           </div>
 
           {allDevices.length > 1 && (
@@ -80,7 +78,7 @@ function DevicesSection() {
         ) : (
           <div className={styles.SessionList}>
             {otherDevices.map(
-              ({ id, token, device, browser, os, location }) => (
+              ({ id, token, device, browser, os, location, lastSeenAt }) => (
                 <SessionItem
                   key={id}
                   token={token}
@@ -88,6 +86,7 @@ function DevicesSection() {
                   browser={browser}
                   os={os}
                   location={location}
+                  lastSeenAt={lastSeenAt}
                   isPending={isPending}
                   onRevoke={handleRevokeSession}
                 />
@@ -106,16 +105,18 @@ interface SessionItemProps {
   browser: string
   os: string
   location: string
+  lastSeenAt: Date | null | undefined
   isPending: boolean
   onRevoke: (token: string) => void
 }
 
 function SessionItem({
+  token,
   device,
   browser,
   os,
   location,
-  token,
+  lastSeenAt,
   isPending,
   onRevoke,
 }: SessionItemProps) {
@@ -134,11 +135,22 @@ function SessionItem({
         className={styles.SessionItem}
         onClick={() => setIsDialogShown(true)}
       >
-        <h3 className={styles.DeviceTitle}>{device}</h3>
+        <div className={styles.FlexContainer}>
+          <h3 className={styles.DeviceTitle}>{device}</h3>
+          <span className={styles.MobileOnly}>
+            {lastSeenAt ? formatCustomDate(lastSeenAt) : 'Час невідомий'}
+          </span>
+        </div>
         <p className={styles.DeviceSubtitle}>
           {browser}, {os}
         </p>
-        <p className={styles.DeviceMeta}>{location}</p>
+        <p className={styles.DeviceMeta}>
+          {location}
+          <span className={styles.TabletAndUp}>
+            {' '}
+            · {lastSeenAt ? formatCustomDate(lastSeenAt) : 'Час невідомий'}
+          </span>
+        </p>
       </Button>
       <ConfirmDialog
         isOpen={isDialogShown}

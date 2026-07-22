@@ -102,6 +102,16 @@ export const auth = betterAuth({
       },
     },
   },
+  session: {
+    additionalFields: {
+      lastSeenAt: {
+        type: 'date',
+        required: false,
+        defaultValue: null,
+        input: false,
+      },
+    },
+  },
   databaseHooks: {
     user: {
       create: {
@@ -146,6 +156,27 @@ export const auth = betterAuth({
               'Помилка при створенні системних папок для користувача:',
               error,
             )
+          }
+        },
+      },
+    },
+    session: {
+      create: {
+        after: async (session) => {
+          const now = new Date()
+          try {
+            await Promise.all([
+              prisma.user.update({
+                where: { id: session.userId },
+                data: { lastSeenAt: now },
+              }),
+              prisma.session.update({
+                where: { id: session.id },
+                data: { lastSeenAt: now },
+              }),
+            ])
+          } catch (error) {
+            console.error('Помилка оновлення lastSeenAt при вході: ', error)
           }
         },
       },

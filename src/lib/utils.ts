@@ -1,6 +1,8 @@
 import { S3 } from '@/lib/s3-client'
 import { CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { createClientOnlyFn } from '@tanstack/react-start'
+import { differenceInHours, format, isSameYear } from 'date-fns'
+import { uk } from 'date-fns/locale'
 
 // ============================================================================
 // РОБОТА З МАСИВАМИ ТА ЧИСЛАМИ
@@ -41,6 +43,36 @@ export function getRandom(min: number, max: number) {
   const randomWithinRange = random + min
 
   return randomWithinRange
+}
+
+// ============================================================================
+// РОБОТА З ДАТАМИ
+// ============================================================================
+
+/**
+ * Форматує дату відповідно до часу, що минув.
+ *
+ * @param dateInput - Об'єкт Date, timestamp або ISO-рядок дати
+ * @returns Відформатований рядок дати
+ */
+export function formatCustomDate(dateInput: Date | number | string): string {
+  const targetDate = new Date(dateInput)
+  const now = new Date()
+
+  // 1. Перевірка, чи минуло менше 24 годин
+  const hoursDifference = differenceInHours(now, targetDate)
+
+  if (hoursDifference < 24) {
+    return format(targetDate, 'HH:mm')
+  }
+
+  // 2. Якщо минуло більше 24 годин — перевіряємо, чи це поточний рік
+  if (isSameYear(now, targetDate)) {
+    return format(targetDate, 'd MMM.', { locale: uk })
+  }
+
+  // 3. Якщо дата з іншого року
+  return format(targetDate, 'd MMM. yyyy', { locale: uk })
 }
 
 // ============================================================================

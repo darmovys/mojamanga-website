@@ -51,8 +51,15 @@ export const usersRouter = new Elysia({
             return status(404, 'Такого користувача не знайдено')
           }
 
+          const TWO_MINUTES = 2 * 60 * 1000
+
+          const isOnline = userData.lastSeenAt
+            ? Date.now() - userData.lastSeenAt.getTime() < TWO_MINUTES
+            : false
+
           if (isMe) {
             return {
+              isOnline,
               isMe: true as const,
               user: userData,
             }
@@ -61,6 +68,7 @@ export const usersRouter = new Elysia({
           const { email, emailVerified, ...publicUserData } = userData
 
           return {
+            isOnline,
             isMe: false as const,
             user: publicUserData,
           }
@@ -122,6 +130,30 @@ export const usersRouter = new Elysia({
             id: z.string(),
           }),
         },
+      )
+      .post(
+        '/ping',
+        async ({ user, session, status }) => {
+          const now = new Date()
+          try {
+            await Promise.all([
+              prisma.user.update({
+                where: { id: user.id },
+                data: { lastSeenAt: now },
+              }),
+              prisma.session.update({
+                where: { id: session.id },
+                data: { lastSeenAt: now },
+              }),
+            ])
+
+            return status(200, 'Статус перебування на сайті оновлено')
+          } catch (error) {
+            console.log(`Помилка оновлення lastSeenAt: ${error}`)
+            return status(500, 'Помилка оновлення статусу')
+          }
+        },
+        { authed: true },
       )
       .group('/user/:id/settings', (app) => {
         return app
@@ -427,77 +459,76 @@ export const usersRouter = new Elysia({
           )
           .get(
             '/devices',
-            async ({ status }) => {
-              const currentSession = await auth.api.getSession({
-                headers: getRequestHeaders(),
-              })
+            async ({ status, session: currentSession }) => {
+              try {
+                const sessions = await auth.api.listSessions({
+                  headers: getRequestHeaders(),
+                })
 
-              if (!currentSession) {
-                return status(401, 'Ви не авторизовані')
-              }
+                const formattedDevices = await Promise.all(
+                  sessions.map(async (session) => {
+                    const parser = Bowser.getParser(
+                      session.userAgent || 'Невідомо',
+                    )
 
-              const sessions = await auth.api.listSessions({
-                headers: getRequestHeaders(),
-              })
+                    const browser = parser.getBrowser()
+                    const os = parser.getOS()
+                    const platform = parser.getPlatform()
 
-              const formattedDevices = await Promise.all(
-                sessions.map(async (session) => {
-                  const parser = Bowser.getParser(
-                    session.userAgent || 'Невідомо',
-                  )
+                    const browserName = browser.name || 'Невідомий браузер'
+                    const browserVersion = browser.version
+                      ? browser.version.split('.')[0]
+                      : ''
+                    const osName = os.name || 'Невідома ОС'
 
-                  const browser = parser.getBrowser()
-                  const os = parser.getOS()
-                  const platform = parser.getPlatform()
-
-                  const browserName = browser.name || 'Невідомий браузер'
-                  const browserVersion = browser.version
-                    ? browser.version.split('.')[0]
-                    : ''
-                  const osName = os.name || 'Невідома ОС'
-
-                  let deviceName = 'Настільний ПК'
-                  if (platform.model) {
-                    deviceName =
-                      `${platform.vendor || ''} ${platform.model}`.trim()
-                  } else if (platform.type === 'mobile') {
-                    deviceName = 'Мобільний пристрій'
-                  } else if (platform.type === 'tablet') {
-                    deviceName = 'Планшет'
-                  }
-
-                  let location = 'Невідома локація'
-                  const ip = session.ipAddress
-
-                  if (ip && ip !== '127.0.0.1' && ip !== '::1') {
-                    try {
-                      const geoGes = await fetch(`http://ip-api.com/json/${ip}`)
-                      const geoData = await geoGes.json()
-                      if (geoData.status === 'success') {
-                        location = `${geoData.city}, ${geoData.country}`
-                      }
-                    } catch (error) {
-                      console.error('Помилка геолокації', error)
+                    let deviceName = 'Настільний ПК'
+                    if (platform.model) {
+                      deviceName =
+                        `${platform.vendor || ''} ${platform.model}`.trim()
+                    } else if (platform.type === 'mobile') {
+                      deviceName = 'Мобільний пристрій'
+                    } else if (platform.type === 'tablet') {
+                      deviceName = 'Планшет'
                     }
-                  } else {
-                    location = 'Localhost'
-                  }
 
-                  return {
-                    id: session.id,
-                    token: session.token,
-                    ipAddress: ip || 'Невідомий IP',
-                    createdAt: session.createdAt,
-                    isCurrent: session.id === currentSession.session.id,
-                    browser: `${browserName} ${browserVersion}`.trim(),
-                    os: osName,
-                    device: deviceName,
-                    location,
-                  }
-                }),
-              )
+                    let location = 'Невідома локація'
+                    const ip = session.ipAddress
 
-              return formattedDevices
+                    if (ip && ip !== '127.0.0.1' && ip !== '::1') {
+                      try {
+                        const geoGes = await fetch(
+                          `http://ip-api.com/json/${ip}`,
+                        )
+                        const geoData = await geoGes.json()
+                        if (geoData.status === 'success') {
+                          location = `${geoData.city}, ${geoData.country}`
+                        }
+                      } catch (error) {
+                        console.error('Помилка геолокації', error)
+                      }
+                    } else {
+                      location = 'Localhost'
+                    }
+
+                    return {
+                      id: session.id,
+                      token: session.token,
+                      createdAt: session.createdAt,
+                      lastSeenAt: session.lastSeenAt,
+                      isCurrent: session.id === currentSession.id,
+                      browser: `${browserName} ${browserVersion}`.trim(),
+                      os: osName,
+                      device: deviceName,
+                      location,
+                    }
+                  }),
+                )
+
+                return formattedDevices
+              } catch (error) {
+                console.error('Помилка під час отримання списку всіх сеансів')
+                return status(500, 'Не вдалося отримати список всіх сеансів')
+              }
             },
             {
               authed: true,

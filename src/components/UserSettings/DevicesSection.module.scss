@@ -1,3 +1,5 @@
+@use '../../styles/breakpoints' as *;
+
 .Card {
   --inner-padding: var(--8px);
   padding: var(--8px);
@@ -117,4 +119,26 @@
   font-size: var(--14px);
   margin-block-start: var(--2px);
   padding-inline: var(--inner-padding);
+}
+
+.FlexContainer {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.MobileOnly {
+  color: var(--sys-on-surface-variant);
+  font-size: var(--14px);
+  @include up('tablet') {
+    display: none;
+  }
+}
+
+.TabletAndUp {
+  display: none;
+  @include up('tablet') {
+    display: revert;
+  }
 }

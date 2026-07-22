@@ -1,4 +1,5 @@
 @use '../../styles/breakpoints' as *;
+@use '../../styles/utils' as *;
 
 .Wrapper {
   --padding: var(--12px);
@@ -127,12 +128,65 @@
 
 .CoverWrapper {
   grid-area: avatar;
+  position: relative;
+
+  --status-size: #{rem(15px)};
+  --status-offset-x: #{rem(3.5px)};
+  --status-offset-y: #{rem(1.8px)};
+  --status-cutout-gap: #{rem(2.5px)};
+
+  --status-radius: calc(var(--status-size) / 2);
+  --mask-center-x: calc(var(--status-offset-x) + var(--status-radius));
+  --mask-center-y: calc(var(--status-offset-y) + var(--status-radius));
+  --mask-radius: calc(var(--status-radius) + var(--status-cutout-gap));
+
+  @include up('laptop') {
+    --status-size: #{rem(20px)};
+    --status-offset-x: #{rem(3.5px)};
+    --status-offset-y: #{rem(3.7px)};
+    --status-cutout-gap: #{rem(3px)};
+  }
 
   img {
     aspect-ratio: 1 / 1;
     object-fit: cover;
     overflow: hidden;
     border-radius: 50%;
+
+    -webkit-mask-image: radial-gradient(
+      circle at calc(100% - var(--mask-center-x))
+        calc(100% - var(--mask-center-y)),
+      transparent var(--mask-radius),
+      #000 calc(var(--mask-radius) + 0.5px)
+    );
+    mask-image: radial-gradient(
+      circle at calc(100% - var(--mask-center-x))
+        calc(100% - var(--mask-center-y)),
+      transparent var(--mask-radius),
+      #000 calc(var(--mask-radius) + 0.5px)
+    );
+  }
+}
+
+.OnlineStatus {
+  position: absolute;
+  border-radius: 50%;
+
+  inline-size: var(--status-size);
+  block-size: var(--status-size);
+  inset-inline-end: var(--status-offset-x);
+  inset-block-end: var(--status-offset-y);
+
+  @include up('laptop') {
+    transform: translateY(rem(-1.6px));
+  }
+
+  &[data-online] {
+    background-color: oklch(77.06% 0.20368 138.029);
+  }
+
+  &[data-offline] {
+    background-color: oklch(60.841% 0.1604 32.127);
   }
 }
 

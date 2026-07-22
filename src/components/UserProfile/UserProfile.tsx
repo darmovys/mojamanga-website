@@ -117,6 +117,11 @@ function UserProfile() {
               }
               alt={data.user.displayUsername}
             />
+            <span
+              data-offline={!data.isOnline ? '' : undefined}
+              data-online={data.isOnline ? '' : undefined}
+              className={styles.OnlineStatus}
+            />
           </div>
           {data.user.role !== 'USER' && (
             <ShiftBy

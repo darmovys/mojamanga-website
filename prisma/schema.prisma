@@ -21,6 +21,7 @@ model User {
   displayUsername String     @map("display_username")
   status          UserStatus @default(NORMAL)
   description     String?
+  lastSeenAt      DateTime?  @map("last_seen_at")
 
   sessions Session[]
   accounts Account[]
@@ -52,13 +53,14 @@ model User {
 }
 
 model Session {
-  id        String   @id @default(cuid(2))
-  expiresAt DateTime @map("expires_at")
-  token     String
-  ipAddress String?  @map("ip_address")
-  userAgent String?  @map("user_agent")
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String    @id @default(cuid(2))
+  expiresAt  DateTime  @map("expires_at")
+  token      String
+  ipAddress  String?   @map("ip_address")
+  userAgent  String?   @map("user_agent")
+  lastSeenAt DateTime? @map("last_seen_at")
+  userId     String    @map("user_id")
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
