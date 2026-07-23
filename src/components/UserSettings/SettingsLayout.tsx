@@ -10,7 +10,7 @@ import {
   UserRoundIcon,
 } from 'lucide-react'
 import { useGoBack } from '@/hooks/use-go-back'
-import ShiftBy from '../ShiftBy/ShiftBy'
+import ShiftBy from '../ShiftBy'
 import MobileNavigation from '../MobileNavigation'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { authQueries } from '@/services/queries'

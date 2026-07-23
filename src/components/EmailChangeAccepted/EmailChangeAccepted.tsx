@@ -1,5 +1,5 @@
 import { HouseIcon } from 'lucide-react'
-import ShiftBy from '../ShiftBy/ShiftBy'
+import ShiftBy from '../ShiftBy'
 import styles from './EmailChangeAccepted.module.scss'
 import { Link } from '@tanstack/react-router'
 

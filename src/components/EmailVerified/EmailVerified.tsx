@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { HouseIcon } from 'lucide-react'
-import ShiftBy from '../ShiftBy/ShiftBy'
+import ShiftBy from '../ShiftBy'
 import ClickTargetHelper from '../ClickTargetHelper'
 import MobileNavigation from '../MobileNavigation'
 import clsx from 'clsx'

@@ -1,7 +1,7 @@
 import { getRouteApi, Link } from '@tanstack/react-router'
 import { useResetPassword } from './use-reset-password'
 import { Button, Field } from '@base-ui/react'
-import ShiftBy from '../ShiftBy/ShiftBy'
+import ShiftBy from '../ShiftBy'
 import PasswordConditionsPopover from '../PasswordConditionsPopover'
 import ClickTargetHelper from '../ClickTargetHelper'
 import VisuallyHidden from '../VisuallyHidden'

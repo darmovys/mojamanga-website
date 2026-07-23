@@ -15,7 +15,7 @@ import {
   TITLE_TYPE_LABELS,
 } from '@/lib/constants'
 import { format } from 'date-fns'
-import ShiftBy from '../ShiftBy/ShiftBy'
+import ShiftBy from '../ShiftBy'
 import HelperDialog from '../HelperDialog'
 import { useReviewRequest } from './use-review-request'
 import Skeleton from '../Skeleton'
