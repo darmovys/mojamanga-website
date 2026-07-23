@@ -4,6 +4,7 @@
   display: grid;
   place-content: center;
   justify-items: center;
+  text-align: center;
 }
 
 .Heading {
@@ -19,23 +20,18 @@
 }
 
 .Button {
+  background-color: var(--sys-primary);
+  padding: var(--4px) var(--12px);
+  color: var(--sys-surface);
+  border-radius: 100vmax;
+  padding-block: var(--6px);
   font-size: var(--14px);
-  background-color: var(--success);
-  color: #fff;
-  padding: var(--4px) var(--8px);
-  border-radius: var(--4px);
-
-  overflow: hidden; /* Ховає текст, що вилітає, і блокує появу скролів */
+  text-align: center;
+  outline-offset: -2px;
 
   &[data-disabled] {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-
-  &:focus-visible {
-    outline-offset: 2px;
-    outline: 2px solid var(--blue-400);
-    border-radius: var(--2px);
   }
 }
 

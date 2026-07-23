@@ -18,7 +18,6 @@ import {
   ConfirmEmailChange,
   ResetPassword,
 } from '@/components/emails'
-import { useVerificationStore } from '@/stores/email-verification-store'
 import { directChangePasswordSchema } from '@/schemas/users'
 
 export const auth = betterAuth({
@@ -75,9 +74,6 @@ export const auth = betterAuth({
       } catch (error) {
         console.error('Не вдалося розпарсити URL верифікації:', error)
       }
-
-      const { setTime } = useVerificationStore.getState()
-      setTime(10)
 
       void sendEmail({
         to: user.email,

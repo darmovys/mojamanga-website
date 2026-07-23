@@ -6,6 +6,8 @@ import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { authClient } from '@/lib/auth-client'
 import { motion } from 'motion/react'
 import { LoaderCircleIcon } from 'lucide-react'
+import MobileNavigation from '../MobileNavigation'
+import clsx from 'clsx'
 import styles from './VerifyEmail.module.scss'
 
 function VerifyEmail() {
@@ -47,57 +49,60 @@ function VerifyEmail() {
     })
   }
   return (
-    <div className={styles.Wrapper}>
-      <h1 className={styles.Heading}>Підтвердьте електронну пошту</h1>
-      <p className={styles.Paragraph}>
-        Лист з підтвердженням був надісланий на вашу пошту
-      </p>
-      <MotionButton
-        className={styles.Button}
-        disabled={isSending}
-        focusableWhenDisabled={true}
-        onClick={sendVerificationEmail}
-        layout
-        transition={{
-          type: 'spring',
-          stiffness: 380,
-          damping: 30,
-        }}
-      >
-        <motion.span
-          key={isSending ? 'sending' : 'idle'}
-          initial={{
-            opacity: 0,
-            filter: 'blur(4px)',
-          }}
-          animate={{
-            opacity: 1,
-            filter: 'blur(0px)',
-          }}
-          exit={{
-            opacity: 0,
-            filter: 'blur(4px)',
-          }}
+    <>
+      <div className={styles.Wrapper}>
+        <h1 className={styles.Heading}>Підтвердьте електронну пошту</h1>
+        <p className={styles.Paragraph}>
+          Лист з підтвердженням був надісланий на вашу пошту
+        </p>
+        <MotionButton
+          className={clsx(styles.Button, 'Gradient')}
+          disabled={isSending}
+          focusableWhenDisabled={true}
+          onClick={sendVerificationEmail}
+          layout
           transition={{
             type: 'spring',
-            duration: 0.6,
-            bounce: 0,
+            stiffness: 380,
+            damping: 30,
           }}
-          // layout="position" запобігає деформації/розтягуванню тексту
-          layout="position"
-          style={{ display: 'flex', alignItems: 'center', gap: 'var(--4px)' }}
         >
-          {isSending ? (
-            <>
-              <LoaderCircleIcon className={styles.Loader} size={14} />
-              Надсилаємо...
-            </>
-          ) : (
-            'Надіслати повторно'
-          )}
-        </motion.span>
-      </MotionButton>
-    </div>
+          <motion.span
+            key={isSending ? 'sending' : 'idle'}
+            initial={{
+              opacity: 0,
+              filter: 'blur(4px)',
+            }}
+            animate={{
+              opacity: 1,
+              filter: 'blur(0px)',
+            }}
+            exit={{
+              opacity: 0,
+              filter: 'blur(4px)',
+            }}
+            transition={{
+              type: 'spring',
+              duration: 0.6,
+              bounce: 0,
+            }}
+            // layout="position" запобігає деформації/розтягуванню тексту
+            layout="position"
+            style={{ display: 'flex', alignItems: 'center', gap: 'var(--4px)' }}
+          >
+            {isSending ? (
+              <>
+                <LoaderCircleIcon className={styles.Loader} size={14} />
+                Надсилаємо...
+              </>
+            ) : (
+              'Надіслати повторно'
+            )}
+          </motion.span>
+        </MotionButton>
+      </div>
+      <MobileNavigation />
+    </>
   )
 }
 
