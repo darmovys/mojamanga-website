@@ -312,7 +312,7 @@ function SignupComponent() {
       </form>
       <div className={styles.LoginText}>
         <span>Вже маєте обліковий запис?</span>
-        <Link to="/login" className={styles.LoginLink}>
+        <Link to="/login" className={styles.Link}>
           Увійти
           <ClickTargetHelper />
         </Link>

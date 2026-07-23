@@ -198,18 +198,25 @@
   }
 }
 
-.LoginLink {
+.Link {
   color: var(--blue-400);
-  outline-offset: 2px;
-  position: relative; // for click target helper
+  text-decoration: none;
+  outline-offset: 1px;
+  box-shadow: 0 1.5px 0 var(--blue-400);
+  transition: box-shadow 0.2s;
+  font-size: var(--14px);
+  block-size: var(--20px);
 
-  &:hover {
-    text-decoration: none;
+  @media (hover: hover) {
+    &:hover {
+      box-shadow: 0 0 0 transparent;
+    }
   }
 
   &:focus-visible {
-    outline: 2px solid var(--blue-400);
     border-radius: var(--2px);
+    outline: 2px solid var(--blue-400);
+    outline-offset: 2px;
   }
 }
 

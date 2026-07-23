@@ -484,6 +484,37 @@
   }
 }
 
+.ForgotPasswordInfo {
+  background-color: var(--sys-surface-highest);
+  border-radius: var(--6px);
+  padding: var(--12px) var(--20px);
+  font-size: var(--14px);
+  margin-block-start: var(--10px);
+  color: var(--blue-400);
+  background-color: oklch(from var(--blue-500) l c h / 0.1);
+}
+
+.ForgotPasswordLink {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+  outline-offset: 1px;
+  box-shadow: 0 1.5px 0 var(--blue-400);
+  transition: box-shadow 0.2s;
+
+  @media (hover: hover) {
+    &:hover {
+      box-shadow: 0 0 0 transparent;
+    }
+  }
+
+  &:focus-visible {
+    border-radius: var(--2px);
+    outline: 2px solid var(--blue-400);
+    outline-offset: 2px;
+  }
+}
+
 @keyframes marching-ants {
   to {
     stroke-dashoffset: -28;

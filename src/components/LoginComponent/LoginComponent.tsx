@@ -97,7 +97,17 @@ function LoginComponent() {
                 dirty={field.state.meta.isDirty}
                 touched={field.state.meta.isTouched}
               >
-                <Field.Label className={styles.FieldLabel}>Пароль</Field.Label>
+                <div className={styles.PasswordLabelWrapper}>
+                  <Field.Label className={styles.FieldLabel}>
+                    Пароль
+                  </Field.Label>
+                  <Link
+                    className={styles.ForgotPasswordLink}
+                    to="/forgot-password"
+                  >
+                    Забули пароль?
+                  </Link>
+                </div>
 
                 <div className={styles.FieldInputWrapper}>
                   <Field.Control
@@ -257,7 +267,7 @@ function LoginComponent() {
       </form>
       <div className={styles.SignupText}>
         <span>Вперше на Моя Манга?</span>
-        <Link to="/signup" className={styles.SignupLink}>
+        <Link to="/signup" className={styles.Link}>
           Зареєструватися
           <ClickTargetHelper />
         </Link>

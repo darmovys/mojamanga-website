@@ -4,11 +4,20 @@ import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 import { username, captcha, openAPI } from 'better-auth/plugins'
 import { i18n } from '@better-auth/i18n'
-import { loginSchema, signupSchema } from '@/schemas/auth'
+import {
+  createForgotPasswordSchema,
+  loginSchema,
+  resetPasswordSchema,
+  signupSchema,
+} from '@/schemas/auth'
 import { createAuthMiddleware } from 'better-auth/api'
 import { UserRole, UserStatus } from '@/generated/prisma/enums'
 import { sendEmail } from './email'
-import { ConfirmEmail, ConfirmEmailChange } from '@/components/emails'
+import {
+  ConfirmEmail,
+  ConfirmEmailChange,
+  ResetPassword,
+} from '@/components/emails'
 import { useVerificationStore } from '@/stores/email-verification-store'
 import { directChangePasswordSchema } from '@/schemas/users'
 
@@ -22,6 +31,16 @@ export const auth = betterAuth({
     maxPasswordLength: Infinity,
     enabled: true,
     autoSignIn: false,
+    async sendResetPassword({ user, url }) {
+      void sendEmail({
+        to: user.email,
+        subject: 'Скидання паролю',
+        react: ResetPassword({
+          url: url,
+          baseUrl: import.meta.env.VITE_SITE_URL,
+        }),
+      })
+    },
   },
   emailVerification: {
     sendOnSignUp: true,
@@ -188,6 +207,7 @@ export const auth = betterAuth({
           USER_NOT_FOUND: 'Користувача не знайдено',
           INVALID_EMAIL_OR_PASSWORD: 'Неправильний пароль або електронна пошта',
           INVALID_PASSWORD: 'Неправильний пароль',
+          INVALID_TOKEN: 'Недійсний токен',
           CREDENTIAL_ACCOUNT_NOT_FOUND: 'Не вдалося знайти обліковий запис',
           EMAIL_NOT_VERIFIED: 'Електронна пошта не верифікована',
           SESSION_EXPIRED: 'Сесія вичерпана',
@@ -230,6 +250,32 @@ export const auth = betterAuth({
 
       if (ctx.path === '/change-password') {
         const result = directChangePasswordSchema.safeParse(ctx.body)
+
+        if (!result.success) {
+          throw new APIError('BAD_REQUEST', {
+            message: result.error.issues[0].message,
+          })
+        }
+      }
+
+      if (ctx.path === '/request-password-reset') {
+        const clientForgotPasswordSchema = createForgotPasswordSchema({
+          isServer: true,
+        })
+
+        const result = clientForgotPasswordSchema
+          .omit({ cfToken: true })
+          .safeParse(ctx.body)
+
+        if (!result.success) {
+          throw new APIError('BAD_REQUEST', {
+            message: result.error.issues[0].message,
+          })
+        }
+      }
+
+      if (ctx.path === '/reset-password') {
+        const result = resetPasswordSchema.safeParse(ctx.body)
 
         if (!result.success) {
           throw new APIError('BAD_REQUEST', {

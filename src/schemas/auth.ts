@@ -58,3 +58,26 @@ export const loginSchema = z.object({
   cfToken: z.string(),
   rememberMe: z.boolean(),
 })
+
+export const createForgotPasswordSchema = ({
+  isServer = false,
+}: {
+  isServer?: boolean
+} = {}) => {
+  const minMessage = isServer
+    ? "Електронна пошта є обов'язковою"
+    : 'Заповніть це поле'
+  const emailMessage = isServer
+    ? 'Неправильна електронна пошта'
+    : 'Вкажіть коректну пошту'
+  return z.object({
+    email: trimmedString
+      .min(1, { error: minMessage })
+      .pipe(z.email({ error: emailMessage })),
+    cfToken: z.string(),
+  })
+}
+
+export const resetPasswordSchema = z.object({
+  newPassword: passwordSchema,
+})

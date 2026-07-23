@@ -122,11 +122,6 @@ function SecuritySection() {
                 invalid={!field.state.meta.isValid}
                 dirty={field.state.meta.isDirty}
                 touched={field.state.meta.isTouched}
-                onFocus={() => setIsPasswordPopoverOpen(true)}
-                onBlur={(e) => {
-                  if (e.currentTarget.contains(e.relatedTarget)) return
-                  setIsPasswordPopoverOpen(false)
-                }}
               >
                 <Field.Label
                   htmlFor={field.name}
@@ -134,13 +129,32 @@ function SecuritySection() {
                 >
                   Новий пароль
                 </Field.Label>
-                <PasswordField
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(newValue) => field.handleChange(newValue)}
-                  wrapperRef={passwordWrapperRef}
-                />
+                <div
+                  onFocus={() => setIsPasswordPopoverOpen(true)}
+                  onBlur={(e) => {
+                    if (e.currentTarget.contains(e.relatedTarget)) return
+                    setIsPasswordPopoverOpen(false)
+                  }}
+                >
+                  <PasswordField
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(newValue) => field.handleChange(newValue)}
+                    wrapperRef={passwordWrapperRef}
+                  />
+                </div>
+                <div className={styles.ForgotPasswordInfo}>
+                  Якщо ви не пам'ятаєте свій поточний пароль, то можете його
+                  скинути на{' '}
+                  <Link
+                    className={styles.ForgotPasswordLink}
+                    to="/forgot-password"
+                  >
+                    цій сторінці
+                  </Link>
+                  .
+                </div>
 
                 <PasswordConditionsPopover
                   open={isPasswordPopoverOpen}

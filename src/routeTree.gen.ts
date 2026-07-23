@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ForbiddenRouteImport } from './routes/forbidden'
 import { Route as EmailVerifiedRouteImport } from './routes/email-verified'
 import { Route as EmailChangeAcceptedRouteImport } from './routes/email-change-accepted'
@@ -55,9 +57,19 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForbiddenRoute = ForbiddenRouteImport.update({
@@ -263,7 +275,9 @@ export interface FileRoutesByFullPath {
   '/email-change-accepted': typeof EmailChangeAcceptedRoute
   '/email-verified': typeof EmailVerifiedRoute
   '/forbidden': typeof ForbiddenRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/notifications': typeof NotificationsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
   '/api/$': typeof ApiSplatRoute
   '/team/$id': typeof TeamIdRoute
@@ -303,7 +317,9 @@ export interface FileRoutesByTo {
   '/email-change-accepted': typeof EmailChangeAcceptedRoute
   '/email-verified': typeof EmailVerifiedRoute
   '/forbidden': typeof ForbiddenRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/notifications': typeof NotificationsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
   '/api/$': typeof ApiSplatRoute
   '/team/$id': typeof TeamIdRoute
@@ -344,7 +360,9 @@ export interface FileRoutesById {
   '/email-change-accepted': typeof EmailChangeAcceptedRoute
   '/email-verified': typeof EmailVerifiedRoute
   '/forbidden': typeof ForbiddenRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/notifications': typeof NotificationsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
   '/api/$': typeof ApiSplatRoute
   '/team/$id': typeof TeamIdRoute
@@ -387,7 +405,9 @@ export interface FileRouteTypes {
     | '/email-change-accepted'
     | '/email-verified'
     | '/forbidden'
+    | '/forgot-password'
     | '/notifications'
+    | '/reset-password'
     | '/verify-email'
     | '/api/$'
     | '/team/$id'
@@ -427,7 +447,9 @@ export interface FileRouteTypes {
     | '/email-change-accepted'
     | '/email-verified'
     | '/forbidden'
+    | '/forgot-password'
     | '/notifications'
+    | '/reset-password'
     | '/verify-email'
     | '/api/$'
     | '/team/$id'
@@ -467,7 +489,9 @@ export interface FileRouteTypes {
     | '/email-change-accepted'
     | '/email-verified'
     | '/forbidden'
+    | '/forgot-password'
     | '/notifications'
+    | '/reset-password'
     | '/verify-email'
     | '/api/$'
     | '/team/$id'
@@ -510,7 +534,9 @@ export interface RootRouteChildren {
   EmailChangeAcceptedRoute: typeof EmailChangeAcceptedRoute
   EmailVerifiedRoute: typeof EmailVerifiedRoute
   ForbiddenRoute: typeof ForbiddenRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   NotificationsRoute: typeof NotificationsRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   ApiSplatRoute: typeof ApiSplatRoute
   TeamIdRoute: typeof TeamIdRoute
@@ -534,11 +560,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/notifications': {
       id: '/notifications'
       path: '/notifications'
       fullPath: '/notifications'
       preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forbidden': {
@@ -894,7 +934,9 @@ const rootRouteChildren: RootRouteChildren = {
   EmailChangeAcceptedRoute: EmailChangeAcceptedRoute,
   EmailVerifiedRoute: EmailVerifiedRoute,
   ForbiddenRoute: ForbiddenRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   NotificationsRoute: NotificationsRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   ApiSplatRoute: ApiSplatRoute,
   TeamIdRoute: TeamIdRoute,
