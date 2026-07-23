@@ -72,9 +72,9 @@ export function useImageUpload({
     setFileState((prev) => (prev ? { ...prev, isDeleting: true } : null))
 
     try {
-      const { data, error } = await api()
-        .files.temp({ key: encodeURIComponent(fileState.key) })
-        .delete()
+      const { data, error } = await api().files.temp.file.delete({
+        key: fileState.key,
+      })
 
       if (error !== null) {
         if (error.status === 401) {

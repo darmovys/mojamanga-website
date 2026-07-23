@@ -94,9 +94,9 @@ export const filesRouter = new Elysia({
             },
           )
           .delete(
-            '/:key',
-            async ({ params, user, status }) => {
-              const key = decodeURIComponent(params.key)
+            '/file',
+            async ({ user, status, body }) => {
+              const key = body.key
 
               if (!key.includes(`/${user.id}/`)) {
                 return status(
@@ -120,6 +120,9 @@ export const filesRouter = new Elysia({
             },
             {
               authed: true,
+              body: z.object({
+                key: z.string(),
+              }),
             },
           )
       })
