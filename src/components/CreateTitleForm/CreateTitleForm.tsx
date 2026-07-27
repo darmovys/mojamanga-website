@@ -71,8 +71,7 @@ function CreateTitleForm() {
   } = useTitleForm()
   const loaderData = routeApi.useLoaderData()
 
-  const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
-    useHelperDialog('seen_create_title_rules', loaderData)
+  const helper = useHelperDialog('seen_create_title_rules', loaderData)
 
   return (
     <div className={styles.MaxWidthWrapper}>
@@ -83,38 +82,42 @@ function CreateTitleForm() {
           <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
         </Button>
         <h1 className={styles.GoBackHeading}>Додавання твору</h1>
-        <HelperDialog
-          title={title}
-          content={content}
-          mdast={mdast}
-          open={isHelperOpen}
-          onOpenChange={handleHelperOpenChange}
-          trigger={(openDialog) => (
-            <Button onClick={openDialog} className={styles.InfoButton}>
-              <ClickTargetHelper />
-              <Info size={20} />
-              <VisuallyHidden>Довідка</VisuallyHidden>
-            </Button>
-          )}
-        />
+        {helper && (
+          <HelperDialog
+            title={helper.title}
+            content={helper.content}
+            mdast={helper.mdast}
+            open={helper.isHelperOpen}
+            onOpenChange={helper.handleHelperOpenChange}
+            trigger={(openDialog) => (
+              <Button onClick={openDialog} className={styles.InfoButton}>
+                <ClickTargetHelper />
+                <Info size={20} />
+                <VisuallyHidden>Довідка</VisuallyHidden>
+              </Button>
+            )}
+          />
+        )}
       </div>
       <div className={styles.Wrapper}>
         <div className={styles.Content}>
           <div className={styles.ContentHeaderWrapper}>
             <h1 className={styles.ContentTitle}>Додавання твору</h1>
-            <HelperDialog
-              title={title}
-              content={content}
-              mdast={mdast}
-              open={isHelperOpen}
-              onOpenChange={handleHelperOpenChange}
-              trigger={(openDialog) => (
-                <Button onClick={openDialog} className={styles.HelperButton}>
-                  <Info size={16} />
-                  <span>Довідка</span>
-                </Button>
-              )}
-            />
+            {helper && (
+              <HelperDialog
+                title={helper.title}
+                content={helper.content}
+                mdast={helper.mdast}
+                open={helper.isHelperOpen}
+                onOpenChange={helper.handleHelperOpenChange}
+                trigger={(openDialog) => (
+                  <Button onClick={openDialog} className={styles.HelperButton}>
+                    <Info size={16} />
+                    <span>Довідка</span>
+                  </Button>
+                )}
+              />
+            )}
           </div>
           <form
             className={styles.Form}

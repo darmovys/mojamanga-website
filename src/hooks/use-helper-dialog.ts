@@ -12,10 +12,13 @@ export interface HelperData {
  * @param storageKey - унікальний ключ для localStorage (наприклад, 'seen_rules_page_x')
  * @param data - об'єкт з даними підказки (зазвичай з loaderData)
  */
-export function useHelperDialog(storageKey: string, data: HelperData) {
+export function useHelperDialog(storageKey?: string, data?: HelperData) {
   const [isHelperOpen, setIsHelperOpen] = useState(false)
 
   useEffect(() => {
+    // Якщо немає ключа або даних — нічого не робимо
+    if (!storageKey || !data) return
+
     // Перевіряємо, чи користувач вже бачив цю підказку
     const hasSeen = localStorage.getItem(storageKey)
 
@@ -28,9 +31,13 @@ export function useHelperDialog(storageKey: string, data: HelperData) {
     setIsHelperOpen(open)
 
     // Якщо діалог закривається, зберігаємо статус "бачив"
-    if (!open) {
+    if (!open && storageKey) {
       localStorage.setItem(storageKey, 'true')
     }
+  }
+
+  if (!data) {
+    return undefined
   }
 
   return {

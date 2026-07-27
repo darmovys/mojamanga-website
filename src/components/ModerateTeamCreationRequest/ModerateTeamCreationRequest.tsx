@@ -26,8 +26,10 @@ function ModerateTeamCreationRequest() {
 
   const { handleGoBack } = useGoBack()
   const { theme } = useTheme()
-  const { title, content, mdast, isHelperOpen, handleHelperOpenChange } =
-    useHelperDialog('seen_create_team_request_moderation_rules', loaderData)
+  const helper = useHelperDialog(
+    'seen_create_team_request_moderation_rules',
+    loaderData,
+  )
 
   const {
     data,
@@ -53,20 +55,22 @@ function ModerateTeamCreationRequest() {
           <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
         </Button>
         <h1 className={styles.GoBackHeading}>Розгляд нової команди</h1>
-        <HelperDialog
-          title={title}
-          content={content}
-          mdast={mdast}
-          open={isHelperOpen}
-          onOpenChange={handleHelperOpenChange}
-          trigger={(openDialog) => (
-            <Button onClick={openDialog} className={styles.InfoButton}>
-              <ClickTargetHelper />
-              <Info size={20} />
-              <VisuallyHidden>Довідка</VisuallyHidden>
-            </Button>
-          )}
-        />
+        {helper && (
+          <HelperDialog
+            title={helper.title}
+            content={helper.content}
+            mdast={helper.mdast}
+            open={helper.isHelperOpen}
+            onOpenChange={helper.handleHelperOpenChange}
+            trigger={(openDialog) => (
+              <Button onClick={openDialog} className={styles.InfoButton}>
+                <ClickTargetHelper />
+                <Info size={20} />
+                <VisuallyHidden>Довідка</VisuallyHidden>
+              </Button>
+            )}
+          />
+        )}
       </div>
       <main className={styles.Content}>
         <div className={clsx(styles.Card, styles.NavCard)}>
@@ -84,19 +88,21 @@ function ModerateTeamCreationRequest() {
               Розгляд нової команди
             </li>
           </ol>
-          <HelperDialog
-            title={title}
-            content={content}
-            mdast={mdast}
-            open={isHelperOpen}
-            onOpenChange={handleHelperOpenChange}
-            trigger={(openDialog) => (
-              <Button onClick={openDialog} className={styles.HelperButton}>
-                <Info size={16} />
-                <span>Довідка</span>
-              </Button>
-            )}
-          />
+          {helper && (
+            <HelperDialog
+              title={helper.title}
+              content={helper.content}
+              mdast={helper.mdast}
+              open={helper.isHelperOpen}
+              onOpenChange={helper.handleHelperOpenChange}
+              trigger={(openDialog) => (
+                <Button onClick={openDialog} className={styles.HelperButton}>
+                  <Info size={16} />
+                  <span>Довідка</span>
+                </Button>
+              )}
+            />
+          )}
         </div>
         <div className={clsx(styles.Card, styles.Creator)}>
           <div className={styles.UserInfo}>
