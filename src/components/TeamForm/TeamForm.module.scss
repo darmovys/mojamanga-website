@@ -120,6 +120,17 @@
   }
 }
 
+.ModerationFeedback {
+  color: var(--blue-400);
+  background-color: oklch(from var(--blue-500) l c h / 0.1);
+  font-size: var(--14px);
+  border-radius: var(--6px);
+  padding: var(--12px) var(--16px);
+  white-space: pre-line;
+  position: relative;
+  margin-block-end: var(--8px);
+}
+
 .Form {
   display: flex;
   flex-direction: column;
@@ -373,7 +384,7 @@
   }
 }
 
-.UploadAvatarWrapper {
+.UploadCoverWrapper {
   composes: UploadWrapper;
   --width: var(--140px);
 

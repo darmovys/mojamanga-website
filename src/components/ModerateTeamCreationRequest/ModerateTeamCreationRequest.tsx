@@ -2,7 +2,7 @@ import { getRouteApi, Link } from '@tanstack/react-router'
 import { useGoBack } from '@/hooks/use-go-back'
 import { Button } from '@base-ui/react'
 import ClickTargetHelper from '../ClickTargetHelper'
-import { ArrowLeft, ImageOff, Info } from 'lucide-react'
+import { ArrowLeft, ImageOff, Info, Link2Icon } from 'lucide-react'
 import MotionButton from '../MotionButton'
 import clsx from 'clsx'
 import VisuallyHidden from '../VisuallyHidden'
@@ -15,8 +15,12 @@ import HelperDialog from '../HelperDialog'
 import { useReviewRequest } from './use-review-request'
 import Skeleton from '../Skeleton'
 import ConfirmDialog from '../ConfirmDialog'
-import styles from './ModerateTeamCreationRequest.module.scss'
 import { useHelperDialog } from '@/hooks/use-helper-dialog'
+import { LinkType } from '@/generated/prisma/enums'
+import { useState } from 'react'
+import { isTrustedHostname } from '@/lib/utils'
+import AwayDialog from '../AwayDialog'
+import styles from './ModerateTeamCreationRequest.module.scss'
 
 const routeApi = getRouteApi('/moderation/team-review/$teamId')
 
@@ -80,8 +84,9 @@ function ModerateTeamCreationRequest() {
                 className={styles.CrumbLink}
                 to="/moderation"
                 search={{ type: 'teams' }}
+                replace={true}
               >
-                Запити на стоврення нової команди
+                Запити на створення нової команди
               </Link>
             </li>
             <li className={clsx(styles.Crumb, styles.Current)}>
@@ -107,7 +112,11 @@ function ModerateTeamCreationRequest() {
         <div className={clsx(styles.Card, styles.Creator)}>
           <div className={styles.UserInfo}>
             <span>Запит від</span>
-            <Link to="/about" className={styles.CreatorLink}>
+            <Link
+              to="/user/$id/bookmarks"
+              params={{ id: data.creatorId }}
+              className={styles.CreatorLink}
+            >
               <Image
                 layout="fullWidth"
                 src={
@@ -194,24 +203,7 @@ function ModerateTeamCreationRequest() {
           <h2 className={styles.CardTitle}>Посилання</h2>
           {data.links.length > 0 ? (
             data.links.map((link) => {
-              const { icon: Icon, tone, toneDark } = LINK_META[link.type]
-
-              return (
-                <div key={link.id} className={styles.LinkField}>
-                  <div
-                    className={styles.IconWrapper}
-                    style={
-                      {
-                        '--tone':
-                          theme === 'dark' && toneDark ? toneDark : tone,
-                      } as React.CSSProperties
-                    }
-                  >
-                    <Icon />
-                  </div>
-                  <span className={styles.LinkUrl}>{link.url}</span>
-                </div>
-              )
+              return <TeamLink key={link.id} theme={theme} link={link} />
             })
           ) : (
             <div className={styles.TextField}>Посилань немає</div>
@@ -291,6 +283,75 @@ function ModerateTeamCreationRequest() {
           </div>
         </footer>
       </main>
+    </div>
+  )
+}
+
+interface TeamLinkProps {
+  theme: string
+  link: {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    url: string
+    type: LinkType
+    teamId: string
+  }
+}
+
+function TeamLink({ theme, link }: TeamLinkProps) {
+  const { icon: Icon, tone, toneDark } = LINK_META[link.type]
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const hostname = (() => {
+    try {
+      return new URL(link.url).hostname
+    } catch {
+      return null
+    }
+  })()
+
+  function openLink(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+    e.preventDefault()
+    if (hostname && isTrustedHostname(hostname)) {
+      window.open(link.url, '_blank', 'noopener,noreferrer')
+    } else {
+      setIsDialogOpen(true)
+    }
+  }
+
+  return (
+    <div className={styles.LinkWrapper}>
+      <MotionButton
+        nativeButton={false}
+        style={{ position: 'relative' }} // for click target helper
+        render={
+          <a className={styles.LinkButton} href={link.url} onClick={openLink} />
+        }
+      >
+        <Link2Icon size={16} />
+        <VisuallyHidden>Перейти за посиланням {link.url}</VisuallyHidden>
+        <ClickTargetHelper />
+      </MotionButton>
+      <AwayDialog
+        url={link.url}
+        isOpen={isDialogOpen}
+        onIsOpenChange={setIsDialogOpen}
+      />
+
+      <div className={styles.LinkField}>
+        <div
+          className={styles.IconWrapper}
+          style={
+            {
+              '--tone': theme === 'dark' && toneDark ? toneDark : tone,
+            } as React.CSSProperties
+          }
+        >
+          <Icon />
+        </div>
+        <span className={styles.LinkUrl}>{link.url}</span>
+      </div>
     </div>
   )
 }

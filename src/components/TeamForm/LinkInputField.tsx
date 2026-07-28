@@ -5,7 +5,7 @@ import MotionButton from '../MotionButton'
 import { Trash2 } from 'lucide-react'
 import VisuallyHidden from '../VisuallyHidden'
 import { ActiveLink } from '@/schemas/teams'
-import styles from './CreateTeamForm.module.scss'
+import styles from './TeamForm.module.scss'
 
 interface LinkInputField {
   link: ActiveLink

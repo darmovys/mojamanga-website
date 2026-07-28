@@ -42,8 +42,8 @@ function TeamsSection() {
                   <div className={styles.StatusRejectedCover}>
                     <span>Відхилено</span>
                     <Link
-                      to="/user/$id/revise-team/$teamId"
-                      params={{ id: userId, teamId }}
+                      to="/team/$id/edit"
+                      params={{ id: teamId }}
                       className={styles.ReviseButton}
                     >
                       <motion.span

@@ -1,6 +1,8 @@
 import { queryOptions } from '@tanstack/react-query'
 import { api } from '@/lib/api-client'
-import { notFound } from '@tanstack/react-router'
+import { notFound, redirect } from '@tanstack/react-router'
+import { Treaty } from '@elysiajs/eden'
+import { Api } from '@/lib/api-client'
 
 export const authQueries = {
   all: ['auth'] as const,
@@ -31,9 +33,29 @@ export type PendingTeam = NonNullable<
   Awaited<ReturnType<typeof fetchPendingTeams>>
 >['teams'][number]
 
+export type TeamEditData = Treaty.Data<ReturnType<Api['teams']>['edit']['get']>
+
 export const teamsQueries = {
   all: ['teams'] as const,
   lists: () => [...teamsQueries.all, 'lists'] as const,
+  teamEditData: (id: string) =>
+    queryOptions({
+      queryKey: [...teamsQueries.all, id, 'edit'],
+      queryFn: async () => {
+        const response = await api().teams({ id }).edit.get()
+        const { error } = response
+        if (error) {
+          if (error.status === 404) {
+            throw notFound()
+          } else if (error.status === 403) {
+            throw redirect({ to: '/forbidden' })
+          } else {
+            throw error
+          }
+        }
+        return response.data
+      },
+    }),
   pendingTeams: (page: number) =>
     queryOptions({
       queryKey: [...teamsQueries.lists(), 'pending', page] as const,

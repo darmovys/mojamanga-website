@@ -1,11 +1,11 @@
 import { Elysia } from 'elysia'
 import { betterAuthPlugin } from '../plugins/auth'
-import { createTeamSchema } from '@/schemas/teams'
+import { sendNewTeamDataSchema } from '@/schemas/teams'
 import { prisma } from '@/db'
 import { createId } from '@paralleldrive/cuid2'
 import { moveS3File, ukrainianToLatin } from '@/lib/utils'
 import z from 'zod'
-import { DeleteObjectsCommand } from '@aws-sdk/client-s3'
+import { DeleteObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
 import { S3 } from '@/lib/s3-client'
 
 async function getTeamOrFail(id: string) {
@@ -74,11 +74,11 @@ export const teamsRouter = new Elysia({
 
           const teamFolder = `uploads/teams/${latinizedName}-${teamId}`
 
-          const avatarFileName = body.avatarKey.split('/').pop()
-          const newAvatarKey = `${teamFolder}/cover/${avatarFileName}`
+          const coverFileName = body.coverKey.split('/').pop()
+          const newCoverKey = `${teamFolder}/cover/${coverFileName}`
 
-          const isAvatarMoved = await moveS3File(body.avatarKey, newAvatarKey)
-          if (!isAvatarMoved) {
+          const isCoverMoved = await moveS3File(body.coverKey, newCoverKey)
+          if (!isCoverMoved) {
             return status(500, 'Не вдалося зберегти обкладинку команди')
           }
 
@@ -105,7 +105,7 @@ export const teamsRouter = new Elysia({
                 id: teamId,
                 name: trimmedTitle,
                 description: body.description,
-                coverUrl: newAvatarKey,
+                coverUrl: newCoverKey,
                 backgroundUrl: newBackgroundKey,
                 status: 'PENDING',
                 creatorId: user.id,
@@ -131,6 +131,7 @@ export const teamsRouter = new Elysia({
 
             return {
               message: 'Запит на створення команди відправлено',
+              userId: user.id,
             }
           } catch (dbError) {
             console.error('Помилка БД: ', dbError)
@@ -139,7 +140,7 @@ export const teamsRouter = new Elysia({
         },
         {
           authed: true,
-          body: createTeamSchema,
+          body: sendNewTeamDataSchema,
         },
       )
       .get(
@@ -270,7 +271,9 @@ export const teamsRouter = new Elysia({
               where: { id: body.id },
               data: {
                 status: 'REJECTED',
-                ...(body.message.length && { rejectionReason: body.message }),
+                ...(body.message.length && {
+                  moderationFeedback: body.message,
+                }),
               },
             })
 
@@ -343,4 +346,243 @@ export const teamsRouter = new Elysia({
           }),
         },
       )
+      .group('/:id', (app) => {
+        return app
+          .get(
+            '/edit',
+            async ({ params: { id }, status, user }) => {
+              try {
+                const team = await prisma.team.findUnique({
+                  where: { id },
+                  include: {
+                    links: true,
+                    members: {
+                      where: {
+                        userId: user.id,
+                      },
+                    },
+                  },
+                })
+
+                if (!team) return status(404, 'Команду не знайдено')
+
+                const currentMember = team.members[0]
+
+                if (!currentMember) {
+                  return status(403, 'Ви не є учасником цієї команди')
+                }
+
+                const canEdit = currentMember.canEditTeamInfo
+
+                if (!canEdit)
+                  return status(
+                    403,
+                    'У вас немає прав для редагування цієї команди',
+                  )
+
+                return {
+                  id: team.id,
+                  name: team.name,
+                  description: team.description ?? '',
+                  coverUrl: team.coverUrl,
+                  backgroundUrl: team.backgroundUrl,
+                  moderationFeedback: team.moderationFeedback,
+                  links: team.links.map((link) => ({
+                    id: link.id,
+                    type: link.type,
+                    url: link.url,
+                  })),
+                }
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при отриманні даних')
+              }
+            },
+            {
+              authed: true,
+              params: z.object({
+                id: z.string(),
+              }),
+            },
+          )
+          .patch(
+            '/edit',
+            async ({ params: { id }, body, status, user }) => {
+              try {
+                const team = await prisma.team.findUnique({
+                  where: { id },
+                  include: {
+                    links: true,
+                    members: {
+                      where: {
+                        userId: user.id,
+                      },
+                    },
+                  },
+                })
+
+                if (!team) return status(404, 'Команду не знайдено')
+
+                const currentMember = team.members[0]
+
+                if (!currentMember) {
+                  return status(403, 'Ви не є учасником цієї команди')
+                }
+
+                const canEdit = currentMember.canEditTeamInfo
+
+                if (!canEdit)
+                  return status(
+                    403,
+                    'У вас немає прав для редагування цієї команди',
+                  )
+
+                const latinizedName = ukrainianToLatin(body.title)
+
+                const teamFolder = `uploads/teams/${latinizedName}-${team.id}`
+
+                let finalCoverKey = team.coverUrl
+
+                if (body.coverKey && body.coverKey.includes('/temp/')) {
+                  const coverFileName = body.coverKey.split('/').pop()
+                  finalCoverKey = `${teamFolder}/cover/${coverFileName}`
+
+                  const isCoverMoved = await moveS3File(
+                    body.coverKey,
+                    finalCoverKey,
+                  )
+
+                  if (!isCoverMoved) {
+                    return status(500, 'Не вдалося зберегти нову обкладинку')
+                  }
+
+                  if (team.coverUrl) {
+                    try {
+                      await S3.send(
+                        new DeleteObjectCommand({
+                          Bucket: process.env.S3_BUCKET_NAME,
+                          Key: team.coverUrl,
+                        }),
+                      )
+                    } catch (s3Error) {
+                      console.error(
+                        'Помилка видалення старої обкладинки з S3:',
+                        s3Error,
+                      )
+                    }
+                  }
+                } else if (!body.coverKey) {
+                  finalCoverKey = null
+
+                  if (team.coverUrl) {
+                    try {
+                      await S3.send(
+                        new DeleteObjectCommand({
+                          Bucket: process.env.S3_BUCKET_NAME,
+                          Key: team.coverUrl,
+                        }),
+                      )
+                    } catch (s3Error) {
+                      console.error(
+                        'Помилка видалення обкладинки з S3:',
+                        s3Error,
+                      )
+                    }
+                  }
+                }
+
+                let finalBGKey = team.backgroundUrl
+
+                if (
+                  body.backgroundKey &&
+                  body.backgroundKey.includes('/temp/')
+                ) {
+                  const bgFileName = body.backgroundKey.split('/').pop()
+                  finalBGKey = `${teamFolder}/background/${bgFileName}`
+
+                  const isBGMoved = await moveS3File(
+                    body.backgroundKey,
+                    finalBGKey,
+                  )
+
+                  if (!isBGMoved) {
+                    return status(
+                      500,
+                      'Не вдалося зберегти нове фонове зображення',
+                    )
+                  }
+
+                  if (team.backgroundUrl) {
+                    try {
+                      await S3.send(
+                        new DeleteObjectCommand({
+                          Bucket: process.env.S3_BUCKET_NAME,
+                          Key: team.backgroundUrl,
+                        }),
+                      )
+                    } catch (s3Error) {
+                      console.error(
+                        'Помилка видалення старого фонового зображення з S3:',
+                        s3Error,
+                      )
+                    }
+                  }
+                } else if (!body.backgroundKey) {
+                  finalBGKey = null
+
+                  if (team.backgroundUrl) {
+                    try {
+                      await S3.send(
+                        new DeleteObjectCommand({
+                          Bucket: process.env.S3_BUCKET_NAME,
+                          Key: team.backgroundUrl,
+                        }),
+                      )
+                    } catch (s3Error) {
+                      console.error(
+                        'Помилка видалення фонового зображення з S3:',
+                        s3Error,
+                      )
+                    }
+                  }
+                }
+
+                await prisma.team.update({
+                  where: { id },
+                  data: {
+                    status: 'PENDING',
+                    moderationFeedback: null,
+                    name: body.title,
+                    description: body.description,
+                    coverUrl: finalCoverKey,
+                    backgroundUrl: finalBGKey,
+                    links: {
+                      deleteMany: {},
+                      create: body.links.map((link) => ({
+                        id: link.id,
+                        type: link.type,
+                        url: link.url,
+                      })),
+                    },
+                  },
+                })
+
+                return {
+                  message: 'Запит відправлено',
+                  userId: user.id,
+                }
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при зміні даних')
+              }
+            },
+            {
+              authed: true,
+              params: z.object({
+                id: z.string(),
+              }),
+              body: sendNewTeamDataSchema,
+            },
+          )
+      })
   })

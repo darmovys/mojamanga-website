@@ -26,11 +26,11 @@ import { Route as TitleIndexRouteImport } from './routes/title/index'
 import { Route as TeamIndexRouteImport } from './routes/team/index'
 import { Route as ModerationIndexRouteImport } from './routes/moderation/index'
 import { Route as UserIdRouteImport } from './routes/user/$id'
-import { Route as TeamIdRouteImport } from './routes/team/$id'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as UserIdIndexRouteImport } from './routes/user/$id.index'
 import { Route as TitleCreateIndexRouteImport } from './routes/title/create/index'
 import { Route as TeamCreateIndexRouteImport } from './routes/team/create/index'
+import { Route as TeamIdIndexRouteImport } from './routes/team/$id/index'
 import { Route as PeopleCreateIndexRouteImport } from './routes/people/create/index'
 import { Route as AuthSignupIndexRouteImport } from './routes/_auth/signup/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
@@ -39,18 +39,17 @@ import { Route as UserIdNotificationsRouteImport } from './routes/user/$id.notif
 import { Route as UserIdCommentsRouteImport } from './routes/user/$id.comments'
 import { Route as UserIdBookmarksRouteImport } from './routes/user/$id.bookmarks'
 import { Route as UserIdAboutRouteImport } from './routes/user/$id.about'
+import { Route as TeamIdEditRouteImport } from './routes/team/$id/edit'
 import { Route as ModerationTitleReviewTitleIdRouteImport } from './routes/moderation/title-review/$titleId'
 import { Route as ModerationTeamReviewTeamIdRouteImport } from './routes/moderation/team-review/$teamId'
 import { Route as ModerationPersonReviewPersonIdRouteImport } from './routes/moderation/person-review/$personId'
 import { Route as UserIdSettingsRouteRouteImport } from './routes/user/$id_.settings/route'
 import { Route as UserIdSettingsIndexRouteImport } from './routes/user/$id_.settings/index'
-import { Route as UserIdReviseTeamIndexRouteImport } from './routes/user/$id_.revise-team/index'
 import { Route as UserIdSettingsSecurityRouteImport } from './routes/user/$id_.settings/security'
 import { Route as UserIdSettingsRootRouteImport } from './routes/user/$id_.settings/root'
 import { Route as UserIdSettingsProfileRouteImport } from './routes/user/$id_.settings/profile'
 import { Route as UserIdSettingsNotificationsRouteImport } from './routes/user/$id_.settings/notifications'
 import { Route as UserIdSettingsDevicesRouteImport } from './routes/user/$id_.settings/devices'
-import { Route as UserIdReviseTeamTeamIdRouteImport } from './routes/user/$id_.revise-team/$teamId'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -136,11 +135,6 @@ const UserIdRoute = UserIdRouteImport.update({
   path: '/user/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TeamIdRoute = TeamIdRouteImport.update({
-  id: '/team/$id',
-  path: '/team/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -159,6 +153,11 @@ const TitleCreateIndexRoute = TitleCreateIndexRouteImport.update({
 const TeamCreateIndexRoute = TeamCreateIndexRouteImport.update({
   id: '/team/create/',
   path: '/team/create/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamIdIndexRoute = TeamIdIndexRouteImport.update({
+  id: '/team/$id/',
+  path: '/team/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PeopleCreateIndexRoute = PeopleCreateIndexRouteImport.update({
@@ -201,6 +200,11 @@ const UserIdAboutRoute = UserIdAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => UserIdRoute,
 } as any)
+const TeamIdEditRoute = TeamIdEditRouteImport.update({
+  id: '/team/$id/edit',
+  path: '/team/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ModerationTitleReviewTitleIdRoute =
   ModerationTitleReviewTitleIdRouteImport.update({
     id: '/title-review/$titleId',
@@ -229,11 +233,6 @@ const UserIdSettingsIndexRoute = UserIdSettingsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => UserIdSettingsRouteRoute,
 } as any)
-const UserIdReviseTeamIndexRoute = UserIdReviseTeamIndexRouteImport.update({
-  id: '/user/$id_/revise-team/',
-  path: '/user/$id/revise-team/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const UserIdSettingsSecurityRoute = UserIdSettingsSecurityRouteImport.update({
   id: '/security',
   path: '/security',
@@ -260,11 +259,6 @@ const UserIdSettingsDevicesRoute = UserIdSettingsDevicesRouteImport.update({
   path: '/devices',
   getParentRoute: () => UserIdSettingsRouteRoute,
 } as any)
-const UserIdReviseTeamTeamIdRoute = UserIdReviseTeamTeamIdRouteImport.update({
-  id: '/user/$id_/revise-team/$teamId',
-  path: '/user/$id/revise-team/$teamId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -280,7 +274,6 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
   '/api/$': typeof ApiSplatRoute
-  '/team/$id': typeof TeamIdRoute
   '/user/$id': typeof UserIdRouteWithChildren
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
@@ -289,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/moderation/title-review/$titleId': typeof ModerationTitleReviewTitleIdRoute
+  '/team/$id/edit': typeof TeamIdEditRoute
   '/user/$id/about': typeof UserIdAboutRoute
   '/user/$id/bookmarks': typeof UserIdBookmarksRoute
   '/user/$id/comments': typeof UserIdCommentsRoute
@@ -297,16 +291,15 @@ export interface FileRoutesByFullPath {
   '/login/': typeof AuthLoginIndexRoute
   '/signup/': typeof AuthSignupIndexRoute
   '/people/create/': typeof PeopleCreateIndexRoute
+  '/team/$id/': typeof TeamIdIndexRoute
   '/team/create/': typeof TeamCreateIndexRoute
   '/title/create/': typeof TitleCreateIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
-  '/user/$id/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
   '/user/$id/settings/devices': typeof UserIdSettingsDevicesRoute
   '/user/$id/settings/notifications': typeof UserIdSettingsNotificationsRoute
   '/user/$id/settings/profile': typeof UserIdSettingsProfileRoute
   '/user/$id/settings/root': typeof UserIdSettingsRootRoute
   '/user/$id/settings/security': typeof UserIdSettingsSecurityRoute
-  '/user/$id/revise-team/': typeof UserIdReviseTeamIndexRoute
   '/user/$id/settings/': typeof UserIdSettingsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -322,13 +315,13 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
   '/api/$': typeof ApiSplatRoute
-  '/team/$id': typeof TeamIdRoute
   '/moderation': typeof ModerationIndexRoute
   '/team': typeof TeamIndexRoute
   '/title': typeof TitleIndexRoute
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/moderation/title-review/$titleId': typeof ModerationTitleReviewTitleIdRoute
+  '/team/$id/edit': typeof TeamIdEditRoute
   '/user/$id/about': typeof UserIdAboutRoute
   '/user/$id/bookmarks': typeof UserIdBookmarksRoute
   '/user/$id/comments': typeof UserIdCommentsRoute
@@ -337,16 +330,15 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginIndexRoute
   '/signup': typeof AuthSignupIndexRoute
   '/people/create': typeof PeopleCreateIndexRoute
+  '/team/$id': typeof TeamIdIndexRoute
   '/team/create': typeof TeamCreateIndexRoute
   '/title/create': typeof TitleCreateIndexRoute
   '/user/$id': typeof UserIdIndexRoute
-  '/user/$id/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
   '/user/$id/settings/devices': typeof UserIdSettingsDevicesRoute
   '/user/$id/settings/notifications': typeof UserIdSettingsNotificationsRoute
   '/user/$id/settings/profile': typeof UserIdSettingsProfileRoute
   '/user/$id/settings/root': typeof UserIdSettingsRootRoute
   '/user/$id/settings/security': typeof UserIdSettingsSecurityRoute
-  '/user/$id/revise-team': typeof UserIdReviseTeamIndexRoute
   '/user/$id/settings': typeof UserIdSettingsIndexRoute
 }
 export interface FileRoutesById {
@@ -365,7 +357,6 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/verify-email': typeof VerifyEmailRoute
   '/api/$': typeof ApiSplatRoute
-  '/team/$id': typeof TeamIdRoute
   '/user/$id': typeof UserIdRouteWithChildren
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
@@ -374,6 +365,7 @@ export interface FileRoutesById {
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/moderation/title-review/$titleId': typeof ModerationTitleReviewTitleIdRoute
+  '/team/$id/edit': typeof TeamIdEditRoute
   '/user/$id/about': typeof UserIdAboutRoute
   '/user/$id/bookmarks': typeof UserIdBookmarksRoute
   '/user/$id/comments': typeof UserIdCommentsRoute
@@ -382,16 +374,15 @@ export interface FileRoutesById {
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/signup/': typeof AuthSignupIndexRoute
   '/people/create/': typeof PeopleCreateIndexRoute
+  '/team/$id/': typeof TeamIdIndexRoute
   '/team/create/': typeof TeamCreateIndexRoute
   '/title/create/': typeof TitleCreateIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
-  '/user/$id_/revise-team/$teamId': typeof UserIdReviseTeamTeamIdRoute
   '/user/$id_/settings/devices': typeof UserIdSettingsDevicesRoute
   '/user/$id_/settings/notifications': typeof UserIdSettingsNotificationsRoute
   '/user/$id_/settings/profile': typeof UserIdSettingsProfileRoute
   '/user/$id_/settings/root': typeof UserIdSettingsRootRoute
   '/user/$id_/settings/security': typeof UserIdSettingsSecurityRoute
-  '/user/$id_/revise-team/': typeof UserIdReviseTeamIndexRoute
   '/user/$id_/settings/': typeof UserIdSettingsIndexRoute
 }
 export interface FileRouteTypes {
@@ -410,7 +401,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify-email'
     | '/api/$'
-    | '/team/$id'
     | '/user/$id'
     | '/moderation/'
     | '/team/'
@@ -419,6 +409,7 @@ export interface FileRouteTypes {
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/moderation/title-review/$titleId'
+    | '/team/$id/edit'
     | '/user/$id/about'
     | '/user/$id/bookmarks'
     | '/user/$id/comments'
@@ -427,16 +418,15 @@ export interface FileRouteTypes {
     | '/login/'
     | '/signup/'
     | '/people/create/'
+    | '/team/$id/'
     | '/team/create/'
     | '/title/create/'
     | '/user/$id/'
-    | '/user/$id/revise-team/$teamId'
     | '/user/$id/settings/devices'
     | '/user/$id/settings/notifications'
     | '/user/$id/settings/profile'
     | '/user/$id/settings/root'
     | '/user/$id/settings/security'
-    | '/user/$id/revise-team/'
     | '/user/$id/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -452,13 +442,13 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify-email'
     | '/api/$'
-    | '/team/$id'
     | '/moderation'
     | '/team'
     | '/title'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/moderation/title-review/$titleId'
+    | '/team/$id/edit'
     | '/user/$id/about'
     | '/user/$id/bookmarks'
     | '/user/$id/comments'
@@ -467,16 +457,15 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/people/create'
+    | '/team/$id'
     | '/team/create'
     | '/title/create'
     | '/user/$id'
-    | '/user/$id/revise-team/$teamId'
     | '/user/$id/settings/devices'
     | '/user/$id/settings/notifications'
     | '/user/$id/settings/profile'
     | '/user/$id/settings/root'
     | '/user/$id/settings/security'
-    | '/user/$id/revise-team'
     | '/user/$id/settings'
   id:
     | '__root__'
@@ -494,7 +483,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify-email'
     | '/api/$'
-    | '/team/$id'
     | '/user/$id'
     | '/moderation/'
     | '/team/'
@@ -503,6 +491,7 @@ export interface FileRouteTypes {
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/moderation/title-review/$titleId'
+    | '/team/$id/edit'
     | '/user/$id/about'
     | '/user/$id/bookmarks'
     | '/user/$id/comments'
@@ -511,16 +500,15 @@ export interface FileRouteTypes {
     | '/_auth/login/'
     | '/_auth/signup/'
     | '/people/create/'
+    | '/team/$id/'
     | '/team/create/'
     | '/title/create/'
     | '/user/$id/'
-    | '/user/$id_/revise-team/$teamId'
     | '/user/$id_/settings/devices'
     | '/user/$id_/settings/notifications'
     | '/user/$id_/settings/profile'
     | '/user/$id_/settings/root'
     | '/user/$id_/settings/security'
-    | '/user/$id_/revise-team/'
     | '/user/$id_/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -539,16 +527,15 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   ApiSplatRoute: typeof ApiSplatRoute
-  TeamIdRoute: typeof TeamIdRoute
   UserIdRoute: typeof UserIdRouteWithChildren
   TeamIndexRoute: typeof TeamIndexRoute
   TitleIndexRoute: typeof TitleIndexRoute
   UserIdSettingsRouteRoute: typeof UserIdSettingsRouteRouteWithChildren
+  TeamIdEditRoute: typeof TeamIdEditRoute
   PeopleCreateIndexRoute: typeof PeopleCreateIndexRoute
+  TeamIdIndexRoute: typeof TeamIdIndexRoute
   TeamCreateIndexRoute: typeof TeamCreateIndexRoute
   TitleCreateIndexRoute: typeof TitleCreateIndexRoute
-  UserIdReviseTeamTeamIdRoute: typeof UserIdReviseTeamTeamIdRoute
-  UserIdReviseTeamIndexRoute: typeof UserIdReviseTeamIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -672,13 +659,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/team/$id': {
-      id: '/team/$id'
-      path: '/team/$id'
-      fullPath: '/team/$id'
-      preLoaderRoute: typeof TeamIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/$': {
       id: '/api/$'
       path: '/api/$'
@@ -705,6 +685,13 @@ declare module '@tanstack/react-router' {
       path: '/team/create'
       fullPath: '/team/create/'
       preLoaderRoute: typeof TeamCreateIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/team/$id/': {
+      id: '/team/$id/'
+      path: '/team/$id'
+      fullPath: '/team/$id/'
+      preLoaderRoute: typeof TeamIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/people/create/': {
@@ -763,6 +750,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserIdAboutRouteImport
       parentRoute: typeof UserIdRoute
     }
+    '/team/$id/edit': {
+      id: '/team/$id/edit'
+      path: '/team/$id/edit'
+      fullPath: '/team/$id/edit'
+      preLoaderRoute: typeof TeamIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/moderation/title-review/$titleId': {
       id: '/moderation/title-review/$titleId'
       path: '/title-review/$titleId'
@@ -798,13 +792,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserIdSettingsIndexRouteImport
       parentRoute: typeof UserIdSettingsRouteRoute
     }
-    '/user/$id_/revise-team/': {
-      id: '/user/$id_/revise-team/'
-      path: '/user/$id/revise-team'
-      fullPath: '/user/$id/revise-team/'
-      preLoaderRoute: typeof UserIdReviseTeamIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/user/$id_/settings/security': {
       id: '/user/$id_/settings/security'
       path: '/security'
@@ -839,13 +826,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/user/$id/settings/devices'
       preLoaderRoute: typeof UserIdSettingsDevicesRouteImport
       parentRoute: typeof UserIdSettingsRouteRoute
-    }
-    '/user/$id_/revise-team/$teamId': {
-      id: '/user/$id_/revise-team/$teamId'
-      path: '/user/$id/revise-team/$teamId'
-      fullPath: '/user/$id/revise-team/$teamId'
-      preLoaderRoute: typeof UserIdReviseTeamTeamIdRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -939,16 +919,15 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   ApiSplatRoute: ApiSplatRoute,
-  TeamIdRoute: TeamIdRoute,
   UserIdRoute: UserIdRouteWithChildren,
   TeamIndexRoute: TeamIndexRoute,
   TitleIndexRoute: TitleIndexRoute,
   UserIdSettingsRouteRoute: UserIdSettingsRouteRouteWithChildren,
+  TeamIdEditRoute: TeamIdEditRoute,
   PeopleCreateIndexRoute: PeopleCreateIndexRoute,
+  TeamIdIndexRoute: TeamIdIndexRoute,
   TeamCreateIndexRoute: TeamCreateIndexRoute,
   TitleCreateIndexRoute: TitleCreateIndexRoute,
-  UserIdReviseTeamTeamIdRoute: UserIdReviseTeamTeamIdRoute,
-  UserIdReviseTeamIndexRoute: UserIdReviseTeamIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

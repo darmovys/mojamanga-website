@@ -90,6 +90,10 @@
 
   margin-block-end: var(--24px);
   padding-inline: var(--4px);
+
+  &[data-no-other-sessions] {
+    margin-block-end: var(--12px);
+  }
 }
 
 .SessionList {

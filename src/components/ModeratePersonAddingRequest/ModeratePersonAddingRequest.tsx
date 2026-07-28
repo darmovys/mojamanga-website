@@ -11,10 +11,10 @@ import { format } from 'date-fns'
 import ShiftBy from '../ShiftBy'
 import HelperDialog from '../HelperDialog'
 import Skeleton from '../Skeleton'
-import styles from './ModeratePersonAddingRequest.module.scss'
 import ConfirmDialog from '../ConfirmDialog'
 import { useReviewRequest } from './use-review-request'
 import { useHelperDialog } from '@/hooks/use-helper-dialog'
+import styles from './ModeratePersonAddingRequest.module.scss'
 
 const routeApi = getRouteApi('/moderation/person-review/$personId')
 
@@ -75,6 +75,7 @@ function ModeratePersonAddingRequest() {
                 className={styles.CrumbLink}
                 to="/moderation"
                 search={{ type: 'people' }}
+                replace={true}
               >
                 Запити на додавання персон
               </Link>
@@ -102,7 +103,11 @@ function ModeratePersonAddingRequest() {
         <div className={clsx(styles.Card, styles.Creator)}>
           <div className={styles.UserInfo}>
             <span>Запит від</span>
-            <Link to="/about" className={styles.CreatorLink}>
+            <Link
+              to="/user/$id/bookmarks"
+              params={{ id: data.proposedByUserId! }}
+              className={styles.CreatorLink}
+            >
               <Image
                 layout="fullWidth"
                 src={

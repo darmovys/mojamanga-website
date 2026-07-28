@@ -115,6 +115,7 @@ function ModerateTitleAddingRequest() {
                 className={styles.Link}
                 to="/moderation"
                 search={{ type: 'titles' }}
+                replace={true}
               >
                 Запити на додавання нового твору
               </Link>
@@ -142,7 +143,11 @@ function ModerateTitleAddingRequest() {
         <div className={clsx(styles.Card, styles.Creator)}>
           <div className={styles.UserInfo}>
             <span>Запит від</span>
-            <Link to="/about" className={styles.CreatorLink}>
+            <Link
+              to="/user/$id/bookmarks"
+              params={{ id: data.proposedByUserId }}
+              className={styles.CreatorLink}
+            >
               <Image
                 layout="fullWidth"
                 src={
@@ -346,7 +351,11 @@ function ModerateTitleAddingRequest() {
           <div className={styles.LinksGroup}>
             {data.publishers.map(({ team }, index, arr) => (
               <div key={team.id}>
-                <Link to="/" className={styles.Link}>
+                <Link
+                  to="/team/$id"
+                  params={{ id: team.id }}
+                  className={styles.Link}
+                >
                   <span>{team.name}</span>
                 </Link>
                 {index < arr.length - 1 ? ', ' : ''}
@@ -360,7 +369,7 @@ function ModerateTitleAddingRequest() {
           <div className={styles.SourcesGroup}>
             {currentVersionData.sources.length > 0
               ? currentVersionData.sources.map((source) => (
-                  <Source key={source.id} id={source.id} url={source.url} />
+                  <Source key={source.id} url={source.url} />
                 ))
               : 'Відсутні'}
           </div>
@@ -475,11 +484,10 @@ function ModerateTitleAddingRequest() {
 }
 
 interface SourceProps {
-  id: string
   url: string
 }
 
-function Source({ id, url }: SourceProps) {
+function Source({ url }: SourceProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const hostname = (() => {
     try {
@@ -499,7 +507,7 @@ function Source({ id, url }: SourceProps) {
   }
 
   return (
-    <div className={styles.SourcesItem} key={id}>
+    <div className={styles.SourcesItem}>
       <MotionButton
         nativeButton={false}
         style={{ position: 'relative' }} // for click target helper

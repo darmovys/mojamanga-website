@@ -223,11 +223,41 @@
   display: flex;
   align-items: center;
   gap: var(--6px);
+  flex: 1;
+  word-break: break-all;
   padding-inline-start: calc(var(--48px) + var(--2px));
   position: relative; // Для позиціювання іконки
+}
+
+.LinkWrapper {
+  display: flex;
+  gap: var(--10px);
+  min-inline-size: 0;
 
   &:not(:last-of-type) {
-    margin-block-end: var(--12px);
+    margin-block-end: var(--10px);
+  }
+}
+
+.LinkButton {
+  flex: 0 0 var(--32px);
+  block-size: var(--32px);
+  border-radius: var(--6px);
+  background-color: var(--sys-surface-highest);
+  box-shadow: var(--shadow-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  transition:
+    color 0.2s var(--bg-animation),
+    background-color 0.2s var(--bg-animation);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--blue-400);
+      background-color: var(--sys-surface-high);
+    }
   }
 }
 

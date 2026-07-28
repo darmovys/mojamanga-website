@@ -57,6 +57,7 @@ function NavigationLink({
       activeProps={{ className: styles.ActiveLink }}
       activeOptions={{ includeSearch: true }}
       onClick={onClick}
+      replace={true}
     >
       <li className={styles.NavSectionItem}>
         <span>{item.label}</span>

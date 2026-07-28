@@ -1,9 +1,9 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import CreateTeamForm from '@/components/CreateTeamForm'
+import TeamForm from '@/components/TeamForm'
 import { allHelperInfos } from 'content-collections'
 
 export const Route = createFileRoute('/team/create/')({
-  component: CreateTeamForm,
+  component: CreateTeamPage,
   beforeLoad: async ({ context, location }) => {
     if (!context.authState.isAuthenticated) {
       throw redirect({
@@ -20,3 +20,13 @@ export const Route = createFileRoute('/team/create/')({
     return helperInfo
   },
 })
+
+function CreateTeamPage() {
+  const loaderData = Route.useLoaderData()
+  return (
+    <TeamForm
+      helperData={loaderData}
+      helperStorageKey="seen_create_team_rules"
+    />
+  )
+}

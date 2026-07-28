@@ -63,8 +63,12 @@ function DevicesSection() {
         </div>
       )}
 
-      <p className={styles.Description}>
-        Вийти з акаунта на всіх пристроях, крім цього.
+      <p
+        className={styles.Description}
+        data-no-other-sessions={allDevices.length > 1 ? undefined : ''}
+      >
+        {allDevices.length > 1 &&
+          'Вийти з акаунта на всіх пристроях, крім цього.'}
       </p>
 
       <div

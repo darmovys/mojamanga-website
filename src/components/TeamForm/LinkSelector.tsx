@@ -7,7 +7,7 @@ import VisuallyHidden from '../VisuallyHidden'
 import { ChevronDown, CircleQuestionMark } from 'lucide-react'
 import ClickTargetHelper from '../ClickTargetHelper'
 import { LINK_META } from '@/lib/constants'
-import styles from './CreateTeamForm.module.scss'
+import styles from './TeamForm.module.scss'
 
 interface LinkSelectorProps {
   value: LinkType | null
