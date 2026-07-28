@@ -65,8 +65,8 @@ export const teamsRouter = new Elysia({
               403,
               'У вас є відхилені запити. Переробіть їх або скасуйте повністю на сторінці профілю',
             )
-          if (userTeams.length >= 3) {
-            return status(403, 'Не можна бути учасником більше ніж 3 команд')
+          if (userTeams.length >= 10) {
+            return status(403, 'Не можна бути учасником більше ніж 10 команд')
           }
 
           const teamId = createId()
