@@ -20,37 +20,34 @@
 
 .PageControls {
   display: flex;
-  gap: var(--6px);
+  gap: var(--28px);
 }
 
 .PageButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100vmax;
-  block-size: var(--32px);
-  inline-size: var(--32px);
-  background-color: var(--sys-surface-highest);
-  box-shadow: var(--shadow-border);
   position: relative;
-  color: inherit;
-  text-decoration: none;
-  font-weight: 600;
-  outline: none;
-  outline-offset: -2px;
-  cursor: pointer;
-  border: none;
+  font-weight: 500;
+  font-size: var(--20px);
+  transition: color 0.2s var(--bg-animation);
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    border-radius: 100vmax;
+  }
 
   @media (hover: hover) {
-    &:not(.Disabled):hover {
-      background-color: var(--state-primary-opacity-8);
+    &:not(.Disabled):not([data-active]):hover {
+      color: var(--blue-400);
     }
   }
 
-  &.Active {
-    &::before {
-      opacity: 1;
-    }
+  &[data-active] {
+    filter: brightness(130%);
+    pointer-events: none;
   }
 
   &.Disabled {
@@ -68,13 +65,15 @@
   margin-inline: var(--4px);
   display: flex;
   align-items: center;
+  user-select: none;
+  font-size: var(--20px);
 }
 
 .GoToSpecificPage {
   display: flex;
   align-items: center;
   gap: var(--10px);
-  font-size: var(--14px);
+  font-weight: 500;
 }
 
 .PageInput {

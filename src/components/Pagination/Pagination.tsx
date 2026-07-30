@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import clsx from 'clsx'
 import { Button } from '@base-ui/react'
-import { ChevronLeft, ChevronRight, ChevronsLeft } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import MotionButton from '../MotionButton'
 import VisuallyHidden from '../VisuallyHidden'
 import styles from './Pagination.module.scss'
@@ -48,38 +48,22 @@ export default function Pagination({
     (_, i) => startPage + i,
   )
 
-  const isFirstPageReachable = startPage === 1
-
   return (
     <div className={clsx(styles.PaginationSection, className)}>
       <div className={styles.PageControls}>
-        {/* Кнопка "На самий початок" */}
-        {isFirstPageReachable ? (
-          <Button className={clsx(styles.PageButton, styles.Disabled)} disabled>
-            <ChevronsLeft />
-            <VisuallyHidden>Ви вже на початку</VisuallyHidden>
-          </Button>
-        ) : (
-          <MotionButton
-            onClick={() => onPageChange(1)}
-            className={clsx(styles.PageButton, 'Gradient')}
-          >
-            <ChevronsLeft />
-            <VisuallyHidden>Повернутися на самий початок</VisuallyHidden>
-          </MotionButton>
-        )}
-
         {/* Кнопка "Попередня" */}
         {currentPage === 1 ? (
           <Button className={clsx(styles.PageButton, styles.Disabled)} disabled>
-            <ChevronLeft />
+            <VisuallyHidden>Попередня сторінка</VisuallyHidden>
+            <ChevronLeft size={20} />
           </Button>
         ) : (
           <MotionButton
             onClick={() => onPageChange(currentPage - 1)}
-            className={clsx(styles.PageButton, 'Gradient')}
+            className={styles.PageButton}
           >
-            <ChevronLeft />
+            <VisuallyHidden>Попередня сторінка</VisuallyHidden>
+            <ChevronLeft size={20} />
           </MotionButton>
         )}
 
@@ -87,10 +71,10 @@ export default function Pagination({
         {consecutivePages.map((p) => (
           <MotionButton
             key={p}
+            data-active={currentPage === p ? '' : undefined}
+            disabled={currentPage === p}
             onClick={() => onPageChange(p)}
-            className={clsx(styles.PageButton, 'Gradient', {
-              [styles.Active]: currentPage === p,
-            })}
+            className={styles.PageButton}
           >
             {p}
           </MotionButton>
@@ -105,9 +89,8 @@ export default function Pagination({
         {endPage < totalPages && (
           <MotionButton
             onClick={() => onPageChange(totalPages)}
-            className={clsx(styles.PageButton, 'Gradient', {
-              [styles.Active]: currentPage === totalPages,
-            })}
+            data-active={currentPage === totalPages ? '' : undefined}
+            className={styles.PageButton}
           >
             {totalPages}
           </MotionButton>
@@ -117,13 +100,15 @@ export default function Pagination({
         {currentPage === totalPages ? (
           <Button className={clsx(styles.PageButton, styles.Disabled)} disabled>
             <ChevronRight />
+            <VisuallyHidden>Наступна сторінка</VisuallyHidden>
           </Button>
         ) : (
           <MotionButton
             onClick={() => onPageChange(currentPage + 1)}
-            className={clsx(styles.PageButton, 'Gradient')}
+            className={clsx(styles.PageButton)}
           >
             <ChevronRight />
+            <VisuallyHidden>Наступна сторінка</VisuallyHidden>
           </MotionButton>
         )}
       </div>
