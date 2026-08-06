@@ -106,6 +106,7 @@ function LoginComponent() {
                     to="/forgot-password"
                   >
                     Забули пароль?
+                    <ClickTargetHelper />
                   </Link>
                 </div>
 

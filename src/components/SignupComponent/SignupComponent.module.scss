@@ -199,6 +199,7 @@
 }
 
 .Link {
+  position: relative; // Для click-target-helper
   color: var(--blue-400);
   text-decoration: none;
   outline-offset: 1px;
