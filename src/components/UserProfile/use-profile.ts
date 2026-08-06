@@ -16,14 +16,20 @@ function useProfile(id: string) {
   })
 
   const navItems = [
-    { to: '/user/$id/bookmarks', label: 'Закладки' },
-    { to: '/user/$id/comments', label: 'Коментарі' },
-    { to: '/user/$id/teams', label: 'Команди' },
-    { to: '/user/$id/notifications', label: 'Сповіщення' },
+    { to: '/user/$id/bookmarks', label: 'Закладки', replace: true },
+    { to: '/user/$id/comments', label: 'Коментарі', replace: true },
+    { to: '/user/$id/teams', label: 'Команди', replace: true },
+    { to: '/user/$id/notifications', label: 'Сповіщення', replace: true },
     {
       to: '/user/$id/about',
       label: `Про ${data.isMe ? 'себе' : 'користувача'}`,
+      replace: true,
     },
+    ...(data.isMe
+      ? ([
+          { to: '/user/$id/requests', label: 'Мої запити', replace: false },
+        ] as const)
+      : []),
   ] as const
 
   function handleItemClick(e: MouseEvent<HTMLAnchorElement>) {

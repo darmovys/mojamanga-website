@@ -1,0 +1,61 @@
+.Heading {
+  font-size: var(--18px);
+  font-weight: 550;
+  margin-block-end: var(--10px);
+}
+
+.Navigation {
+  min-width: 0;
+  display: flex;
+  gap: var(--12px);
+  overflow: auto;
+
+  // Приховування горизонтальної прокрутки на Firefox
+  scrollbar-width: none;
+
+  // Приховування горизонтальної прокрутки на всіх інших браузерах
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.NavLink {
+  text-decoration: none;
+  font-weight: 400;
+  white-space: nowrap;
+  outline: none;
+  position: relative;
+  color: inherit;
+
+  padding: var(--6px) 0 var(--10px);
+  transition: color 0.2s var(--bg-animation);
+
+  &:focus-visible span:first-of-type {
+    border-radius: var(--4px);
+
+    outline-offset: 2px;
+    outline: var(--default-outline);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--blue-400);
+    }
+  }
+}
+
+.Indicator {
+  block-size: var(--4px);
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  background-color: var(--blue-400);
+}
+
+.Separator {
+  block-size: 1.5px;
+  background-color: var(--sys-outline);
+  margin-inline: calc(var(--12px) * -1);
+  margin-block-end: var(--8px);
+}

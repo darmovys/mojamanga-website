@@ -189,7 +189,7 @@ function UserProfile() {
                 className={styles.NavLink}
                 to={item.to}
                 params={{ id: data.user.id }}
-                replace={true}
+                replace={item.replace}
                 onClick={handleItemClick}
               >
                 {({ isActive }) => (

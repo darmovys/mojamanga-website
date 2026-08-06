@@ -2,10 +2,12 @@ import { Elysia } from 'elysia'
 import { betterAuthPlugin } from '../plugins/auth'
 import { prisma } from '@/db'
 import z from 'zod'
-import { TeamStatus } from '@/generated/prisma/enums'
+import { TeamStatus, TitleApprovalStatus } from '@/generated/prisma/enums'
 import {
   changeUserProfileSchema,
   changeUserSecuritySchema,
+  userTeamsRequestsSchema,
+  userTitlesRequestsSchema,
 } from '@/schemas/users'
 import { moveS3File } from '@/lib/utils'
 import { S3 } from '@/lib/s3-client'
@@ -15,6 +17,18 @@ import { getRequestHeaders } from '@tanstack/react-start/server'
 import { isAPIError } from 'better-auth/api'
 import { Prisma } from '@/generated/prisma/client'
 import Bowser from 'bowser'
+
+const TEAM_STATUS_MAP = {
+  pending: TeamStatus.PENDING,
+  approved: TeamStatus.APPROVED,
+  rejected: TeamStatus.REJECTED,
+} as const
+
+const TITLE_STATUS_MAP = {
+  pending: TitleApprovalStatus.PENDING,
+  approved: TitleApprovalStatus.APPROVED,
+  rejected: TitleApprovalStatus.REJECTED,
+} as const
 
 export const usersRouter = new Elysia({
   name: 'users-router',
@@ -531,6 +545,96 @@ export const usersRouter = new Elysia({
               }
             },
             {
+              authed: true,
+            },
+          )
+      })
+      .group('/user/:id/requests', (app) => {
+        return app
+          .get(
+            '/teams',
+            async ({ query, params: { id }, user, status }) => {
+              try {
+                const isMe = id === user.id
+
+                if (!isMe) return status(403, 'Доступ обмежено')
+
+                const teamsRequestsData = await prisma.team.findMany({
+                  where: {
+                    creatorId: id,
+                    status: TEAM_STATUS_MAP[query.status],
+                  },
+                  select: {
+                    id: true,
+                    name: true,
+                    status: true,
+                    coverUrl: true,
+                  },
+                })
+
+                return teamsRequestsData
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при завантаженні даних')
+              }
+            },
+            {
+              query: userTeamsRequestsSchema,
+              authed: true,
+            },
+          )
+          .get(
+            '/titles',
+            async ({ query, params: { id }, user, status }) => {
+              try {
+                const isMe = id === user.id
+
+                if (!isMe) return status(403, 'Доступ обмежено')
+
+                const rawTitles = await prisma.title.findMany({
+                  where: {
+                    proposedByUserId: id,
+                    approvalStatus: TITLE_STATUS_MAP[query.status],
+                    currentVersion: { isNot: null },
+                  },
+                  select: {
+                    id: true,
+                    approvalStatus: true,
+                    currentVersion: {
+                      select: {
+                        nameUkr: true,
+                        coverUrl: true,
+                      },
+                    },
+                  },
+                })
+
+                /* 
+                  Наразі, Prisma не вміє звужувати типи в момент фільтраці даних під час запиту до БД.
+                  Тому хоч ми і вказали, що currentVersion: { isNot: null }, 
+                  TypeScript все ще вважатиме, що currentVersion може бути null.
+                  Код знизу змушує TypeScript важати, що значення ніколи не буде null.
+                */
+                const titles = rawTitles.map((title) => ({
+                  ...title,
+                  currentVersion: title.currentVersion!, // Знак оклику каже: "Тут точно не null"
+                }))
+
+                const formattedTitles = titles.map((title) => ({
+                  id: title.id,
+                  status: title.approvalStatus,
+                  name: title.currentVersion.nameUkr,
+                  coverUrl: title.currentVersion.coverUrl,
+                }))
+
+                return formattedTitles
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при завантаженні даних')
+              }
+            },
+            {
+              query: userTitlesRequestsSchema,
               authed: true,
             },
           )

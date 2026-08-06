@@ -3,6 +3,7 @@ import { api } from '@/lib/api-client'
 import { notFound, redirect } from '@tanstack/react-router'
 import { Treaty } from '@elysiajs/eden'
 import { Api } from '@/lib/api-client'
+import { UserTeamsRequests, UserTitlesRequests } from '@/schemas/users'
 
 export const authQueries = {
   all: ['auth'] as const,
@@ -192,6 +193,7 @@ export const usersQueries = {
   all: ['users'] as const,
   lists: () => [...usersQueries.all, 'lists'] as const,
   settings: () => [...usersQueries.all, 'settings'] as const,
+  requests: () => [...usersQueries.all, 'requests'] as const,
   getUserInfo: (id: string) =>
     queryOptions({
       queryKey: [...usersQueries.all, id] as const,
@@ -262,6 +264,34 @@ export const usersQueries = {
       queryFn: async () => {
         const response = await api().users.user({ id }).settings.devices.get()
         const { error } = response
+        if (error) {
+          throw error
+        }
+        return response.data
+      },
+    }),
+  getUserTeamsRequests: (id: string, status: UserTeamsRequests['status']) =>
+    queryOptions({
+      queryKey: [...usersQueries.requests(), 'teams', id, status] as const,
+      queryFn: async () => {
+        const response = await api()
+          .users.user({ id })
+          .requests.teams.get({ query: { status } })
+        const error = response.error
+        if (error) {
+          throw error
+        }
+        return response.data
+      },
+    }),
+  getUserTitlesRequests: (id: string, status: UserTitlesRequests['status']) =>
+    queryOptions({
+      queryKey: [...usersQueries.requests(), 'titles', id, status] as const,
+      queryFn: async () => {
+        const response = await api()
+          .users.user({ id })
+          .requests.titles.get({ query: { status } })
+        const error = response.error
         if (error) {
           throw error
         }

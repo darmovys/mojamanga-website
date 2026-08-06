@@ -73,3 +73,14 @@ export const directChangePasswordSchema = z.object({
     .min(1, { message: 'Поточний пароль обовʼязковий' }),
   newPassword: newPasswordSchema,
 })
+
+export const userTeamsRequestsSchema = z.object({
+  status: z.enum(['pending', 'approved', 'rejected']).catch('pending'),
+})
+
+export const userTitlesRequestsSchema = z.object({
+  status: z.enum(['pending', 'approved', 'rejected']).catch('pending'),
+})
+
+export type UserTitlesRequests = z.infer<typeof userTitlesRequestsSchema>
+export type UserTeamsRequests = z.infer<typeof userTeamsRequestsSchema>

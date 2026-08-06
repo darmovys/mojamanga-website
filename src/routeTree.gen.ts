@@ -29,6 +29,7 @@ import { Route as UserIdRouteImport } from './routes/user/$id'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as UserIdIndexRouteImport } from './routes/user/$id.index'
 import { Route as TitleCreateIndexRouteImport } from './routes/title/create/index'
+import { Route as TitleIdIndexRouteImport } from './routes/title/$id/index'
 import { Route as TeamCreateIndexRouteImport } from './routes/team/create/index'
 import { Route as TeamIdIndexRouteImport } from './routes/team/$id/index'
 import { Route as PeopleCreateIndexRouteImport } from './routes/people/create/index'
@@ -39,17 +40,23 @@ import { Route as UserIdNotificationsRouteImport } from './routes/user/$id.notif
 import { Route as UserIdCommentsRouteImport } from './routes/user/$id.comments'
 import { Route as UserIdBookmarksRouteImport } from './routes/user/$id.bookmarks'
 import { Route as UserIdAboutRouteImport } from './routes/user/$id.about'
+import { Route as TitleIdReviseRouteImport } from './routes/title/$id/revise'
 import { Route as TeamIdEditRouteImport } from './routes/team/$id/edit'
 import { Route as ModerationTitleReviewTitleIdRouteImport } from './routes/moderation/title-review/$titleId'
 import { Route as ModerationTeamReviewTeamIdRouteImport } from './routes/moderation/team-review/$teamId'
 import { Route as ModerationPersonReviewPersonIdRouteImport } from './routes/moderation/person-review/$personId'
 import { Route as UserIdSettingsRouteRouteImport } from './routes/user/$id_.settings/route'
+import { Route as UserIdRequestsRouteRouteImport } from './routes/user/$id_.requests/route'
 import { Route as UserIdSettingsIndexRouteImport } from './routes/user/$id_.settings/index'
+import { Route as UserIdRequestsIndexRouteImport } from './routes/user/$id_.requests/index'
 import { Route as UserIdSettingsSecurityRouteImport } from './routes/user/$id_.settings/security'
 import { Route as UserIdSettingsRootRouteImport } from './routes/user/$id_.settings/root'
 import { Route as UserIdSettingsProfileRouteImport } from './routes/user/$id_.settings/profile'
 import { Route as UserIdSettingsNotificationsRouteImport } from './routes/user/$id_.settings/notifications'
 import { Route as UserIdSettingsDevicesRouteImport } from './routes/user/$id_.settings/devices'
+import { Route as UserIdRequestsTitlesRouteImport } from './routes/user/$id_.requests/titles'
+import { Route as UserIdRequestsTeamsRouteImport } from './routes/user/$id_.requests/teams'
+import { Route as UserIdRequestsChaptersRouteImport } from './routes/user/$id_.requests/chapters'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -150,6 +157,11 @@ const TitleCreateIndexRoute = TitleCreateIndexRouteImport.update({
   path: '/title/create/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TitleIdIndexRoute = TitleIdIndexRouteImport.update({
+  id: '/title/$id/',
+  path: '/title/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TeamCreateIndexRoute = TeamCreateIndexRouteImport.update({
   id: '/team/create/',
   path: '/team/create/',
@@ -200,6 +212,11 @@ const UserIdAboutRoute = UserIdAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => UserIdRoute,
 } as any)
+const TitleIdReviseRoute = TitleIdReviseRouteImport.update({
+  id: '/title/$id/revise',
+  path: '/title/$id/revise',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TeamIdEditRoute = TeamIdEditRouteImport.update({
   id: '/team/$id/edit',
   path: '/team/$id/edit',
@@ -228,10 +245,20 @@ const UserIdSettingsRouteRoute = UserIdSettingsRouteRouteImport.update({
   path: '/user/$id/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserIdRequestsRouteRoute = UserIdRequestsRouteRouteImport.update({
+  id: '/user/$id_/requests',
+  path: '/user/$id/requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UserIdSettingsIndexRoute = UserIdSettingsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => UserIdSettingsRouteRoute,
+} as any)
+const UserIdRequestsIndexRoute = UserIdRequestsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => UserIdRequestsRouteRoute,
 } as any)
 const UserIdSettingsSecurityRoute = UserIdSettingsSecurityRouteImport.update({
   id: '/security',
@@ -259,6 +286,21 @@ const UserIdSettingsDevicesRoute = UserIdSettingsDevicesRouteImport.update({
   path: '/devices',
   getParentRoute: () => UserIdSettingsRouteRoute,
 } as any)
+const UserIdRequestsTitlesRoute = UserIdRequestsTitlesRouteImport.update({
+  id: '/titles',
+  path: '/titles',
+  getParentRoute: () => UserIdRequestsRouteRoute,
+} as any)
+const UserIdRequestsTeamsRoute = UserIdRequestsTeamsRouteImport.update({
+  id: '/teams',
+  path: '/teams',
+  getParentRoute: () => UserIdRequestsRouteRoute,
+} as any)
+const UserIdRequestsChaptersRoute = UserIdRequestsChaptersRouteImport.update({
+  id: '/chapters',
+  path: '/chapters',
+  getParentRoute: () => UserIdRequestsRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -278,11 +320,13 @@ export interface FileRoutesByFullPath {
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
   '/title/': typeof TitleIndexRoute
+  '/user/$id/requests': typeof UserIdRequestsRouteRouteWithChildren
   '/user/$id/settings': typeof UserIdSettingsRouteRouteWithChildren
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/moderation/title-review/$titleId': typeof ModerationTitleReviewTitleIdRoute
   '/team/$id/edit': typeof TeamIdEditRoute
+  '/title/$id/revise': typeof TitleIdReviseRoute
   '/user/$id/about': typeof UserIdAboutRoute
   '/user/$id/bookmarks': typeof UserIdBookmarksRoute
   '/user/$id/comments': typeof UserIdCommentsRoute
@@ -293,13 +337,18 @@ export interface FileRoutesByFullPath {
   '/people/create/': typeof PeopleCreateIndexRoute
   '/team/$id/': typeof TeamIdIndexRoute
   '/team/create/': typeof TeamCreateIndexRoute
+  '/title/$id/': typeof TitleIdIndexRoute
   '/title/create/': typeof TitleCreateIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
+  '/user/$id/requests/chapters': typeof UserIdRequestsChaptersRoute
+  '/user/$id/requests/teams': typeof UserIdRequestsTeamsRoute
+  '/user/$id/requests/titles': typeof UserIdRequestsTitlesRoute
   '/user/$id/settings/devices': typeof UserIdSettingsDevicesRoute
   '/user/$id/settings/notifications': typeof UserIdSettingsNotificationsRoute
   '/user/$id/settings/profile': typeof UserIdSettingsProfileRoute
   '/user/$id/settings/root': typeof UserIdSettingsRootRoute
   '/user/$id/settings/security': typeof UserIdSettingsSecurityRoute
+  '/user/$id/requests/': typeof UserIdRequestsIndexRoute
   '/user/$id/settings/': typeof UserIdSettingsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -322,6 +371,7 @@ export interface FileRoutesByTo {
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/moderation/title-review/$titleId': typeof ModerationTitleReviewTitleIdRoute
   '/team/$id/edit': typeof TeamIdEditRoute
+  '/title/$id/revise': typeof TitleIdReviseRoute
   '/user/$id/about': typeof UserIdAboutRoute
   '/user/$id/bookmarks': typeof UserIdBookmarksRoute
   '/user/$id/comments': typeof UserIdCommentsRoute
@@ -332,13 +382,18 @@ export interface FileRoutesByTo {
   '/people/create': typeof PeopleCreateIndexRoute
   '/team/$id': typeof TeamIdIndexRoute
   '/team/create': typeof TeamCreateIndexRoute
+  '/title/$id': typeof TitleIdIndexRoute
   '/title/create': typeof TitleCreateIndexRoute
   '/user/$id': typeof UserIdIndexRoute
+  '/user/$id/requests/chapters': typeof UserIdRequestsChaptersRoute
+  '/user/$id/requests/teams': typeof UserIdRequestsTeamsRoute
+  '/user/$id/requests/titles': typeof UserIdRequestsTitlesRoute
   '/user/$id/settings/devices': typeof UserIdSettingsDevicesRoute
   '/user/$id/settings/notifications': typeof UserIdSettingsNotificationsRoute
   '/user/$id/settings/profile': typeof UserIdSettingsProfileRoute
   '/user/$id/settings/root': typeof UserIdSettingsRootRoute
   '/user/$id/settings/security': typeof UserIdSettingsSecurityRoute
+  '/user/$id/requests': typeof UserIdRequestsIndexRoute
   '/user/$id/settings': typeof UserIdSettingsIndexRoute
 }
 export interface FileRoutesById {
@@ -361,11 +416,13 @@ export interface FileRoutesById {
   '/moderation/': typeof ModerationIndexRoute
   '/team/': typeof TeamIndexRoute
   '/title/': typeof TitleIndexRoute
+  '/user/$id_/requests': typeof UserIdRequestsRouteRouteWithChildren
   '/user/$id_/settings': typeof UserIdSettingsRouteRouteWithChildren
   '/moderation/person-review/$personId': typeof ModerationPersonReviewPersonIdRoute
   '/moderation/team-review/$teamId': typeof ModerationTeamReviewTeamIdRoute
   '/moderation/title-review/$titleId': typeof ModerationTitleReviewTitleIdRoute
   '/team/$id/edit': typeof TeamIdEditRoute
+  '/title/$id/revise': typeof TitleIdReviseRoute
   '/user/$id/about': typeof UserIdAboutRoute
   '/user/$id/bookmarks': typeof UserIdBookmarksRoute
   '/user/$id/comments': typeof UserIdCommentsRoute
@@ -376,13 +433,18 @@ export interface FileRoutesById {
   '/people/create/': typeof PeopleCreateIndexRoute
   '/team/$id/': typeof TeamIdIndexRoute
   '/team/create/': typeof TeamCreateIndexRoute
+  '/title/$id/': typeof TitleIdIndexRoute
   '/title/create/': typeof TitleCreateIndexRoute
   '/user/$id/': typeof UserIdIndexRoute
+  '/user/$id_/requests/chapters': typeof UserIdRequestsChaptersRoute
+  '/user/$id_/requests/teams': typeof UserIdRequestsTeamsRoute
+  '/user/$id_/requests/titles': typeof UserIdRequestsTitlesRoute
   '/user/$id_/settings/devices': typeof UserIdSettingsDevicesRoute
   '/user/$id_/settings/notifications': typeof UserIdSettingsNotificationsRoute
   '/user/$id_/settings/profile': typeof UserIdSettingsProfileRoute
   '/user/$id_/settings/root': typeof UserIdSettingsRootRoute
   '/user/$id_/settings/security': typeof UserIdSettingsSecurityRoute
+  '/user/$id_/requests/': typeof UserIdRequestsIndexRoute
   '/user/$id_/settings/': typeof UserIdSettingsIndexRoute
 }
 export interface FileRouteTypes {
@@ -405,11 +467,13 @@ export interface FileRouteTypes {
     | '/moderation/'
     | '/team/'
     | '/title/'
+    | '/user/$id/requests'
     | '/user/$id/settings'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/moderation/title-review/$titleId'
     | '/team/$id/edit'
+    | '/title/$id/revise'
     | '/user/$id/about'
     | '/user/$id/bookmarks'
     | '/user/$id/comments'
@@ -420,13 +484,18 @@ export interface FileRouteTypes {
     | '/people/create/'
     | '/team/$id/'
     | '/team/create/'
+    | '/title/$id/'
     | '/title/create/'
     | '/user/$id/'
+    | '/user/$id/requests/chapters'
+    | '/user/$id/requests/teams'
+    | '/user/$id/requests/titles'
     | '/user/$id/settings/devices'
     | '/user/$id/settings/notifications'
     | '/user/$id/settings/profile'
     | '/user/$id/settings/root'
     | '/user/$id/settings/security'
+    | '/user/$id/requests/'
     | '/user/$id/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -449,6 +518,7 @@ export interface FileRouteTypes {
     | '/moderation/team-review/$teamId'
     | '/moderation/title-review/$titleId'
     | '/team/$id/edit'
+    | '/title/$id/revise'
     | '/user/$id/about'
     | '/user/$id/bookmarks'
     | '/user/$id/comments'
@@ -459,13 +529,18 @@ export interface FileRouteTypes {
     | '/people/create'
     | '/team/$id'
     | '/team/create'
+    | '/title/$id'
     | '/title/create'
     | '/user/$id'
+    | '/user/$id/requests/chapters'
+    | '/user/$id/requests/teams'
+    | '/user/$id/requests/titles'
     | '/user/$id/settings/devices'
     | '/user/$id/settings/notifications'
     | '/user/$id/settings/profile'
     | '/user/$id/settings/root'
     | '/user/$id/settings/security'
+    | '/user/$id/requests'
     | '/user/$id/settings'
   id:
     | '__root__'
@@ -487,11 +562,13 @@ export interface FileRouteTypes {
     | '/moderation/'
     | '/team/'
     | '/title/'
+    | '/user/$id_/requests'
     | '/user/$id_/settings'
     | '/moderation/person-review/$personId'
     | '/moderation/team-review/$teamId'
     | '/moderation/title-review/$titleId'
     | '/team/$id/edit'
+    | '/title/$id/revise'
     | '/user/$id/about'
     | '/user/$id/bookmarks'
     | '/user/$id/comments'
@@ -502,13 +579,18 @@ export interface FileRouteTypes {
     | '/people/create/'
     | '/team/$id/'
     | '/team/create/'
+    | '/title/$id/'
     | '/title/create/'
     | '/user/$id/'
+    | '/user/$id_/requests/chapters'
+    | '/user/$id_/requests/teams'
+    | '/user/$id_/requests/titles'
     | '/user/$id_/settings/devices'
     | '/user/$id_/settings/notifications'
     | '/user/$id_/settings/profile'
     | '/user/$id_/settings/root'
     | '/user/$id_/settings/security'
+    | '/user/$id_/requests/'
     | '/user/$id_/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -530,11 +612,14 @@ export interface RootRouteChildren {
   UserIdRoute: typeof UserIdRouteWithChildren
   TeamIndexRoute: typeof TeamIndexRoute
   TitleIndexRoute: typeof TitleIndexRoute
+  UserIdRequestsRouteRoute: typeof UserIdRequestsRouteRouteWithChildren
   UserIdSettingsRouteRoute: typeof UserIdSettingsRouteRouteWithChildren
   TeamIdEditRoute: typeof TeamIdEditRoute
+  TitleIdReviseRoute: typeof TitleIdReviseRoute
   PeopleCreateIndexRoute: typeof PeopleCreateIndexRoute
   TeamIdIndexRoute: typeof TeamIdIndexRoute
   TeamCreateIndexRoute: typeof TeamCreateIndexRoute
+  TitleIdIndexRoute: typeof TitleIdIndexRoute
   TitleCreateIndexRoute: typeof TitleCreateIndexRoute
 }
 
@@ -680,6 +765,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TitleCreateIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/title/$id/': {
+      id: '/title/$id/'
+      path: '/title/$id'
+      fullPath: '/title/$id/'
+      preLoaderRoute: typeof TitleIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/team/create/': {
       id: '/team/create/'
       path: '/team/create'
@@ -750,6 +842,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserIdAboutRouteImport
       parentRoute: typeof UserIdRoute
     }
+    '/title/$id/revise': {
+      id: '/title/$id/revise'
+      path: '/title/$id/revise'
+      fullPath: '/title/$id/revise'
+      preLoaderRoute: typeof TitleIdReviseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/team/$id/edit': {
       id: '/team/$id/edit'
       path: '/team/$id/edit'
@@ -785,12 +884,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserIdSettingsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/$id_/requests': {
+      id: '/user/$id_/requests'
+      path: '/user/$id/requests'
+      fullPath: '/user/$id/requests'
+      preLoaderRoute: typeof UserIdRequestsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/user/$id_/settings/': {
       id: '/user/$id_/settings/'
       path: '/'
       fullPath: '/user/$id/settings/'
       preLoaderRoute: typeof UserIdSettingsIndexRouteImport
       parentRoute: typeof UserIdSettingsRouteRoute
+    }
+    '/user/$id_/requests/': {
+      id: '/user/$id_/requests/'
+      path: '/'
+      fullPath: '/user/$id/requests/'
+      preLoaderRoute: typeof UserIdRequestsIndexRouteImport
+      parentRoute: typeof UserIdRequestsRouteRoute
     }
     '/user/$id_/settings/security': {
       id: '/user/$id_/settings/security'
@@ -826,6 +939,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/user/$id/settings/devices'
       preLoaderRoute: typeof UserIdSettingsDevicesRouteImport
       parentRoute: typeof UserIdSettingsRouteRoute
+    }
+    '/user/$id_/requests/titles': {
+      id: '/user/$id_/requests/titles'
+      path: '/titles'
+      fullPath: '/user/$id/requests/titles'
+      preLoaderRoute: typeof UserIdRequestsTitlesRouteImport
+      parentRoute: typeof UserIdRequestsRouteRoute
+    }
+    '/user/$id_/requests/teams': {
+      id: '/user/$id_/requests/teams'
+      path: '/teams'
+      fullPath: '/user/$id/requests/teams'
+      preLoaderRoute: typeof UserIdRequestsTeamsRouteImport
+      parentRoute: typeof UserIdRequestsRouteRoute
+    }
+    '/user/$id_/requests/chapters': {
+      id: '/user/$id_/requests/chapters'
+      path: '/chapters'
+      fullPath: '/user/$id/requests/chapters'
+      preLoaderRoute: typeof UserIdRequestsChaptersRouteImport
+      parentRoute: typeof UserIdRequestsRouteRoute
     }
   }
 }
@@ -883,6 +1017,23 @@ const UserIdRouteChildren: UserIdRouteChildren = {
 const UserIdRouteWithChildren =
   UserIdRoute._addFileChildren(UserIdRouteChildren)
 
+interface UserIdRequestsRouteRouteChildren {
+  UserIdRequestsChaptersRoute: typeof UserIdRequestsChaptersRoute
+  UserIdRequestsTeamsRoute: typeof UserIdRequestsTeamsRoute
+  UserIdRequestsTitlesRoute: typeof UserIdRequestsTitlesRoute
+  UserIdRequestsIndexRoute: typeof UserIdRequestsIndexRoute
+}
+
+const UserIdRequestsRouteRouteChildren: UserIdRequestsRouteRouteChildren = {
+  UserIdRequestsChaptersRoute: UserIdRequestsChaptersRoute,
+  UserIdRequestsTeamsRoute: UserIdRequestsTeamsRoute,
+  UserIdRequestsTitlesRoute: UserIdRequestsTitlesRoute,
+  UserIdRequestsIndexRoute: UserIdRequestsIndexRoute,
+}
+
+const UserIdRequestsRouteRouteWithChildren =
+  UserIdRequestsRouteRoute._addFileChildren(UserIdRequestsRouteRouteChildren)
+
 interface UserIdSettingsRouteRouteChildren {
   UserIdSettingsDevicesRoute: typeof UserIdSettingsDevicesRoute
   UserIdSettingsNotificationsRoute: typeof UserIdSettingsNotificationsRoute
@@ -922,11 +1073,14 @@ const rootRouteChildren: RootRouteChildren = {
   UserIdRoute: UserIdRouteWithChildren,
   TeamIndexRoute: TeamIndexRoute,
   TitleIndexRoute: TitleIndexRoute,
+  UserIdRequestsRouteRoute: UserIdRequestsRouteRouteWithChildren,
   UserIdSettingsRouteRoute: UserIdSettingsRouteRouteWithChildren,
   TeamIdEditRoute: TeamIdEditRoute,
+  TitleIdReviseRoute: TitleIdReviseRoute,
   PeopleCreateIndexRoute: PeopleCreateIndexRoute,
   TeamIdIndexRoute: TeamIdIndexRoute,
   TeamCreateIndexRoute: TeamCreateIndexRoute,
+  TitleIdIndexRoute: TitleIdIndexRoute,
   TitleCreateIndexRoute: TitleCreateIndexRoute,
 }
 export const routeTree = rootRouteImport

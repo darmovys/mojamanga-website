@@ -1,0 +1,189 @@
+@use '../../styles/breakpoints' as *;
+@use '../../styles/utils' as *;
+
+.MainSection {
+  --width: var(--128px);
+  --min-width: min(var(--width), 100%);
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--min-width), 1fr));
+  gap: var(--8px);
+
+  &[data-empty] {
+    grid-template-columns: 1fr;
+    align-content: center;
+    justify-items: center;
+  }
+
+  @include up('tablet') {
+    --width: var(--140px);
+  }
+}
+
+.CardWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--2px);
+  transition: opacity 0.2s var(--bg-animation);
+
+  &[data-is-deleting] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.ImageWrapper {
+  border-radius: var(--6px);
+  overflow: clip;
+  aspect-ratio: 3 / 4.2;
+  position: relative;
+
+  &[data-rejected]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: oklch(0% 0 0 / 0.3);
+  }
+}
+
+.ButtonsSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--2px);
+}
+
+.Button {
+  position: relative; // Для click-target-helper
+  outline: none;
+  gap: var(--2px);
+  margin-block-start: var(--4px);
+  font-size: var(--14px);
+  padding: var(--4px) var(--8px) var(--4px) var(--6px);
+  flex: 1;
+  color: var(--sys-on-primary);
+  background-color: var(--sys-primary);
+  border-radius: 100vmax;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.ReviseButton {
+  composes: Button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.DeleteButton {
+  composes: Button;
+  color: var(--danger);
+  background-color: oklch(from var(--danger) l c h / 0.1);
+  transition: font-weight 0.3s var(--emulate-spring);
+
+  @media (hover: hover) {
+    &:hover {
+      font-weight: 500;
+
+      svg {
+        stroke-width: 0.17em;
+      }
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--default-outline);
+  }
+}
+
+.ItemName {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  font-weight: 450;
+  padding-inline: var(--2px);
+}
+
+.ItemLink {
+  color: inherit;
+  text-decoration: none;
+  transition:
+    box-shadow 0.2s,
+    color 0.2s;
+  position: relative; // Для ClickTargetHelper
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--blue-400);
+      box-shadow: 0 1.5px 0 var(--blue-400);
+    }
+  }
+
+  &:focus-visible {
+    border-radius: var(--2px);
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+  }
+}
+
+.NoImage {
+  block-size: 100%;
+  background-color: var(--sys-surface-low);
+  box-shadow: var(--inset-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--4px);
+  color: var(--sys-on-surface-variant);
+}
+
+.EmptyList {
+  color: var(--sys-on-surface-variant);
+  user-select: none;
+}
+
+// Скелетони
+
+.TabsSkeleton {
+  display: flex;
+  gap: var(--8px);
+}
+
+.MainSkeletonSection {
+  --height: #{rem(250px)};
+  --width: var(--128px);
+  --min-width: min(var(--width), 100%);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--min-width), 1fr));
+  grid-template-rows: var(--height);
+  gap: var(--8px);
+
+  @include up('tablet') {
+    --width: var(--140px);
+    --height: #{rem(280px)};
+  }
+
+  &[data-rejected] {
+    --height: #{rem(330px)};
+
+    @include up('tablet') {
+      --height: #{rem(372px)};
+    }
+  }
+}
+
+.CardSkeletonItem {
+  block-size: 100%;
+  inline-size: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--4px);
+}
+
+.CardSkeletonItemImage {
+  aspect-ratio: 3 / 3.4;
+}

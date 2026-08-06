@@ -66,9 +66,9 @@ export const titlesRouter = new Elysia({
             )
 
           /* 
-          Перевіряємо чи цей користувач вже не надсилав запит 
-          на додавання роботи, який ще не був пеервірений модерацією 
-        */
+            Перевіряємо чи цей користувач вже не надсилав запит 
+            на додавання роботи, який ще не був пеервірений модерацією 
+          */
           const userTitleAddings = dbUser.titleAddings
           if (
             userTitleAddings.some((title) => title.approvalStatus === 'PENDING')
@@ -152,78 +152,78 @@ export const titlesRouter = new Elysia({
 
             await prisma.$transaction(async (tx) => {
               await tx.title.create({
-              data: {
-                id: titleId,
-                proposedByUserId: user.id,
+                data: {
+                  id: titleId,
+                  proposedByUserId: user.id,
 
-                versions: {
-                  create: {
-                    id: titleVersionId,
-                    editorId: user.id,
-                    nameUkr: body.ukrName,
-                    nameEng: body.enName,
-                    description: body.description || null,
-                    coverUrl: newCoverKey,
-                    backgroundUrl: newBackgroundKey,
-                    releaseYear: parseInt(body.releaseYear),
-                    type: body.type,
-                    ageRestriction: body.ageRestriction,
-                    titleStatus: body.titleStatus,
-                    translationStatus: body.translationStatus,
+                  versions: {
+                    create: {
+                      id: titleVersionId,
+                      editorId: user.id,
+                      nameUkr: body.ukrName,
+                      nameEng: body.enName,
+                      description: body.description || null,
+                      coverUrl: newCoverKey,
+                      backgroundUrl: newBackgroundKey,
+                      releaseYear: parseInt(body.releaseYear),
+                      type: body.type,
+                      ageRestriction: body.ageRestriction,
+                      titleStatus: body.titleStatus,
+                      translationStatus: body.translationStatus,
 
-                    sources: {
-                      create: body.sources.map((source) => ({
-                        url: source.url,
-                      })),
-                    },
-
-                    alternativeNames: {
-                      create: alternativeNames.map((name) => ({ name })),
-                    },
-
-                    genres: {
-                      create: body.genres.map((g) => ({ genreId: g.id })),
-                    },
-
-                    tags: {
-                      create: body.tags.map((t) => ({ tagId: t.id })),
-                    },
-
-                    people: {
-                      create: [
-                        ...body.authors.map((p) => ({
-                          personId: p.id,
-                          role: 'AUTHOR' as const,
+                      sources: {
+                        create: body.sources.map((source) => ({
+                          url: source.url,
                         })),
-                        ...body.artists.map((p) => ({
-                          personId: p.id,
-                          role: 'ARTIST' as const,
-                        })),
-                      ],
+                      },
+
+                      alternativeNames: {
+                        create: alternativeNames.map((name) => ({ name })),
+                      },
+
+                      genres: {
+                        create: body.genres.map((g) => ({ genreId: g.id })),
+                      },
+
+                      tags: {
+                        create: body.tags.map((t) => ({ tagId: t.id })),
+                      },
+
+                      people: {
+                        create: [
+                          ...body.authors.map((p) => ({
+                            personId: p.id,
+                            role: 'AUTHOR' as const,
+                          })),
+                          ...body.artists.map((p) => ({
+                            personId: p.id,
+                            role: 'ARTIST' as const,
+                          })),
+                        ],
+                      },
                     },
+                  },
+
+                  publishers: {
+                    create: teamIds.map((teamId) => ({ teamId })),
                   },
                 },
 
-                publishers: {
-                  create: teamIds.map((teamId) => ({ teamId })),
+                include: {
+                  versions: { select: { id: true } },
                 },
-              },
+              })
 
-              include: {
-                versions: { select: { id: true } },
-              },
-            })
-
-            /* 
-              Поле currentVersion може бути null. 
-              Це пов'язано зі структурою бази даних.
+              /* 
+                Поле currentVersion може бути null. 
+                Це пов'язано зі структурою бази даних.
                 Та на практиці ми ніколи не хочемо щоб воно мало таке значення.
                 Тому для нашого нового твору ми відразу створюємо зв'язок з titleVersion.
-             */
+              */
               await tx.title.update({
-              where: { id: titleId },
-              data: { currentVersionId: titleVersionId },
-            })
+                where: { id: titleId },
+                data: { currentVersionId: titleVersionId },
+              })
             })
 
             return {
@@ -525,4 +525,87 @@ export const titlesRouter = new Elysia({
           }),
         },
       )
+      .group('/:id', (app) => {
+        return app.delete(
+          '/',
+          async ({ params: { id }, status, user }) => {
+            try {
+              const title = await prisma.title.findUnique({
+                where: { id },
+                select: {
+                  proposedByUserId: true,
+                  approvalStatus: true,
+                  currentVersion: {
+                    select: { coverUrl: true, backgroundUrl: true },
+                  },
+                },
+              })
+
+              if (!title) return status(404, 'Цього твору не існує')
+
+              if (
+                title.proposedByUserId !== user.id ||
+                title.approvalStatus !== 'REJECTED'
+              ) {
+                return status(
+                  403,
+                  'У вас немає прав для видалення цього запиту',
+                )
+              }
+
+              if (!title.currentVersion) {
+                return status(404, 'Поточну версію твору не знайдено')
+              }
+
+              await prisma.title.delete({
+                where: {
+                  id,
+                  approvalStatus: 'REJECTED',
+                  proposedByUserId: user.id,
+                },
+              })
+
+              try {
+                const rawKeys = [
+                  title.currentVersion.coverUrl,
+                  title.currentVersion.backgroundUrl,
+                ]
+                const validKeys = rawKeys.filter(
+                  (key): key is string =>
+                    typeof key === 'string' && key.trim() !== '',
+                )
+
+                if (validKeys.length > 0) {
+                  const objectsPayload = validKeys.map((key) => ({
+                    Key: key,
+                  }))
+
+                  const command = new DeleteObjectsCommand({
+                    Bucket: process.env.S3_BUCKET_NAME,
+                    Delete: {
+                      Objects: objectsPayload,
+                      Quiet: true,
+                    },
+                  })
+
+                  await S3.send(command)
+                }
+              } catch (s3Error) {
+                console.error('Помилка при видаленні файлів з S3: ', s3Error)
+              }
+
+              return { message: 'Запит виконано', userId: user.id }
+            } catch (dbError) {
+              console.error('Помилка БД: ', dbError)
+              return status(500, 'Помилка при роботі з БД')
+            }
+          },
+          {
+            authed: true,
+            params: z.object({
+              id: z.string(),
+            }),
+          },
+        )
+      })
   })
