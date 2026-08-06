@@ -584,5 +584,75 @@ export const teamsRouter = new Elysia({
               body: sendNewTeamDataSchema,
             },
           )
+          .delete(
+            '/',
+            async ({ params: { id }, status, user }) => {
+              try {
+                const team = await prisma.team.findUnique({
+                  where: { id },
+                  select: {
+                    creatorId: true,
+                    status: true,
+                    coverUrl: true,
+                    backgroundUrl: true,
+                  },
+                })
+
+                if (!team) return status(404, 'Цієї команди не існує')
+
+                if (team.creatorId !== user.id || team.status !== 'REJECTED') {
+                  return status(
+                    403,
+                    'У вас немає прав для видалення цього запиту',
+                  )
+                }
+
+                await prisma.team.delete({
+                  where: {
+                    id,
+                    status: 'REJECTED',
+                    creatorId: user.id,
+                  },
+                })
+
+                try {
+                  const rawKeys = [team.coverUrl, team.backgroundUrl]
+                  const validKeys = rawKeys.filter(
+                    (key): key is string =>
+                      typeof key === 'string' && key.trim() !== '',
+                  )
+
+                  if (validKeys.length > 0) {
+                    const objectsPayload = validKeys.map((key) => ({
+                      Key: key,
+                    }))
+
+                    const command = new DeleteObjectsCommand({
+                      Bucket: process.env.S3_BUCKET_NAME,
+                      Delete: {
+                        Objects: objectsPayload,
+                        Quiet: true,
+                      },
+                    })
+
+                    await S3.send(command)
+                  }
+                } catch (s3Error) {
+                  console.error('Помилка при видаленні файлів з S3: ', s3Error)
+                }
+
+                return { message: 'Запит виконано', userId: user.id }
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при роботі з БД')
+              }
+            },
+            {
+              authed: true,
+              params: z.object({
+                id: z.string(),
+              }),
+            },
+          )
       })
   })

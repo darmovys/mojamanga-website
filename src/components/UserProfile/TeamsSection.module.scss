@@ -38,6 +38,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--8px);
+  transition: opacity 0.2s var(--bg-animation);
+
+  &[data-is-deleting] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
 }
 
 .ImageWrapper {
@@ -71,21 +77,47 @@
   flex-direction: column;
 }
 
-.ReviseButton {
-  position: absolute !important; // Щоб перекрити position: relative від класу Gradient
+.ButtonsWrapper {
+  position: absolute;
   inset-block-start: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--6px);
+  transform: translateY(30%);
+}
+
+.ReviseButton {
+  position: relative; // для click-target-helper
+  display: flex;
+  align-items: center;
+  gap: var(--4px);
   text-decoration: none;
-  transform: translateY(60%);
   background-color: var(--sys-on-surface-highest);
   color: var(--sys-on-surface);
   font-size: var(--14px);
-  padding: var(--4px) var(--8px);
+  padding: var(--4px) var(--8px) var(--4px) var(--6px);
   border-radius: var(--8px);
+  transition: font-weight 0.3s var(--emulate-spring);
 
   &:focus-visible {
     outline-offset: 1px;
     outline: 2px solid var(--blue-400);
   }
+
+  @media (hover: hover) {
+    &:hover {
+      font-weight: 500;
+      svg {
+        stroke-width: 0.17em;
+      }
+    }
+  }
+}
+
+.DeleteButton {
+  composes: ReviseButton;
+  color: var(--danger);
+  padding-inline-start: 0;
 }
 
 .TeamCover {
