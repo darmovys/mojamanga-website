@@ -1,6 +1,6 @@
 import React from 'react'
-import styles from './Skeleton.module.scss'
 import clsx from 'clsx'
+import styles from './Skeleton.module.scss'
 
 interface SkeletonVars {
   '--height': string
@@ -20,6 +20,7 @@ interface SkeletonProps {
   lineHeight?: string
   borderRadius?: string
   className?: string
+  style?: React.CSSProperties
 }
 
 function Skeleton({
@@ -29,8 +30,9 @@ function Skeleton({
   lineHeight,
   borderRadius,
   className,
+  style,
 }: SkeletonProps) {
-  const style: SkeletonStyle = {
+  const cssVars: SkeletonVars = {
     '--height': height ?? '100%',
     '--width': width ?? '100%',
     '--base-color': baseColor,
@@ -38,7 +40,14 @@ function Skeleton({
     '--border-radius': borderRadius,
   }
 
-  return <div className={clsx(styles.Skeleton, className)} style={style} />
+  const mergedStyle: SkeletonStyle = {
+    ...cssVars,
+    ...style,
+  }
+
+  return (
+    <div className={clsx(styles.Skeleton, className)} style={mergedStyle} />
+  )
 }
 
 export default Skeleton
