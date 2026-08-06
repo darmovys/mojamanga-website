@@ -33,7 +33,7 @@ export const teamsRouter = new Elysia({
             return status('Bad Request', 'Заповніть усі відкриті поля посилань')
           }
 
-          const [dbUser, existingTeam] = await Promise.all([
+          const [dbUser, existingTeam] = await prisma.$transaction([
             prisma.user.findUnique({
               where: { id: user.id },
               include: { teamMemberships: { include: { team: true } } },
@@ -180,7 +180,7 @@ export const teamsRouter = new Elysia({
             const limit = 10
             const skip = (page - 1) * limit
 
-            const [teams, total] = await Promise.all([
+            const [teams, total] = await prisma.$transaction([
               prisma.team.findMany({
                 where: { status: 'PENDING' },
                 include: {
@@ -364,7 +364,7 @@ export const teamsRouter = new Elysia({
                   },
                 })
 
-                if (!team) return status(404, 'Команду не знайдено')
+                if (!team) return status(404, 'Цієї команди не існує')
 
                 const currentMember = team.members[0]
 
@@ -421,7 +421,7 @@ export const teamsRouter = new Elysia({
                   },
                 })
 
-                if (!team) return status(404, 'Команду не знайдено')
+                if (!team) return status(404, 'Цієї команди не існує')
 
                 const currentMember = team.members[0]
 

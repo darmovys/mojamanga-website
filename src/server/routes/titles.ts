@@ -150,7 +150,8 @@ export const titlesRouter = new Elysia({
           try {
             const titleVersionId = createId()
 
-            await prisma.title.create({
+            await prisma.$transaction(async (tx) => {
+              await tx.title.create({
               data: {
                 id: titleId,
                 proposedByUserId: user.id,
@@ -216,13 +217,15 @@ export const titlesRouter = new Elysia({
             /* 
               Поле currentVersion може бути null. 
               Це пов'язано зі структурою бази даних.
-              Та на практиці ми ніколи не хочемо щоб воно мало це значення null.
-              Тому для нашої нової роботи ми відразу створюємо зв'язок з titleVersion.
+                Та на практиці ми ніколи не хочемо щоб воно мало таке значення.
+                Тому для нашого нового твору ми відразу створюємо зв'язок з titleVersion.
              */
-            await prisma.title.update({
+              await tx.title.update({
               where: { id: titleId },
               data: { currentVersionId: titleVersionId },
             })
+            })
+
             return {
               message: 'Запит на додавання твору відправлено',
             }
@@ -266,7 +269,7 @@ export const titlesRouter = new Elysia({
             const limit = 10
             const skip = (page - 1) * limit
 
-            const [rawTitles, total] = await Promise.all([
+            const [rawTitles, total] = await prisma.$transaction([
               prisma.title.findMany({
                 where: {
                   AND: [
@@ -286,7 +289,14 @@ export const titlesRouter = new Elysia({
                 skip,
                 take: limit,
               }),
-              prisma.title.count({ where: { approvalStatus: 'PENDING' } }),
+              prisma.title.count({
+                where: {
+                  AND: [
+                    { approvalStatus: 'PENDING' },
+                    { currentVersion: { isNot: null } },
+                  ],
+                },
+              }),
             ])
 
             /* 

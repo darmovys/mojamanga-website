@@ -151,7 +151,7 @@ export const peopleRouter = new Elysia({
             const limit = 10
             const skip = (page - 1) * limit
 
-            const [people, total] = await Promise.all([
+            const [people, total] = await prisma.$transaction([
               prisma.person.findMany({
                 where: { verificationStatus: 'PENDING' },
                 include: {
