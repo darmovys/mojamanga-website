@@ -4,7 +4,7 @@ import { prisma } from '@/db'
 import { createId } from '@paralleldrive/cuid2'
 import { moveS3File } from '@/lib/utils'
 import { S3 } from '@/lib/s3-client'
-import { addTitleSchema } from '@/schemas/titles'
+import { sendNewTitleDataSchema } from '@/schemas/titles'
 import { DeleteObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
 import { z } from 'zod'
 import { TitleFieldName } from '@/generated/prisma/enums'
@@ -258,7 +258,7 @@ export const titlesRouter = new Elysia({
         },
         {
           authed: true,
-          body: addTitleSchema,
+          body: sendNewTitleDataSchema,
         },
       )
       .get(
@@ -443,8 +443,7 @@ export const titlesRouter = new Elysia({
               data: {
                 approvalStatus: 'REJECTED',
                 lockedFields: {
-                  deleteMany: {},
-                  create: body.lockedFields.map((f) => ({ fieldName: f })),
+                  set: [...new Set(body.lockedFields)],
                 },
                 ...(body.message.length && {
                   moderationFeedback: body.message,
@@ -523,86 +522,456 @@ export const titlesRouter = new Elysia({
         },
       )
       .group('/:id', (app) => {
-        return app.delete(
-          '/',
-          async ({ params: { id }, status, user }) => {
-            try {
-              const title = await prisma.title.findUnique({
-                where: { id },
-                select: {
-                  proposedByUserId: true,
-                  approvalStatus: true,
-                  currentVersion: {
-                    select: { coverUrl: true, backgroundUrl: true },
-                  },
-                },
-              })
-
-              if (!title) return status(404, 'Цього твору не існує')
-
-              if (
-                title.proposedByUserId !== user.id ||
-                title.approvalStatus !== 'REJECTED'
-              ) {
-                return status(
-                  403,
-                  'У вас немає прав для видалення цього запиту',
-                )
-              }
-
-              if (!title.currentVersion) {
-                return status(404, 'Поточну версію твору не знайдено')
-              }
-
-              await prisma.title.delete({
-                where: {
-                  id,
-                  approvalStatus: 'REJECTED',
-                  proposedByUserId: user.id,
-                },
-              })
-
+        return app
+          .get(
+            '/editable-data',
+            async ({ params: { id }, status, user }) => {
               try {
-                const rawKeys = [
-                  title.currentVersion.coverUrl,
-                  title.currentVersion.backgroundUrl,
-                ]
-                const validKeys = rawKeys.filter(
-                  (key): key is string =>
-                    typeof key === 'string' && key.trim() !== '',
+                const title = await prisma.title.findUnique({
+                  where: {
+                    id,
+                    approvalStatus: 'REJECTED',
+                    proposedByUserId: user.id,
+                  },
+                  select: {
+                    id: true,
+                    moderationFeedback: true,
+                    lockedFields: true,
+                    publishers: {
+                      select: {
+                        team: {
+                          select: { id: true, name: true },
+                        },
+                      },
+                    },
+                    currentVersion: {
+                      select: {
+                        nameUkr: true,
+                        nameEng: true,
+                        description: true,
+                        coverUrl: true,
+                        backgroundUrl: true,
+                        releaseYear: true,
+                        type: true,
+                        ageRestriction: true,
+                        titleStatus: true,
+                        translationStatus: true,
+                        alternativeNames: {
+                          select: {
+                            name: true,
+                          },
+                        },
+                        sources: {
+                          select: {
+                            id: true,
+                            url: true,
+                          },
+                        },
+                        tags: {
+                          select: {
+                            tag: { select: { name: true, id: true } },
+                          },
+                        },
+                        genres: {
+                          select: {
+                            genre: { select: { name: true, id: true } },
+                          },
+                        },
+                        people: {
+                          select: {
+                            person: {
+                              select: {
+                                id: true,
+                                nameUkr: true,
+                                nameLat: true,
+                              },
+                            },
+                            role: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                })
+
+                if (!title) {
+                  return status(404, 'Твір не знайдено')
+                }
+
+                const { currentVersion, publishers, ...titleData } = title
+
+                if (!currentVersion) {
+                  return status(404, 'Дані версії твору відсутні')
+                }
+
+                return {
+                  ...titleData,
+                  coverUrl: currentVersion.coverUrl,
+                  backgroundUrl: currentVersion.backgroundUrl,
+                  nameUkr: currentVersion.nameUkr,
+                  nameEng: currentVersion.nameEng,
+                  alternativeNames: currentVersion.alternativeNames.map(
+                    (a) => a.name,
+                  ),
+                  description: currentVersion.description,
+                  type: currentVersion.type,
+                  titleStatus: currentVersion.titleStatus,
+                  translationStatus: currentVersion.translationStatus,
+                  ageRestriction: currentVersion.ageRestriction,
+                  releaseYear: currentVersion.releaseYear.toString(),
+                  sources: currentVersion.sources,
+                  genres: currentVersion.genres.map((g) => g.genre),
+                  tags: currentVersion.tags.map((g) => g.tag),
+                  authors: currentVersion.people
+                    .filter((p) => p.role === 'AUTHOR')
+                    .map((p) => p.person),
+                  artists: currentVersion.people
+                    .filter((p) => p.role === 'ARTIST')
+                    .map((p) => p.person),
+                  teams: publishers.map((t) => t.team),
+                }
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при отриманні даних')
+              }
+            },
+            {
+              authed: true,
+              params: z.object({
+                id: z.string(),
+              }),
+            },
+          )
+          .patch(
+            '/revise',
+            async ({ params: { id }, body, status, user }) => {
+              try {
+                // 1. Отримання твору та перевірка початкових умов
+                const title = await prisma.title.findUnique({
+                  where: {
+                    id,
+                    approvalStatus: 'REJECTED',
+                    currentVersion: { isNot: null },
+                  },
+                  select: {
+                    id: true,
+                    proposedByUserId: true,
+                    approvalStatus: true,
+                    currentVersion: {
+                      select: { coverUrl: true, backgroundUrl: true },
+                    },
+                  },
+                })
+
+                if (!title) return status(404, 'Цього твору не існує')
+                if (title.proposedByUserId !== user.id) {
+                  return status(
+                    403,
+                    'У вас немає прав для редагування цього твору',
+                  )
+                }
+                if (!title.currentVersion) {
+                  return status(404, 'Поточну версію твору не знайдено')
+                }
+
+                // 2. Перевірка членства користувача в усіх вказаних командах
+                const teamIds = body.teams.map((t) => t.id)
+
+                const memberships = await prisma.teamMember.findMany({
+                  where: {
+                    userId: user.id,
+                    teamId: { in: teamIds },
+                  },
+                  select: { teamId: true },
+                })
+
+                const joinedTeamIds = new Set(memberships.map((m) => m.teamId))
+                const notMemberOf = teamIds.filter(
+                  (id) => !joinedTeamIds.has(id),
                 )
 
-                if (validKeys.length > 0) {
-                  const objectsPayload = validKeys.map((key) => ({
-                    Key: key,
-                  }))
-
-                  const command = new DeleteObjectsCommand({
-                    Bucket: process.env.S3_BUCKET_NAME,
-                    Delete: {
-                      Objects: objectsPayload,
-                      Quiet: true,
-                    },
-                  })
-
-                  await S3.send(command)
+                if (notMemberOf.length > 0) {
+                  return status(403, 'Ви не є членом усіх зазначених команд')
                 }
-              } catch (s3Error) {
-                console.error('Помилка при видаленні файлів з S3: ', s3Error)
-              }
 
-              return { message: 'Запит виконано', userId: user.id }
-            } catch (dbError) {
-              console.error('Помилка БД: ', dbError)
-              return status(500, 'Помилка при роботі з БД')
-            }
-          },
-          {
-            authed: true,
-            params: z.object({
-              id: z.string(),
-            }),
-          },
-        )
+                // 3. Форматування альтернативних назв
+                const alternativeNames = body.alternativeNames
+                  ? body.alternativeNames
+                      .split(' / ')
+                      .map((name) => name.trim())
+                      .filter(Boolean)
+                  : []
+
+                const titleFolder = `uploads/titles/${body.enName}-${title.id}`
+
+                // 4. Обробка обкладинки в S3
+                let finalCoverKey = title.currentVersion.coverUrl
+
+                if (body.coverKey && body.coverKey.includes('/temp/')) {
+                  const coverFileName = body.coverKey.split('/').pop()
+                  finalCoverKey = `${titleFolder}/cover/${coverFileName}`
+
+                  const isCoverMoved = await moveS3File(
+                    body.coverKey,
+                    finalCoverKey,
+                  )
+
+                  if (!isCoverMoved) {
+                    return status(500, 'Не вдалося зберегти нову обкладинку')
+                  }
+
+                  if (title.currentVersion.coverUrl) {
+                    try {
+                      await S3.send(
+                        new DeleteObjectCommand({
+                          Bucket: process.env.S3_BUCKET_NAME,
+                          Key: title.currentVersion.coverUrl,
+                        }),
+                      )
+                    } catch (s3Error) {
+                      console.error(
+                        'Помилка видалення старої обкладинки з S3:',
+                        s3Error,
+                      )
+                    }
+                  }
+                } else if (!body.coverKey) {
+                  finalCoverKey = null
+
+                  if (title.currentVersion.coverUrl) {
+                    try {
+                      await S3.send(
+                        new DeleteObjectCommand({
+                          Bucket: process.env.S3_BUCKET_NAME,
+                          Key: title.currentVersion.coverUrl,
+                        }),
+                      )
+                    } catch (s3Error) {
+                      console.error(
+                        'Помилка видалення старої обкладинки з S3:',
+                        s3Error,
+                      )
+                    }
+                  }
+                }
+
+                // 5. Обробка фонового зображення в S3
+                let finalBGKey = title.currentVersion.backgroundUrl
+
+                if (
+                  body.backgroundKey &&
+                  body.backgroundKey.includes('/temp/')
+                ) {
+                  const bgFileName = body.backgroundKey.split('/').pop()
+                  finalBGKey = `${titleFolder}/background/${bgFileName}`
+
+                  const isBGMoved = await moveS3File(
+                    body.backgroundKey,
+                    finalBGKey,
+                  )
+
+                  if (!isBGMoved) {
+                    return status(
+                      500,
+                      'Не вдалося зберегти нове фонове зображення',
+                    )
+                  }
+
+                  if (title.currentVersion.backgroundUrl) {
+                    try {
+                      await S3.send(
+                        new DeleteObjectCommand({
+                          Bucket: process.env.S3_BUCKET_NAME,
+                          Key: title.currentVersion.backgroundUrl,
+                        }),
+                      )
+                    } catch (s3Error) {
+                      console.error(
+                        'Помилка видалення старого фонового зображення з S3:',
+                        s3Error,
+                      )
+                    }
+                  }
+                } else if (!body.backgroundKey) {
+                  finalBGKey = null
+
+                  if (title.currentVersion.backgroundUrl) {
+                    try {
+                      await S3.send(
+                        new DeleteObjectCommand({
+                          Bucket: process.env.S3_BUCKET_NAME,
+                          Key: title.currentVersion.backgroundUrl,
+                        }),
+                      )
+                    } catch (s3Error) {
+                      console.error(
+                        'Помилка видалення фонового зображення з S3:',
+                        s3Error,
+                      )
+                    }
+                  }
+                }
+
+                // 6. Оновлення записів у базі даних
+                await prisma.title.update({
+                  where: { id },
+                  data: {
+                    approvalStatus: 'PENDING',
+                    moderationFeedback: null,
+                    lockedFields: [] as TitleFieldName[],
+                    publishers: {
+                      deleteMany: {},
+                      create: body.teams.map((team) => ({
+                        team: { connect: { id: team.id } },
+                      })),
+                    },
+                    currentVersion: {
+                      update: {
+                        coverUrl: finalCoverKey,
+                        backgroundUrl: finalBGKey,
+                        nameUkr: body.ukrName,
+                        nameEng: body.enName,
+                        description: body.description || null,
+                        type: body.type,
+                        titleStatus: body.titleStatus,
+                        translationStatus: body.translationStatus,
+                        ageRestriction: body.ageRestriction,
+                        releaseYear: parseInt(body.releaseYear),
+                        alternativeNames: {
+                          deleteMany: {},
+                          create: alternativeNames.map((name) => ({ name })),
+                        },
+                        genres: {
+                          deleteMany: {},
+                          create: body.genres.map((g) => ({
+                            genreId: g.id,
+                          })),
+                        },
+                        tags: {
+                          deleteMany: {},
+                          create: body.tags.map((t) => ({
+                            tagId: t.id,
+                          })),
+                        },
+                        people: {
+                          deleteMany: {},
+                          create: [
+                            ...body.authors.map((p) => ({
+                              personId: p.id,
+                              role: 'AUTHOR' as const,
+                            })),
+                            ...body.artists.map((p) => ({
+                              personId: p.id,
+                              role: 'ARTIST' as const,
+                            })),
+                          ],
+                        },
+                        sources: {
+                          deleteMany: {},
+                          create: body.sources.map((s) => ({
+                            url: s.url,
+                          })),
+                        },
+                      },
+                    },
+                  },
+                })
+
+                // 7. Повідомляємо про успішно виконаний запит
+                return {
+                  message: 'Запит відправлено',
+                  userId: user.id,
+                }
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при зміні даних')
+              }
+            },
+            {
+              authed: true,
+              body: sendNewTitleDataSchema,
+            },
+          )
+          .delete(
+            '/',
+            async ({ params: { id }, status, user }) => {
+              try {
+                const title = await prisma.title.findUnique({
+                  where: { id },
+                  select: {
+                    proposedByUserId: true,
+                    approvalStatus: true,
+                    currentVersion: {
+                      select: { coverUrl: true, backgroundUrl: true },
+                    },
+                  },
+                })
+
+                if (!title) return status(404, 'Цього твору не існує')
+
+                if (
+                  title.proposedByUserId !== user.id ||
+                  title.approvalStatus !== 'REJECTED'
+                ) {
+                  return status(
+                    403,
+                    'У вас немає прав для видалення цього запиту',
+                  )
+                }
+
+                if (!title.currentVersion) {
+                  return status(404, 'Поточну версію твору не знайдено')
+                }
+
+                await prisma.title.delete({
+                  where: {
+                    id,
+                    approvalStatus: 'REJECTED',
+                    proposedByUserId: user.id,
+                  },
+                })
+
+                try {
+                  const rawKeys = [
+                    title.currentVersion.coverUrl,
+                    title.currentVersion.backgroundUrl,
+                  ]
+                  const validKeys = rawKeys.filter(
+                    (key): key is string =>
+                      typeof key === 'string' && key.trim() !== '',
+                  )
+
+                  if (validKeys.length > 0) {
+                    const objectsPayload = validKeys.map((key) => ({
+                      Key: key,
+                    }))
+
+                    const command = new DeleteObjectsCommand({
+                      Bucket: process.env.S3_BUCKET_NAME,
+                      Delete: {
+                        Objects: objectsPayload,
+                        Quiet: true,
+                      },
+                    })
+
+                    await S3.send(command)
+                  }
+                } catch (s3Error) {
+                  console.error('Помилка при видаленні файлів з S3: ', s3Error)
+                }
+
+                return { message: 'Запит виконано', userId: user.id }
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при роботі з БД')
+              }
+            },
+            {
+              authed: true,
+              params: z.object({
+                id: z.string(),
+              }),
+            },
+          )
       })
   })

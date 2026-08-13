@@ -1,10 +1,30 @@
 .Wrapper {
+  --field-border: var(--4px);
+  position: relative;
   background-color: var(--sys-surface-low);
   color: var(--sys-on-surface-highest-variant);
   box-shadow: var(--inset-shadow);
-  border-radius: var(--4px);
+  border-radius: var(--field-border);
   padding: var(--8px) var(--12px) var(--8px) var(--8px);
   font-size: var(--14px);
+
+  &[data-locked] {
+    cursor: not-allowed;
+  }
+}
+
+.LockOverlay {
+  position: absolute;
+  inset: 0;
+  background-color: oklch(from var(--sys-on-surface) l c h / 0.2);
+  border-radius: var(--field-border);
+  display: grid;
+  place-content: center;
+  backdrop-filter: blur(0.5px);
+
+  svg {
+    color: var(--sys-on-dark-overlay);
+  }
 }
 
 .ChipGroup {
@@ -14,6 +34,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--6px);
+
+  .Wrapper[data-locked] & {
+    --buttons-color: var(--sys-on-surface-highest-variant);
+  }
 }
 
 .AddButton {

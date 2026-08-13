@@ -120,6 +120,17 @@
   }
 }
 
+.ModerationFeedback {
+  color: var(--blue-400);
+  background-color: oklch(from var(--blue-500) l c h / 0.1);
+  font-size: var(--14px);
+  border-radius: var(--6px);
+  padding: var(--12px) var(--16px);
+  white-space: pre-line;
+  position: relative;
+  margin-block-end: var(--8px);
+}
+
 .Form {
   display: flex;
   flex-direction: column;
@@ -139,10 +150,12 @@
 
 .Label {
   display: flex;
+  align-items: center;
   font-size: var(--14px);
   font-weight: 550;
   color: var(--sys-on-surface-variant);
   margin-block-end: var(--4px);
+  user-select: none;
 }
 
 .LabelBox {
@@ -177,13 +190,36 @@
   }
 }
 
+.FieldInputWrapper {
+  --field-border: var(--4px);
+  position: relative;
+
+  &[data-locked] {
+    cursor: not-allowed;
+  }
+}
+
+.LockOverlay {
+  position: absolute;
+  inset: 0;
+  background-color: oklch(from var(--sys-on-surface) l c h / 0.2);
+  border-radius: var(--field-border);
+  display: grid;
+  place-content: center;
+  backdrop-filter: blur(0.5px);
+
+  svg {
+    color: var(--sys-on-dark-overlay);
+  }
+}
+
 .FieldInput {
   background-color: var(--sys-surface-low);
   border: none;
   outline: none;
   min-inline-size: 0;
   inline-size: 100%;
-  border-radius: var(--4px);
+  border-radius: var(--field-border);
   padding: var(--8px) var(--12px);
   color: var(--sys-on-surface-highest-variant);
   box-shadow: var(--inset-shadow);
@@ -253,10 +289,6 @@
   &.MarginEnd {
     margin-block-end: var(--16px);
   }
-}
-
-.SourceFieldInputWrapper {
-  position: relative;
 }
 
 .SourceFieldInput {
@@ -389,9 +421,18 @@
   --border-radius: var(--8px);
   display: flex;
   gap: var(--16px);
+  position: relative;
 
   @include up('tablet') {
     --height: var(--220px);
+  }
+
+  .LockOverlay {
+    border-radius: var(--border-radius);
+  }
+
+  &[data-locked] {
+    cursor: not-allowed;
   }
 }
 

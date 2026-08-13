@@ -1,9 +1,9 @@
-import CreateTitleForm from '@/components/CreateTitleForm'
+import TitleForm from '@/components/TitleForm'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { allHelperInfos } from 'content-collections'
 
 export const Route = createFileRoute('/title/create/')({
-  component: CreateTitleForm,
+  component: CreateTitlePage,
   beforeLoad: async ({ context, location }) => {
     if (!context.authState.isAuthenticated) {
       throw redirect({
@@ -20,3 +20,13 @@ export const Route = createFileRoute('/title/create/')({
     return helperInfo
   },
 })
+
+function CreateTitlePage() {
+  const loaderData = Route.useLoaderData()
+  return (
+    <TitleForm
+      helperData={loaderData}
+      helperStorageKey="seen_create_title_rules"
+    />
+  )
+}

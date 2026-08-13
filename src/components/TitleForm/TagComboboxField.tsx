@@ -1,5 +1,12 @@
-import { Plus, X, Search, Check, XIcon, LoaderCircle } from 'lucide-react'
-import styles from './ComboboxField.module.scss'
+import {
+  Plus,
+  X,
+  Search,
+  Check,
+  XIcon,
+  LoaderCircle,
+  LockIcon,
+} from 'lucide-react'
 import { Combobox, ScrollArea, Separator } from '@base-ui/react'
 import MotionButton from '../MotionButton'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
@@ -9,13 +16,20 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { tagsQueries } from '@/services/queries'
 import { Tag } from '@/lib/treaty-types'
+import { showTimedToast } from '@/lib/toast'
+import styles from './ComboboxField.module.scss'
 
 interface TagsComboboxFieldProps {
   value: Tag[]
   onChange: (value: Tag[]) => void
+  isLocked: boolean
 }
 
-export function TagComboboxField({ value, onChange }: TagsComboboxFieldProps) {
+export function TagComboboxField({
+  value,
+  onChange,
+  isLocked,
+}: TagsComboboxFieldProps) {
   const [isOpen, setIsOpen] = useState(false)
   const shouldReduceMotion = useReducedMotion()
 
@@ -46,11 +60,12 @@ export function TagComboboxField({ value, onChange }: TagsComboboxFieldProps) {
       itemToStringLabel={(item: Tag) => item.name}
       isItemEqualToValue={(item: Tag, value: Tag) => item.id === value.id}
     >
-      <div className={styles.Wrapper}>
+      <div className={styles.Wrapper} data-locked={isLocked ? '' : undefined}>
         <Combobox.Chips className={styles.ChipGroup}>
           <Combobox.Trigger
             render={<MotionButton />}
             className={styles.AddButton}
+            disabled={isLocked}
           >
             <AnimatePresence
               mode={shouldReduceMotion ? undefined : 'popLayout'}
@@ -82,6 +97,23 @@ export function TagComboboxField({ value, onChange }: TagsComboboxFieldProps) {
           />
           <ChipList selectedTags={value} />
         </Combobox.Chips>
+        {isLocked && (
+          <div
+            className={styles.LockOverlay}
+            onClick={() => {
+              showTimedToast(
+                {
+                  type: 'warning',
+                  title: 'Попередження',
+                  description: 'Поле заблоковано для внесення змін',
+                },
+                1500,
+              )
+            }}
+          >
+            <LockIcon size={20} />
+          </div>
+        )}
       </div>
 
       <Combobox.Portal>

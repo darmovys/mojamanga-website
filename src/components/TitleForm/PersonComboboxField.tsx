@@ -1,5 +1,12 @@
-import { Plus, X, Search, Check, XIcon, LoaderCircle } from 'lucide-react'
-import styles from './ComboboxField.module.scss'
+import {
+  Plus,
+  X,
+  Search,
+  Check,
+  XIcon,
+  LoaderCircle,
+  LockIcon,
+} from 'lucide-react'
 import { Combobox, ScrollArea, Separator } from '@base-ui/react'
 import MotionButton from '../MotionButton'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
@@ -9,17 +16,21 @@ import { useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api-client'
 import clsx from 'clsx'
 import { Person } from '@/lib/treaty-types'
+import { showTimedToast } from '@/lib/toast'
+import styles from './ComboboxField.module.scss'
 
 interface PersonComboboxFieldProps {
   selectedPeople: Person[]
   onChange: (value: Person[]) => void
   debounceMs?: number
+  isLocked: boolean
 }
 
 export function PersonComboboxField({
   selectedPeople,
   onChange,
   debounceMs = 300,
+  isLocked,
 }: PersonComboboxFieldProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [searchResults, setSearchResults] = useState<Person[]>([])
@@ -116,6 +127,7 @@ export function PersonComboboxField({
 
   return (
     <Combobox.Root
+      value={selectedPeople}
       multiple={true}
       items={searchResults}
       filter={null}
@@ -137,11 +149,12 @@ export function PersonComboboxField({
       }}
       onOpenChange={setIsOpen}
     >
-      <div className={styles.Wrapper}>
+      <div className={styles.Wrapper} data-locked={isLocked ? '' : undefined}>
         <Combobox.Chips className={styles.ChipGroup}>
           <Combobox.Trigger
             render={<MotionButton />}
             className={styles.AddButton}
+            disabled={isLocked}
           >
             <AnimatePresence
               mode={shouldReduceMotion ? undefined : 'popLayout'}
@@ -166,6 +179,23 @@ export function PersonComboboxField({
           />
           <ChipList selectedPeople={selectedPeople} />
         </Combobox.Chips>
+        {isLocked && (
+          <div
+            className={styles.LockOverlay}
+            onClick={() => {
+              showTimedToast(
+                {
+                  type: 'warning',
+                  title: 'Попередження',
+                  description: 'Поле заблоковано для внесення змін',
+                },
+                1500,
+              )
+            }}
+          >
+            <LockIcon size={20} />
+          </div>
+        )}
       </div>
 
       <Combobox.Portal>

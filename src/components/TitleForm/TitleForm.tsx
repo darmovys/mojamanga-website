@@ -8,20 +8,20 @@ import MotionButton, { tapAnimation } from '../MotionButton'
 import MobileNavigation from '../MobileNavigation'
 import clsx from 'clsx'
 import { Image } from '@unpic/react'
-import { MAX_NUMBER_OF_SOURCE_FIELDS, useTitleForm } from './use-title-form'
+import { TitleFormMode, useTitleForm } from './use-title-form'
 import CropImageDialog from '../CropImageDialog'
 import { SelectField } from './SelectField'
 import ShiftBy from '../ShiftBy'
 import { PersonComboboxField } from './PersonComboboxField'
-import { getRouteApi, Link } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { UserTeamsCheckboxList } from './UserTeamsCheckboxList'
 import { TagComboboxField } from './TagComboboxField'
 import { GenreComboboxField } from './GenreComboboxField'
-import { useHelperDialog } from '@/hooks/use-helper-dialog'
+import { HelperData, useHelperDialog } from '@/hooks/use-helper-dialog'
 import HelperDialog from '../HelperDialog'
 import { produce } from 'immer'
 import { createId } from '@paralleldrive/cuid2'
-import { SourceShape } from '@/schemas/titles'
+import { MAX_NUMBER_OF_SOURCE_FIELDS, SourceShape } from '@/schemas/titles'
 import { isValidUrl } from '@/lib/utils'
 import { useId } from 'react'
 import {
@@ -33,6 +33,7 @@ import {
   Link2Icon,
   LinkIcon,
   LoaderCircle,
+  LockIcon,
   Trash2,
   UploadCloud,
 } from 'lucide-react'
@@ -41,6 +42,7 @@ import {
   TranslationStatus,
   TitleStatus,
   TitleType,
+  TitleFieldName,
 } from '@/generated/prisma/enums'
 import {
   AGE_RESTRICTION_LABELS,
@@ -48,13 +50,25 @@ import {
   TITLE_STATUS_LABELS,
   TITLE_TYPE_LABELS,
 } from '@/lib/constants'
-import styles from './CreateTitleForm.module.scss'
+import { TitleEditableData } from '@/services/queries'
+import styles from './TitleForm.module.scss'
+import { showTimedToast } from '@/lib/toast'
 
 const MAX_DESCRIPTION_LENGTH = 1000
 
-const routeApi = getRouteApi('/title/create/')
+interface TitleFormProps {
+  initialData?: TitleEditableData
+  helperData?: HelperData
+  helperStorageKey?: string
+  mode?: TitleFormMode
+}
 
-function CreateTitleForm() {
+function TitleForm({
+  initialData,
+  helperData,
+  helperStorageKey,
+  mode = 'create',
+}: TitleFormProps) {
   const { handleGoBack } = useGoBack()
   const {
     form,
@@ -68,10 +82,15 @@ function CreateTitleForm() {
     hasAccordionAnimationFinished,
     setHasAccordionAnimationFinished,
     handleSourcesPresence,
-  } = useTitleForm()
-  const loaderData = routeApi.useLoaderData()
+  } = useTitleForm(initialData, mode)
 
-  const helper = useHelperDialog('seen_create_title_rules', loaderData)
+  const helper = useHelperDialog(helperStorageKey, helperData)
+
+  const lockedFields = initialData?.lockedFields
+
+  function isLockedField(fieldName: TitleFieldName) {
+    return (lockedFields && lockedFields.includes(fieldName)) ?? false
+  }
 
   return (
     <div className={styles.MaxWidthWrapper}>
@@ -81,7 +100,10 @@ function CreateTitleForm() {
           <ArrowLeft size={20} />
           <VisuallyHidden>Повернутися на попередню сторінку</VisuallyHidden>
         </Button>
-        <h1 className={styles.GoBackHeading}>Додавання твору</h1>
+        <h1 className={styles.GoBackHeading}>
+          {mode === 'create' && 'Додавання твору'}
+          {mode === 'revise' && 'Редагування твору'}
+        </h1>
         {helper && (
           <HelperDialog
             title={helper.title}
@@ -102,7 +124,10 @@ function CreateTitleForm() {
       <div className={styles.Wrapper}>
         <div className={styles.Content}>
           <div className={styles.ContentHeaderWrapper}>
-            <h1 className={styles.ContentTitle}>Додавання твору</h1>
+            <h1 className={styles.ContentTitle}>
+              {mode === 'create' && 'Додавання твору'}
+              {mode === 'revise' && 'Редагування твору'}
+            </h1>
             {helper && (
               <HelperDialog
                 title={helper.title}
@@ -119,6 +144,14 @@ function CreateTitleForm() {
               />
             )}
           </div>
+          {initialData?.moderationFeedback && (
+            <>
+              <span className={styles.Label}>Коментар від модератора</span>
+              <div className={styles.ModerationFeedback}>
+                {initialData.moderationFeedback}
+              </div>
+            </>
+          )}
           <form
             className={styles.Form}
             onSubmit={(e) => {
@@ -130,71 +163,107 @@ function CreateTitleForm() {
             <div className={styles.CoversWrapper}>
               <form.Field
                 name="coverKey"
-                children={(field) => (
-                  <Field.Root
-                    invalid={
-                      !field.state.meta.isValid &&
-                      form.state.submissionAttempts > 0
-                    }
-                  >
-                    <Field.Label
-                      nativeLabel={false}
-                      render={<div />}
-                      className={styles.Label}
+                children={(field) => {
+                  const currentCoverKey = field.state.value
+
+                  const hasNewCover = Boolean(cover.fileState?.objectUrl)
+
+                  const hasOriginalCover =
+                    !cover.fileState &&
+                    Boolean(initialData?.coverUrl) &&
+                    currentCoverKey === initialData?.coverUrl
+
+                  const shouldShowPreview = hasNewCover || hasOriginalCover
+
+                  const isCoverLocked = isLockedField('coverUrl')
+
+                  const shouldShowTrashButton =
+                    !hasNewCover || !cover.fileState!.uploading
+
+                  const shouldShowUploadProgress =
+                    hasNewCover &&
+                    cover.fileState!.uploading &&
+                    !cover.fileState!.isDeleting
+
+                  const shouldShowUploadError =
+                    hasNewCover &&
+                    !cover.fileState!.uploading &&
+                    !cover.fileState!.isDeleting &&
+                    Boolean(cover.fileState!.error)
+
+                  return (
+                    <Field.Root
+                      invalid={
+                        !field.state.meta.isValid &&
+                        form.state.submissionAttempts > 0
+                      }
                     >
-                      Обкладинка
-                      <Tooltip
-                        className={styles.RedTooltip}
-                        text="Обов'язкове поле"
-                        align="start"
+                      <Field.Label
+                        nativeLabel={false}
+                        render={<div />}
+                        className={styles.Label}
                       >
-                        <Asterisk size={14} />
-                      </Tooltip>
-                    </Field.Label>
-                    <div className={styles.UploadAvatarWrapper}>
-                      {!cover.fileState && (
-                        <motion.div
-                          {...tapAnimation}
-                          {...cover.getRootProps({
-                            role: 'button',
-                            'aria-label': 'drag and drop area',
-                          })}
-                          className={styles.UploadZone}
-                          data-drag-active={cover.isDragActive}
+                        Обкладинка
+                        <Tooltip
+                          className={styles.RedTooltip}
+                          text="Обов'язкове поле"
+                          align="start"
                         >
-                          <input {...cover.getInputProps()} />
-                          <UploadCloud size={20} />
-                          <span>Завантажте</span>
-                          <span>фото</span>
-
-                          <svg
-                            className={styles.UploadZoneBorder}
-                            xmlns="http://www.w3.org/2000/svg"
+                          <Asterisk size={14} />
+                        </Tooltip>
+                      </Field.Label>
+                      <div
+                        className={styles.UploadAvatarWrapper}
+                        data-locked={isCoverLocked ? '' : undefined}
+                      >
+                        {!shouldShowPreview && (
+                          <motion.div
+                            {...tapAnimation}
+                            {...cover.getRootProps({
+                              role: 'button',
+                              'aria-label': 'drag and drop area',
+                            })}
+                            tabIndex={isCoverLocked ? -1 : 0}
+                            className={styles.UploadZone}
+                            data-drag-active={cover.isDragActive}
                           >
-                            <rect className={styles.Rectangle} />
-                          </svg>
-                        </motion.div>
-                      )}
+                            <input
+                              {...cover.getInputProps()}
+                              disabled={isCoverLocked}
+                            />
+                            <UploadCloud size={20} />
+                            <span>Завантажте</span>
+                            <span>фото</span>
 
-                      {cover.fileState && (
-                        <div className={styles.UploadedCover}>
-                          <Image
-                            layout="fullWidth"
-                            alt={cover.fileState.file.name}
-                            src={cover.fileState.objectUrl ?? ''}
-                            draggable={false}
-                          />
+                            <svg
+                              className={styles.UploadZoneBorder}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <rect className={styles.Rectangle} />
+                            </svg>
+                          </motion.div>
+                        )}
 
-                          {cover.fileState.uploading &&
-                            !cover.fileState.isDeleting && (
+                        {shouldShowPreview && (
+                          <div className={styles.UploadedCover}>
+                            <Image
+                              layout="fullWidth"
+                              alt="Обкладинка твору"
+                              src={
+                                hasNewCover
+                                  ? cover.fileState!.objectUrl!
+                                  : `${import.meta.env.VITE_STORAGE_URL}${initialData!.coverUrl}`
+                              }
+                              draggable={false}
+                            />
+
+                            {shouldShowUploadProgress && (
                               <div className={styles.Overlay}>
-                                {cover.fileState.progress}%
+                                {cover.fileState!.progress}%
                               </div>
                             )}
 
-                          {!cover.fileState.uploading &&
-                            !cover.fileState.isDeleting &&
-                            cover.fileState.error && (
+                            {shouldShowUploadError && (
                               <div className={styles.Overlay}>
                                 <CircleAlert
                                   className={styles.Error}
@@ -203,124 +272,176 @@ function CreateTitleForm() {
                               </div>
                             )}
 
-                          {!cover.fileState.uploading && (
-                            <div className={styles.FloatingButtonWrapper}>
-                              <MotionButton
-                                focusableWhenDisabled={true}
-                                disabled={
-                                  cover.fileState.isDeleting || isUploading
-                                }
-                                onClick={() => cover.removeFile()}
-                                className={styles.TrashImageButton}
-                              >
-                                <ClickTargetHelper />
-                                {cover.fileState.isDeleting ? (
-                                  <>
-                                    <LoaderCircle
-                                      className={styles.Loader}
-                                      size={16}
-                                    />
-                                    <VisuallyHidden>
-                                      Видаляємо зображення
-                                    </VisuallyHidden>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Trash2 size={16} />
-                                    <VisuallyHidden>
-                                      Видалити зображення
-                                    </VisuallyHidden>
-                                  </>
-                                )}
-                              </MotionButton>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      <AnimatePresence>
-                        {cover.imageToCrop && cover.cropImageUrl && (
-                          <CropImageDialog
-                            src={cover.cropImageUrl}
-                            originalName={cover.imageToCrop.name}
-                            fileType={cover.imageToCrop.type}
-                            originalFile={cover.imageToCrop}
-                            croppedWidth={cover.croppedWidth}
-                            croppedHeight={cover.croppedHeight}
-                            onCropped={(file) => {
-                              if (!file) return
-                              cover.uploadFile(file)
-                            }}
-                            onClose={() => {
-                              cover.setImageToCrop(null)
-                            }}
-                          />
+                            {shouldShowTrashButton && (
+                              <div className={styles.FloatingButtonWrapper}>
+                                <MotionButton
+                                  focusableWhenDisabled={!isCoverLocked}
+                                  disabled={
+                                    isCoverLocked ||
+                                    (hasNewCover
+                                      ? cover.fileState!.isDeleting ||
+                                        isUploading
+                                      : isUploading)
+                                  }
+                                  onClick={() => {
+                                    if (hasNewCover) {
+                                      cover.removeFile()
+                                    } else {
+                                      field.handleChange(null)
+                                    }
+                                  }}
+                                  className={styles.TrashImageButton}
+                                >
+                                  <ClickTargetHelper />
+                                  {hasNewCover &&
+                                  cover.fileState!.isDeleting ? (
+                                    <>
+                                      <LoaderCircle
+                                        className={styles.Loader}
+                                        size={16}
+                                      />
+                                      <VisuallyHidden>
+                                        Видаляємо зображення
+                                      </VisuallyHidden>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Trash2 size={16} />
+                                      <VisuallyHidden>
+                                        Видалити зображення
+                                      </VisuallyHidden>
+                                    </>
+                                  )}
+                                </MotionButton>
+                              </div>
+                            )}
+                          </div>
                         )}
-                      </AnimatePresence>
-                    </div>
-                  </Field.Root>
-                )}
+                        <AnimatePresence>
+                          {cover.imageToCrop && cover.cropImageUrl && (
+                            <CropImageDialog
+                              src={cover.cropImageUrl}
+                              originalName={cover.imageToCrop.name}
+                              fileType={cover.imageToCrop.type}
+                              originalFile={cover.imageToCrop}
+                              croppedWidth={cover.croppedWidth}
+                              croppedHeight={cover.croppedHeight}
+                              onCropped={(file) => {
+                                if (!file) return
+                                cover.uploadFile(file)
+                              }}
+                              onClose={() => {
+                                cover.setImageToCrop(null)
+                              }}
+                            />
+                          )}
+                        </AnimatePresence>
+                        {isLockedField('coverUrl') && <LockOverlay />}
+                      </div>
+                    </Field.Root>
+                  )
+                }}
               />
 
               <form.Field
                 name="backgroundKey"
-                children={(field) => (
-                  <Field.Root
-                    invalid={
-                      !field.state.meta.isValid &&
-                      form.state.submissionAttempts > 0
-                    }
-                  >
-                    <Field.Label
-                      nativeLabel={false}
-                      render={<div />}
-                      className={styles.Label}
+                children={(field) => {
+                  const currentBackgroundKey = field.state.value
+
+                  const hasNewBackground = Boolean(
+                    background.fileState?.objectUrl,
+                  )
+
+                  const hasOriginalBackground =
+                    !background.fileState &&
+                    Boolean(initialData?.backgroundUrl) &&
+                    currentBackgroundKey === initialData?.backgroundUrl
+
+                  const shouldShowPreview =
+                    hasNewBackground || hasOriginalBackground
+
+                  const isBackgroundLocked = isLockedField('backgroundUrl')
+
+                  const shouldShowTrashButton =
+                    !hasNewBackground || !background.fileState!.uploading
+
+                  const shouldShowUploadProgress =
+                    hasNewBackground &&
+                    background.fileState!.uploading &&
+                    !background.fileState!.isDeleting
+
+                  const shouldShowUploadError =
+                    hasNewBackground &&
+                    !background.fileState!.uploading &&
+                    !background.fileState!.isDeleting &&
+                    Boolean(background.fileState!.error)
+
+                  return (
+                    <Field.Root
+                      invalid={
+                        !field.state.meta.isValid &&
+                        form.state.submissionAttempts > 0
+                      }
                     >
-                      Фонове зображення
-                    </Field.Label>
-                    <div className={styles.UploadBackgroundWrapper}>
-                      {!background.fileState && (
-                        <motion.div
-                          {...tapAnimation}
-                          {...background.getRootProps({
-                            role: 'button',
-                            'aria-label': 'drag and drop area',
-                          })}
-                          className={styles.UploadZone}
-                          data-drag-active={background.isDragActive}
-                        >
-                          <input {...background.getInputProps()} />
-                          <UploadCloud size={20} />
-                          <span>Завантажте</span>
-                          <span>фото</span>
-
-                          <svg
-                            className={styles.UploadZoneBorder}
-                            xmlns="http://www.w3.org/2000/svg"
+                      <Field.Label
+                        nativeLabel={false}
+                        render={<div />}
+                        className={styles.Label}
+                      >
+                        Фонове зображення
+                      </Field.Label>
+                      <div
+                        className={styles.UploadBackgroundWrapper}
+                        data-locked={isBackgroundLocked ? '' : undefined}
+                      >
+                        {!shouldShowPreview && (
+                          <motion.div
+                            {...tapAnimation}
+                            {...background.getRootProps({
+                              role: 'button',
+                              'aria-label': 'drag and drop area',
+                            })}
+                            tabIndex={isBackgroundLocked ? -1 : 0}
+                            className={styles.UploadZone}
+                            data-drag-active={background.isDragActive}
                           >
-                            <rect className={styles.Rectangle} />
-                          </svg>
-                        </motion.div>
-                      )}
+                            <input
+                              {...background.getInputProps()}
+                              disabled={isBackgroundLocked}
+                            />
+                            <UploadCloud size={20} />
+                            <span>Завантажте</span>
+                            <span>фото</span>
 
-                      {background.fileState && (
-                        <div className={styles.UploadedCover}>
-                          <Image
-                            layout="fullWidth"
-                            alt={background.fileState.file.name}
-                            src={background.fileState.objectUrl ?? ''}
-                            draggable={false}
-                          />
+                            <svg
+                              className={styles.UploadZoneBorder}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <rect className={styles.Rectangle} />
+                            </svg>
+                          </motion.div>
+                        )}
 
-                          {background.fileState.uploading &&
-                            !background.fileState.isDeleting && (
+                        {shouldShowPreview && (
+                          <div className={styles.UploadedCover}>
+                            <Image
+                              layout="fullWidth"
+                              alt="Фонове зображення твору"
+                              src={
+                                hasNewBackground
+                                  ? background.fileState!.objectUrl!
+                                  : `${import.meta.env.VITE_STORAGE_URL}${initialData!.backgroundUrl}`
+                              }
+                              draggable={false}
+                            />
+
+                            {shouldShowUploadProgress && (
                               <div className={styles.Overlay}>
-                                {background.fileState.progress}%
+                                {background.fileState!.progress}%
                               </div>
                             )}
 
-                          {!background.fileState.uploading &&
-                            !background.fileState.isDeleting &&
-                            background.fileState.error && (
+                            {shouldShowUploadError && (
                               <div className={styles.Overlay}>
                                 <CircleAlert
                                   className={styles.Error}
@@ -329,62 +450,76 @@ function CreateTitleForm() {
                               </div>
                             )}
 
-                          {!background.fileState.uploading && (
-                            <div className={styles.FloatingButtonWrapper}>
-                              <MotionButton
-                                className={styles.TrashImageButton}
-                                focusableWhenDisabled={true}
-                                disabled={
-                                  background.fileState.isDeleting || isUploading
-                                }
-                                onClick={() => background.removeFile()}
-                              >
-                                <ClickTargetHelper />
-                                {background.fileState.isDeleting ? (
-                                  <>
-                                    <LoaderCircle
-                                      className={styles.Loader}
-                                      size={16}
-                                    />
-                                    <VisuallyHidden>
-                                      Видаляємо зображення
-                                    </VisuallyHidden>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Trash2 size={16} />
-                                    <VisuallyHidden>
-                                      Видалити зображення
-                                    </VisuallyHidden>
-                                  </>
-                                )}
-                              </MotionButton>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      <AnimatePresence>
-                        {background.imageToCrop && background.cropImageUrl && (
-                          <CropImageDialog
-                            src={background.cropImageUrl}
-                            originalName={background.imageToCrop.name}
-                            fileType={background.imageToCrop.type}
-                            originalFile={background.imageToCrop}
-                            croppedWidth={background.croppedWidth}
-                            croppedHeight={background.croppedHeight}
-                            onCropped={(file) => {
-                              if (!file) return
-                              background.uploadFile(file)
-                            }}
-                            onClose={() => {
-                              background.setImageToCrop(null)
-                            }}
-                          />
+                            {shouldShowTrashButton && (
+                              <div className={styles.FloatingButtonWrapper}>
+                                <MotionButton
+                                  className={styles.TrashImageButton}
+                                  focusableWhenDisabled={!isBackgroundLocked}
+                                  disabled={
+                                    isBackgroundLocked ||
+                                    (hasNewBackground
+                                      ? background.fileState!.isDeleting ||
+                                        isUploading
+                                      : isUploading)
+                                  }
+                                  onClick={() => {
+                                    if (hasNewBackground) {
+                                      background.removeFile()
+                                    } else {
+                                      field.handleChange(null)
+                                    }
+                                  }}
+                                >
+                                  <ClickTargetHelper />
+                                  {hasNewBackground &&
+                                  background.fileState!.isDeleting ? (
+                                    <>
+                                      <LoaderCircle
+                                        className={styles.Loader}
+                                        size={16}
+                                      />
+                                      <VisuallyHidden>
+                                        Видаляємо зображення
+                                      </VisuallyHidden>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Trash2 size={16} />
+                                      <VisuallyHidden>
+                                        Видалити зображення
+                                      </VisuallyHidden>
+                                    </>
+                                  )}
+                                </MotionButton>
+                              </div>
+                            )}
+                          </div>
                         )}
-                      </AnimatePresence>
-                    </div>
-                  </Field.Root>
-                )}
+                        <AnimatePresence>
+                          {background.imageToCrop &&
+                            background.cropImageUrl && (
+                              <CropImageDialog
+                                src={background.cropImageUrl}
+                                originalName={background.imageToCrop.name}
+                                fileType={background.imageToCrop.type}
+                                originalFile={background.imageToCrop}
+                                croppedWidth={background.croppedWidth}
+                                croppedHeight={background.croppedHeight}
+                                onCropped={(file) => {
+                                  if (!file) return
+                                  background.uploadFile(file)
+                                }}
+                                onClose={() => {
+                                  background.setImageToCrop(null)
+                                }}
+                              />
+                            )}
+                        </AnimatePresence>
+                        {isLockedField('backgroundUrl') && <LockOverlay />}
+                      </div>
+                    </Field.Root>
+                  )
+                }}
               />
             </div>
 
@@ -407,16 +542,23 @@ function CreateTitleForm() {
                       <Asterisk size={14} />
                     </Tooltip>
                   </Field.Label>
-                  <Field.Control
-                    id="ukrName"
-                    name={field.name}
-                    type="text"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    autoComplete="off"
-                    className={styles.FieldInput}
-                  />
+                  <div
+                    className={styles.FieldInputWrapper}
+                    data-locked={isLockedField('nameUkr') ? '' : undefined}
+                  >
+                    <Field.Control
+                      id="ukrName"
+                      name={field.name}
+                      type="text"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      autoComplete="off"
+                      className={styles.FieldInput}
+                      disabled={isLockedField('nameUkr')}
+                    />
+                    {isLockedField('nameUkr') && <LockOverlay />}
+                  </div>
                 </Field.Root>
               )}
             />
@@ -440,16 +582,23 @@ function CreateTitleForm() {
                       <Asterisk size={14} />
                     </Tooltip>
                   </Field.Label>
-                  <Field.Control
-                    id="enName"
-                    name={field.name}
-                    type="text"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    autoComplete="off"
-                    className={styles.FieldInput}
-                  />
+                  <div
+                    className={styles.FieldInputWrapper}
+                    data-locked={isLockedField('nameEng') ? '' : undefined}
+                  >
+                    <Field.Control
+                      id="enName"
+                      name={field.name}
+                      type="text"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      autoComplete="off"
+                      className={styles.FieldInput}
+                      disabled={isLockedField('nameEng')}
+                    />
+                    {isLockedField('nameEng') && <LockOverlay />}
+                  </div>
                 </Field.Root>
               )}
             />
@@ -476,16 +625,25 @@ function CreateTitleForm() {
                       <Asterisk size={14} />
                     </Tooltip>
                   </Field.Label>
-                  <Field.Control
-                    id="alternativeNames"
-                    name={field.name}
-                    type="text"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    autoComplete="off"
-                    className={styles.FieldInput}
-                  />
+                  <div
+                    className={styles.FieldInputWrapper}
+                    data-locked={
+                      isLockedField('alternativeNames') ? '' : undefined
+                    }
+                  >
+                    <Field.Control
+                      id="alternativeNames"
+                      name={field.name}
+                      type="text"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      autoComplete="off"
+                      className={styles.FieldInput}
+                      disabled={isLockedField('alternativeNames')}
+                    />
+                    {isLockedField('alternativeNames') && <LockOverlay />}
+                  </div>
                 </Field.Root>
               )}
             />
@@ -506,21 +664,30 @@ function CreateTitleForm() {
                     <Field.Label htmlFor="description" className={styles.Label}>
                       Опис
                     </Field.Label>
-                    <Field.Control
-                      render={<textarea />}
-                      id="description"
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => {
-                        if (e.target.value.length <= MAX_DESCRIPTION_LENGTH) {
-                          field.handleChange(e.target.value)
-                        }
-                      }}
-                      autoComplete="off"
-                      className={styles.FieldInput}
-                      style={{ resize: 'vertical', height: 'var(--160px)' }}
-                    />
+                    <div
+                      className={styles.FieldInputWrapper}
+                      data-locked={
+                        isLockedField('description') ? '' : undefined
+                      }
+                    >
+                      <Field.Control
+                        render={<textarea />}
+                        id="description"
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => {
+                          if (e.target.value.length <= MAX_DESCRIPTION_LENGTH) {
+                            field.handleChange(e.target.value)
+                          }
+                        }}
+                        autoComplete="off"
+                        className={styles.FieldInput}
+                        style={{ resize: 'vertical', height: 'var(--160px)' }}
+                        disabled={isLockedField('description')}
+                      />
+                      {isLockedField('description') && <LockOverlay />}
+                    </div>
                     <span className={styles.MaxDescriptionLength}>
                       {remainingSymbols}/{MAX_DESCRIPTION_LENGTH}
                     </span>
@@ -566,6 +733,7 @@ function CreateTitleForm() {
                       onValueChange={field.handleChange}
                       options={Object.values(TitleType)}
                       labels={TITLE_TYPE_LABELS}
+                      isLocked={isLockedField('type')}
                     />
                   </Field.Root>
                 )}
@@ -595,6 +763,7 @@ function CreateTitleForm() {
                       onValueChange={field.handleChange}
                       options={Object.values(TitleStatus)}
                       labels={TITLE_STATUS_LABELS}
+                      isLocked={isLockedField('titleStatus')}
                     />
                   </Field.Root>
                 )}
@@ -624,6 +793,7 @@ function CreateTitleForm() {
                       onValueChange={field.handleChange}
                       options={Object.values(TranslationStatus)}
                       labels={TRANSLATION_STATUS_LABELS}
+                      isLocked={isLockedField('translationStatus')}
                     />
                   </Field.Root>
                 )}
@@ -653,6 +823,7 @@ function CreateTitleForm() {
                       onValueChange={field.handleChange}
                       options={Object.values(AgeRestriction)}
                       labels={AGE_RESTRICTION_LABELS}
+                      isLocked={isLockedField('ageRestriction')}
                     />
                   </Field.Root>
                 )}
@@ -676,17 +847,26 @@ function CreateTitleForm() {
                     >
                       Рік випуску
                     </Field.Label>
-                    <Field.Control
-                      id={field.name}
-                      name={field.name}
-                      type="text"
-                      autoComplete="off"
-                      inputMode="numeric"
-                      value={field.state.value}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      onBlur={field.handleBlur}
-                      className={styles.FieldInput}
-                    />
+                    <div
+                      className={styles.FieldInputWrapper}
+                      data-locked={
+                        isLockedField('releaseYear') ? '' : undefined
+                      }
+                    >
+                      <Field.Control
+                        id={field.name}
+                        name={field.name}
+                        type="text"
+                        autoComplete="off"
+                        inputMode="numeric"
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        className={styles.FieldInput}
+                        disabled={isLockedField('releaseYear')}
+                      />
+                      {isLockedField('releaseYear') && <LockOverlay />}
+                    </div>
                   </Field.Root>
                 )}
               />
@@ -711,6 +891,7 @@ function CreateTitleForm() {
                   <GenreComboboxField
                     value={field.state.value}
                     onChange={field.handleChange}
+                    isLocked={isLockedField('genres')}
                   />
                 </Field.Root>
               )}
@@ -735,6 +916,7 @@ function CreateTitleForm() {
                   <TagComboboxField
                     value={field.state.value}
                     onChange={field.handleChange}
+                    isLocked={isLockedField('tags')}
                   />
                 </Field.Root>
               )}
@@ -771,6 +953,7 @@ function CreateTitleForm() {
                   <PersonComboboxField
                     selectedPeople={field.state.value}
                     onChange={field.handleChange}
+                    isLocked={isLockedField('authors')}
                   />
                 </Field.Root>
               )}
@@ -807,6 +990,7 @@ function CreateTitleForm() {
                   <PersonComboboxField
                     selectedPeople={field.state.value}
                     onChange={field.handleChange}
+                    isLocked={isLockedField('artists')}
                   />
                 </Field.Root>
               )}
@@ -949,26 +1133,37 @@ function CreateTitleForm() {
                             <AnimatePresence>
                               {visibleFields.map((source, index) => {
                                 return (
-                                  <SourceInputField
+                                  <div
                                     key={source.id}
-                                    source={source}
-                                    fieldIndex={index}
-                                    onChangeSource={(id, value) =>
-                                      handleChangeSource(id, value)
+                                    className={styles.FieldInputWrapper}
+                                    data-locked={
+                                      isLockedField('sources') ? '' : undefined
                                     }
-                                    onRemoveSource={(id) =>
-                                      handleRemoveSource(id)
-                                    }
-                                    hasAccordionAnimationFinished={
-                                      hasAccordionAnimationFinished
-                                    }
-                                  />
+                                  >
+                                    <SourceInputField
+                                      source={source}
+                                      fieldIndex={index}
+                                      onChangeSource={(id, value) =>
+                                        handleChangeSource(id, value)
+                                      }
+                                      onRemoveSource={(id) =>
+                                        handleRemoveSource(id)
+                                      }
+                                      hasAccordionAnimationFinished={
+                                        hasAccordionAnimationFinished
+                                      }
+                                      isLocked={isLockedField('sources')}
+                                    />
+                                    {isLockedField('sources') && (
+                                      <LockOverlay />
+                                    )}
+                                  </div>
                                 )
                               })}
                             </AnimatePresence>
                           </div>
 
-                          {!maxFieldsReached && (
+                          {!maxFieldsReached && !isLockedField('sources') && (
                             <MotionButton
                               type="button"
                               disabled={hasEmptyFields}
@@ -1060,12 +1255,33 @@ function CreateTitleForm() {
   )
 }
 
+function LockOverlay() {
+  return (
+    <div
+      className={styles.LockOverlay}
+      onClick={() => {
+        showTimedToast(
+          {
+            type: 'warning',
+            title: 'Попередження',
+            description: 'Поле заблоковано для внесення змін',
+          },
+          1500,
+        )
+      }}
+    >
+      <LockIcon size={20} />
+    </div>
+  )
+}
+
 interface SourceInputField {
   source: SourceShape
   fieldIndex: number
   onChangeSource: (id: string, value: string) => void
   onRemoveSource: (id: string) => void
   hasAccordionAnimationFinished: boolean
+  isLocked: boolean
 }
 
 export function SourceInputField({
@@ -1074,6 +1290,7 @@ export function SourceInputField({
   onChangeSource,
   onRemoveSource,
   hasAccordionAnimationFinished,
+  isLocked,
 }: SourceInputField) {
   const isValid = isValidUrl(source.url)
   const fieldId = useId()
@@ -1114,7 +1331,7 @@ export function SourceInputField({
           marginBottom: { delay: 0.25, duration: 0.25 },
         },
       }}
-      className={styles.SourceFieldInputWrapper}
+      className={styles.FieldInputWrapper}
     >
       <input
         type="url"
@@ -1126,6 +1343,7 @@ export function SourceInputField({
         autoComplete="off"
         className={styles.SourceFieldInput}
         autoFocus={true}
+        disabled={isLocked}
       />
 
       <div className={styles.SourceFieldButtonsWrapper}>
@@ -1148,6 +1366,7 @@ export function SourceInputField({
               />
             }
             nativeButton={false}
+            disabled={isLocked}
           >
             <Link2Icon size={16} />
             <VisuallyHidden>Перейти за наданим посиланням</VisuallyHidden>
@@ -1170,6 +1389,7 @@ export function SourceInputField({
         <MotionButton
           className={clsx(styles.SourceFieldButton, styles.TrashButton)}
           onClick={() => onRemoveSource(source.id)}
+          disabled={isLocked}
         >
           <Trash2 size={16} />
           <VisuallyHidden>Видалити поле</VisuallyHidden>
@@ -1179,4 +1399,4 @@ export function SourceInputField({
   )
 }
 
-export default CreateTitleForm
+export default TitleForm

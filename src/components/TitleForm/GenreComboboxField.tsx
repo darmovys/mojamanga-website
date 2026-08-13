@@ -1,5 +1,12 @@
-import { Plus, X, Search, Check, XIcon, LoaderCircle } from 'lucide-react'
-import styles from './ComboboxField.module.scss'
+import {
+  Plus,
+  X,
+  Search,
+  Check,
+  XIcon,
+  LoaderCircle,
+  LockIcon,
+} from 'lucide-react'
 import { Combobox, ScrollArea, Separator } from '@base-ui/react'
 import MotionButton from '../MotionButton'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
@@ -9,15 +16,19 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { genresQueries } from '@/services/queries'
 import { Genre } from '@/lib/treaty-types'
+import { showTimedToast } from '@/lib/toast'
+import styles from './ComboboxField.module.scss'
 
 interface GenresComboboxFieldProps {
   value: Genre[]
   onChange: (value: Genre[]) => void
+  isLocked: boolean
 }
 
 export function GenreComboboxField({
   value,
   onChange,
+  isLocked,
 }: GenresComboboxFieldProps) {
   const [isOpen, setIsOpen] = useState(false)
   const shouldReduceMotion = useReducedMotion()
@@ -49,11 +60,12 @@ export function GenreComboboxField({
       itemToStringLabel={(item: Genre) => item.name}
       isItemEqualToValue={(item: Genre, value: Genre) => item.id === value.id}
     >
-      <div className={styles.Wrapper}>
+      <div className={styles.Wrapper} data-locked={isLocked ? '' : undefined}>
         <Combobox.Chips className={styles.ChipGroup}>
           <Combobox.Trigger
             render={<MotionButton />}
             className={styles.AddButton}
+            disabled={isLocked}
           >
             <AnimatePresence
               mode={shouldReduceMotion ? undefined : 'popLayout'}
@@ -85,6 +97,23 @@ export function GenreComboboxField({
           />
           <ChipList selectedGenres={value} />
         </Combobox.Chips>
+        {isLocked && (
+          <div
+            className={styles.LockOverlay}
+            onClick={() => {
+              showTimedToast(
+                {
+                  type: 'warning',
+                  title: 'Попередження',
+                  description: 'Поле заблоковано для внесення змін',
+                },
+                1500,
+              )
+            }}
+          >
+            <LockIcon size={20} />
+          </div>
+        )}
       </div>
 
       <Combobox.Portal>

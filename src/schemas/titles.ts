@@ -4,6 +4,7 @@ import {
   TitleStatus,
   TitleType,
 } from '@/generated/prisma/enums'
+import { isValidUrl } from '@/lib/utils'
 import { z } from 'zod'
 
 interface PersonShape {
@@ -28,6 +29,8 @@ interface GenreShape {
 }
 
 type FieldTypes = { [key: string]: 'string' | 'number' | 'boolean' }
+
+export const MAX_NUMBER_OF_SOURCE_FIELDS = 20
 
 function zodObjectArray<T>(fields: FieldTypes, errorMsg: string) {
   return z.array(
@@ -68,13 +71,13 @@ const sourceShapeSchema = z.object({
 
 export type SourceShape = z.infer<typeof sourceShapeSchema>
 
-export const addTitleSchema = z.object({
+export const sendNewTitleDataSchema = z.object({
   coverKey: z
     .string({ error: 'Прикріпіть обкладинку твору' })
     .min(1, { error: 'Прикріпіть обкладинку твору' }),
-  backgroundKey: z.string().optional(),
-  ukrName: z.string().min(1, { error: "Назва українською обов'язкова" }),
-  enName: z.string().min(1, { error: "Назва англійською обов'язкова" }),
+  backgroundKey: z.string().nullable().optional(),
+  ukrName: z.string().trim().min(1, { error: "Назва українською обов'язкова" }),
+  enName: z.string().trim().min(1, { error: "Назва англійською обов'язкова" }),
   alternativeNames: z
     .string()
     .refine((val) => val === '' || /^[^/]+( \/ [^/]+)*$/.test(val), {
@@ -111,14 +114,27 @@ export const addTitleSchema = z.object({
   genres: zodGenreArray,
   tags: zodTagArray,
   authors: zodPersonArray.min(1, { error: 'Додайте хоча б одного автора' }),
-  artists: zodPersonArray.min(1, { error: 'Додайте хоча б одного художника' }),
+  artists: zodPersonArray.min(1, {
+    error: 'Додайте хоча б одного художника',
+  }),
   sources: z
     .array(
       z.object({
         id: z.string(),
-        url: z.string(),
+        url: z
+          .string()
+          .trim()
+          .min(1, { error: 'У вас є незаповнені поля зовнішніх ресурсів' })
+          .refine((val) => isValidUrl(val), {
+            error:
+              'Деякі з наданих вами зовнішніх ресурсів мають невалідні посилання',
+          }),
       }),
     )
+    .max(MAX_NUMBER_OF_SOURCE_FIELDS, {
+      error:
+        'Перевищена кількість максимально допустимих зовнішній ресурсів для прикріплення',
+    })
     .default([]),
   teams: zodTeamArray.min(1, { error: 'Оберіть хоча б одну команду' }),
 })

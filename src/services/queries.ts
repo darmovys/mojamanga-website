@@ -153,6 +153,10 @@ export type PendingTitle = NonNullable<
   Awaited<ReturnType<typeof fetchPendingTitles>>
 >['titles'][number]
 
+export type TitleEditableData = Treaty.Data<
+  ReturnType<Api['titles']>['editable-data']['get']
+>
+
 const fetchPendingTitles = async (page: number) => {
   const response = await api().titles['get-pending-titles'].get({
     query: { page },
@@ -164,6 +168,22 @@ const fetchPendingTitles = async (page: number) => {
 export const titlesQueries = {
   all: ['titles'] as const,
   lists: () => [...titlesQueries.all, 'lists'] as const,
+  titleEditData: (id: string) =>
+    queryOptions({
+      queryKey: [...titlesQueries.all, id, 'edit'],
+      queryFn: async () => {
+        const response = await api().titles({ id })['editable-data'].get()
+        const { error } = response
+        if (error) {
+          if (error.status === 404) {
+            throw notFound()
+          } else {
+            throw error
+          }
+        }
+        return response.data
+      },
+    }),
   pendingTitles: (page: number) =>
     queryOptions({
       queryKey: [...titlesQueries.lists(), 'pending', page] as const,
