@@ -166,7 +166,7 @@ function ModerateTitleAddingRequest() {
           <div className={styles.MetaInfo}>
             <span className={styles.Dot}>•</span>
             <ShiftBy y={1}>
-              {format(data.createdAt, 'dd.MM.yyyy HH:mm:ss')}
+              {format(data.updatedAt, 'dd.MM.yyyy HH:mm:ss')}
             </ShiftBy>
           </div>
         </div>

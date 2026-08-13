@@ -64,7 +64,7 @@ export default function WorksRequestsList() {
 }
 
 function PersonRequestCard({ title }: { title: PendingTitle }) {
-  const formattedDate = formatDistanceToNow(new Date(title.createdAt), {
+  const formattedDate = formatDistanceToNow(new Date(title.updatedAt), {
     locale: uk,
     addSuffix: true,
   })

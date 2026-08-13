@@ -11,7 +11,7 @@ import { TitleFieldName } from '@/generated/prisma/enums'
 
 const titleSchema = z.object({
   id: z.string(),
-  createdAt: z.date(),
+  updatedAt: z.date(),
   proposedByUser: z.object({
     displayUsername: z.string(),
   }),
@@ -272,20 +272,18 @@ export const titlesRouter = new Elysia({
             const [rawTitles, total] = await prisma.$transaction([
               prisma.title.findMany({
                 where: {
-                  AND: [
-                    { approvalStatus: 'PENDING' },
-                    { currentVersion: { isNot: null } },
-                  ],
+                  approvalStatus: 'PENDING',
+                  currentVersion: { isNot: null },
                 },
                 select: {
                   id: true,
-                  createdAt: true,
+                  updatedAt: true,
                   currentVersion: {
                     select: { nameUkr: true, nameEng: true, description: true },
                   },
                   proposedByUser: { select: { displayUsername: true } },
                 },
-                orderBy: { createdAt: 'desc' },
+                orderBy: { updatedAt: 'desc' },
                 skip,
                 take: limit,
               }),
@@ -336,20 +334,19 @@ export const titlesRouter = new Elysia({
       .get(
         '/title-adding-request/:id',
         async ({ params: { id }, status }) => {
-          const titleRawData = await prisma.title.findFirst({
+          const titleRawData = await prisma.title.findUnique({
             where: {
-              AND: [
-                { id, approvalStatus: 'PENDING' },
-                { currentVersion: { isNot: null } },
-              ],
+              id,
+              approvalStatus: 'PENDING',
+              currentVersion: { isNot: null },
             },
-            include: {
+            select: {
+              proposedByUserId: true,
               proposedByUser: {
                 select: { image: true, displayUsername: true },
               },
-              lockedFields: {
-                select: { fieldName: true },
-              },
+              lockedFields: true,
+              updatedAt: true,
               currentVersion: {
                 select: {
                   coverUrl: true,
@@ -387,7 +384,7 @@ export const titlesRouter = new Elysia({
             },
           })
 
-          if (!titleRawData) {
+          if (!titleRawData || !titleRawData.currentVersion) {
             return status(404, 'Такої заявки не знайдено')
           }
 
