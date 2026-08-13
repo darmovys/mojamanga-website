@@ -34,6 +34,7 @@ export function TeamsRequests() {
         {data.length > 0 ? (
           data.map(({ id, coverUrl, name, status }) => (
             <TeamCard
+              key={id}
               teamId={id}
               coverUrl={coverUrl}
               name={name}

@@ -36,6 +36,7 @@ export function TitlesRequests() {
         {data.length > 0 ? (
           data.map(({ id, coverUrl, name, status }) => (
             <TitleCard
+              key={id}
               titleId={id}
               coverUrl={coverUrl}
               name={name}
