@@ -1,47 +1,25 @@
 import { LinkType } from '@/generated/prisma/enums'
+import { isValidUrl } from '@/lib/utils'
 import z from 'zod'
 
-export const activeLinkSchema = z
-  .object({
-    id: z.string(),
-    type: z.enum(LinkType).nullable(),
-    url: z.string(),
-  })
-  .transform((data, ctx) => {
-    if (data.type === null) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Задайте всім прикріпленим посиланням тип',
-        path: ['url'],
-      })
-      return z.NEVER
-    }
-
-    if (data.url.trim() === '') {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Задайте всім прикріпленим посиланням адресу',
-        path: ['url'],
-      })
-      return z.NEVER
-    }
-
-    const isUrlValid = z.url().safeParse(data.url).success
-    if (!isUrlValid) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Некоректний формат посилання',
-        path: ['url'],
-      })
-      return z.NEVER
-    }
-
-    return {
-      id: data.id,
-      type: data.type,
-      url: data.url,
-    }
-  })
+export const activeLinkSchema = z.object({
+  id: z.string(),
+  type: z
+    .enum(LinkType)
+    .nullable()
+    .pipe(
+      z.enum(LinkType, {
+        error: 'Задайте всім прикріпленим посиланням тип',
+      }),
+    ),
+  url: z
+    .string()
+    .trim()
+    .min(1, { error: 'Заповніть адреси для всіх посилань' })
+    .refine((val) => isValidUrl(val), {
+      error: 'Введіть посилання у форматі "https://"',
+    }),
+})
 
 export type ActiveLinkInput = z.input<typeof activeLinkSchema>
 

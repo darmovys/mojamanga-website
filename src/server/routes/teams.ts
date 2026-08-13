@@ -27,19 +27,13 @@ export const teamsRouter = new Elysia({
       .post(
         '/create-team',
         async ({ body, status, user }) => {
-          const trimmedTitle = body.title.trim()
-
-          if (body.links.find((el) => el.url === '' || el.type === null)) {
-            return status('Bad Request', 'Заповніть усі відкриті поля посилань')
-          }
-
           const [dbUser, existingTeam] = await prisma.$transaction([
             prisma.user.findUnique({
               where: { id: user.id },
               include: { teamMemberships: { include: { team: true } } },
             }),
             prisma.team.findFirst({
-              where: { name: { equals: trimmedTitle, mode: 'insensitive' } },
+              where: { name: { equals: body.title, mode: 'insensitive' } },
             }),
           ])
 
@@ -103,7 +97,7 @@ export const teamsRouter = new Elysia({
             await prisma.team.create({
               data: {
                 id: teamId,
-                name: trimmedTitle,
+                name: body.title,
                 description: body.description,
                 coverUrl: newCoverKey,
                 backgroundUrl: newBackgroundKey,
