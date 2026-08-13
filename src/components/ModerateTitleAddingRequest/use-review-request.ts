@@ -28,7 +28,7 @@ export function useReviewRequest(titleId: string) {
     titlesQueries.getTitleAddingRequest(titleId),
   )
 
-  const serverLockedFields = data.lockedFields.map((f) => f.fieldName)
+  const serverLockedFields = data.lockedFields
 
   const [lockedFields, setLockedFields] = useState<TitleFieldName[]>(
     serverLockedFields ?? [],
