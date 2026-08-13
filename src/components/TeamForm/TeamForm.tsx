@@ -296,7 +296,7 @@ function TeamForm({
               <form.Field
                 name="backgroundKey"
                 children={(field) => {
-                  const currentBackgroundUrl = field.state.value
+                  const currentBackgroundKey = field.state.value
 
                   const hasNewBackground = Boolean(
                     background.fileState?.objectUrl,
@@ -305,7 +305,7 @@ function TeamForm({
                   const hasOriginalBackground =
                     !background.fileState &&
                     Boolean(initialData?.backgroundUrl) &&
-                    currentBackgroundUrl === initialData?.backgroundUrl
+                    currentBackgroundKey === initialData?.backgroundUrl
 
                   const shouldShowPreview =
                     hasNewBackground || hasOriginalBackground
