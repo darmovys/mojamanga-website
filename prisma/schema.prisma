@@ -200,7 +200,7 @@ model TitleVersion {
   nameUkr           String            @map("name_ukr")
   nameEng           String            @map("name_eng")
   description       String?
-  coverUrl          String            @map("cover_url")
+  coverUrl          String?           @map("cover_url")
   backgroundUrl     String?           @map("background_url")
   releaseYear       Int               @map("release_year")
   type              TitleType
