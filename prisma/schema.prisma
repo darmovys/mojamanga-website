@@ -167,14 +167,14 @@ model Title {
   id                 String              @id @default(cuid(2))
   approvalStatus     TitleApprovalStatus @default(PENDING) @map("approval_status")
   moderationFeedback String?             @map("moderation_feedback")
+  lockedFields       TitleFieldName[]    @default([]) @map("locked_fields")
 
   proposedByUserId String @map("proposed_by_user_id")
   proposedByUser   User   @relation(fields: [proposedByUserId], references: [id])
 
-  currentVersionId String?            @unique @map("current_version_id")
-  currentVersion   TitleVersion?      @relation("CurrentVersion", fields: [currentVersionId], references: [id])
-  versions         TitleVersion[]     @relation("TitleHistory")
-  lockedFields     TitleLockedField[]
+  currentVersionId String?        @unique @map("current_version_id")
+  currentVersion   TitleVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+  versions         TitleVersion[] @relation("TitleHistory")
 
   publishers PublishingVersion[]
   comments   Comment[]
@@ -186,15 +186,6 @@ model Title {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("titles")
-}
-
-model TitleLockedField {
-  titleId   String         @map("title_id")
-  title     Title          @relation(fields: [titleId], references: [id], onDelete: Cascade)
-  fieldName TitleFieldName @map("field_name")
-
-  @@id([titleId, fieldName]) // composite PK — один запис на поле
-  @@map("title_locked_fields")
 }
 
 model TitleVersion {
