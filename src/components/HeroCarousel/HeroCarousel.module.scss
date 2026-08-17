@@ -1,0 +1,352 @@
+@use '../../styles/breakpoints' as *;
+@use '../../styles/utils' as *;
+
+.Wrapper {
+  --padding-inline: var(--12px);
+  --padding-block: var(--16px);
+  flex: 1;
+  padding: var(--padding-block) var(--padding-inline);
+  color: var(--sys-primary);
+
+  @include up('laptop') {
+    --padding-inline: var(--40px);
+  }
+}
+
+.HeroWrapper {
+  position: relative;
+  container-type: inline-size;
+}
+
+.MainViewport {
+  --width: #{rem(320)};
+  inline-size: 100%;
+  block-size: var(--width);
+  border-radius: var(--16px);
+  overflow: clip;
+  color: var(--tone-12);
+  user-select: none;
+
+  @include up('tablet') {
+    --width: #{rem(400)};
+  }
+}
+
+.MainContainer {
+  display: flex;
+  block-size: 100%;
+  touch-action: pan-y pinch-zoom;
+}
+
+.MainSlide {
+  flex: 0 0 100%;
+  min-width: 0;
+  position: relative;
+  block-size: 100%;
+}
+
+.BackgroundImage {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.BackdropGradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(11, 15, 25, 0.95) 0%,
+    rgba(11, 15, 25, 0.75) 35%,
+    rgba(11, 15, 25, 0.3) 70%,
+    rgba(11, 15, 25, 0.8) 100%
+  );
+}
+
+/* Текстовий контент */
+.ContentOverlay {
+  --padding: var(--20px);
+  position: absolute;
+  inset-block-end: var(--padding);
+  inset-inline: var(--padding);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: var(--320px);
+
+  @include up('laptop') {
+    --padding: var(--32px);
+    max-width: var(--512px);
+  }
+}
+
+.MetaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--10px);
+  margin-block-end: var(--8px);
+
+  @include up('laptop') {
+    margin-block-end: var(--10px);
+  }
+}
+
+.Badge {
+  background-color: var(--blue-500);
+  color: var(--tone-12);
+  font-size: var(--10px);
+  font-weight: 700;
+  padding: var(--4px) var(--10px);
+  border-radius: 100vmax;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  @include up('laptop') {
+    font-size: var(--12px);
+  }
+}
+
+.Rating {
+  font-size: var(--12px);
+  font-weight: 600;
+  color: var(--tone-8);
+  display: flex;
+  align-items: center;
+  gap: var(--4px);
+}
+
+.StarIcon {
+  color: var(--star-color);
+  svg {
+    fill: var(--star-color);
+  }
+}
+
+.Title {
+  font-size: var(--24px);
+  font-weight: 800;
+  margin-block-end: var(--6px);
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+
+  @include up('laptop') {
+    font-size: var(--32px);
+  }
+}
+
+.SubTitle {
+  font-size: var(--12px);
+  color: var(--tone-8);
+  margin-block-end: var(--12px);
+
+  @include up('laptop') {
+    font-size: var(--14px);
+    margin-block-end: var(--18px);
+  }
+}
+
+.GoToButton {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  gap: var(--4px);
+  color: var(--tone-1);
+  background-color: var(--tone-12);
+  padding: var(--8px) var(--18px) var(--8px) var(--12px);
+  border-radius: 100vmax;
+  font-size: var(--14px);
+  font-weight: 600;
+  outline: none;
+
+  svg {
+    inline-size: var(--20px);
+    block-size: var(--20px);
+  }
+
+  @include up('laptop') {
+    font-size: var(--18px);
+    padding: var(--10px) var(--20px) var(--10px) var(--14px);
+    gap: var(--6px);
+
+    svg {
+      inline-size: var(--24px);
+      block-size: var(--24px);
+    }
+  }
+}
+
+.TopControls {
+  position: absolute;
+  inset-block-start: var(--24px);
+  inset-inline-end: var(--28px);
+  display: flex;
+  align-items: center;
+  gap: var(--12px);
+}
+
+.ProgressRoot {
+  inline-size: var(--32px);
+  block-size: var(--32px);
+}
+
+.ProgressSvg {
+  inline-size: 100%;
+  block-size: 100%;
+  /* Повертаємо SVG на -90 градусів, щоб заповнення починалося зверху (з 12 години) */
+  transform: rotate(-90deg);
+}
+
+.ProgressTrack {
+  fill: transparent;
+  stroke: oklch(100% 0.00011 271.152 / 0.25);
+  stroke-width: 3.5px;
+}
+
+.ProgressIndicator {
+  fill: transparent;
+  stroke: var(--tone-10);
+  stroke-width: 3.5px;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 50ms linear;
+}
+
+.NavButtonsGroup {
+  display: flex;
+  gap: var(--6px);
+}
+
+.NavBtn {
+  position: relative; // Для комопнента <ClickTargetHelper />
+  inline-size: var(--32px);
+  block-size: var(--32px);
+  border-radius: 100vmax;
+  backdrop-filter: blur(8px);
+  color: var(--tone-1);
+  background-color: var(--tone-12);
+}
+
+.ThumbsViewport {
+  --extra-space: var(--16px);
+  display: none;
+
+  @container (min-width: 41.875rem) {
+    --width: #{rem(280px)};
+    display: revert;
+    position: absolute;
+    inset-block-end: var(--20px);
+    inset-inline-end: var(--20px);
+    inline-size: var(--width);
+    overflow: clip;
+    padding-block: var(--extra-space);
+    margin-block-end: calc(var(--extra-space) * -1);
+  }
+
+  @container (min-width: 41.875rem) {
+    --width: #{rem(280px)};
+  }
+
+  @container (min-width: 50rem) {
+    --width: #{rem(350px)};
+  }
+
+  @container (min-width: 62.5rem) {
+    --width: #{rem(580px)};
+  }
+}
+
+.ThumbsContainer {
+  --slide-spacing: var(--12px);
+  display: flex;
+  margin-inline-start: calc(var(--slide-spacing) * -1);
+  touch-action: pan-y pinch-zoom;
+}
+
+.ThumbSlideWrapper {
+  --height: #{rem(130px)};
+  --width: #{rem(100px)};
+  padding-inline-start: var(--slide-spacing);
+  flex: 0 0 var(--width);
+  block-size: var(--height);
+
+  @include up('tablet') {
+    --height: #{rem(140px)};
+    --width: #{rem(110px)};
+  }
+
+  @include up('laptop') {
+    --height: #{rem(190px)};
+    --width: #{rem(145px)};
+  }
+}
+
+.ThumbSlide {
+  block-size: 100%;
+  inline-size: 100%;
+  position: relative;
+  border-radius: var(--10px);
+  overflow: clip;
+  border: 2px solid transparent;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+
+  img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-4px);
+    }
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 1px solid var(--blue-400);
+    transform: translateY(-2px);
+  }
+
+  &[data-active] {
+    border-color: var(--blue-400);
+    box-shadow: 0 0 16px oklch(from var(--blue-400) l c h / 0.3);
+    transform: translateY(-2px);
+  }
+}
+
+.ThumbGradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    oklch(0% 0 0 / 0.9) 0%,
+    oklch(0% 0 0 / 0.1) 60%,
+    transparent 100%
+  );
+}
+
+.ThumbTitle {
+  --spacing: var(--8px);
+  position: absolute;
+  inset-block-end: var(--spacing);
+  inset-inline-start: var(--spacing);
+  inset-inline-end: var(--spacing);
+  font-size: var(--12px);
+  font-weight: 600;
+  color: var(--tone-15);
+  line-height: 1.25;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
