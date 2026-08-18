@@ -5,15 +5,17 @@ import {
   createRootRouteWithContext,
   useMatches,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
+import { TanStackDevtools } from '@tanstack/react-devtools'
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
+import { HotkeysDevtoolsPanel } from '@tanstack/react-hotkeys-devtools'
+import { FormDevtoolsPanel } from '@tanstack/react-form-devtools'
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/lib/theme-provider'
 import Header from '@/components/Header'
 import GlobalSearchSection from '@/components/GlobalSearchSection'
 import globalCSS from '@/styles/global.scss?url'
 import AppToasts from '@/components/AppToasts'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { authQueries } from '@/services/queries'
 import { api } from '@/lib/api-client'
 
@@ -108,9 +110,27 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             {children}
           </div>
         </ThemeProvider>
-        {/* <TanStackRouterDevtools position="bottom-right" />
-        <ReactQueryDevtools buttonPosition="bottom-left" /> */}
-
+        <TanStackDevtools
+          config={{ position: 'bottom-left', hideUntilHover: true }}
+          plugins={[
+            {
+              name: 'Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+            {
+              name: 'Query',
+              render: <ReactQueryDevtoolsPanel />,
+            },
+            {
+              name: 'Form',
+              render: <FormDevtoolsPanel />,
+            },
+            {
+              name: 'Hotkeys',
+              render: <HotkeysDevtoolsPanel />,
+            },
+          ]}
+        />
         <Scripts />
       </body>
     </html>
