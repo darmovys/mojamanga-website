@@ -1,18 +1,6 @@
 @use '../../styles/breakpoints' as *;
 @use '../../styles/utils' as *;
 
-.Wrapper {
-  --padding-inline: var(--12px);
-  --padding-block: var(--16px);
-  flex: 1;
-  padding: var(--padding-block) var(--padding-inline);
-  color: var(--sys-primary);
-
-  @include up('laptop') {
-    --padding-inline: var(--40px);
-  }
-}
-
 .HeroWrapper {
   position: relative;
   container-type: inline-size;
@@ -183,6 +171,7 @@
 
 .TopControls {
   position: absolute;
+  z-index: 1;
   inset-block-start: var(--24px);
   inset-inline-end: var(--28px);
   display: flex;
@@ -229,6 +218,7 @@
   backdrop-filter: blur(8px);
   color: var(--tone-1);
   background-color: var(--tone-12);
+  outline: none;
 }
 
 .ThumbsViewport {
@@ -307,12 +297,6 @@
     &:hover {
       transform: translateY(-4px);
     }
-  }
-
-  &:focus-visible {
-    outline-offset: 2px;
-    outline: 1px solid var(--blue-400);
-    transform: translateY(-2px);
   }
 
   &[data-active] {
