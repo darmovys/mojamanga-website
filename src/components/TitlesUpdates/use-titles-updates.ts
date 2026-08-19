@@ -8,6 +8,7 @@ import {
 import { createId } from '@paralleldrive/cuid2'
 import useEmblaCarousel from 'embla-carousel-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useHotkeys } from '@tanstack/react-hotkeys'
 
 export const SLIDES = [
   {
@@ -184,7 +185,9 @@ export function useTitlesUpdates() {
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true)
 
   const prevBtnRef = useRef<HTMLButtonElement>(null) // Посилання на кнопку "Гортати назад"
-  const wrapperRef = useRef<HTMLDivElement>(null) // // Посилання на секцію оновлень
+  const nextBtnRef = useRef<HTMLButtonElement>(null) // Посилання на кнопку "Гортати вперед"
+  const wrapperRef = useRef<HTMLDivElement>(null) // Посилання на секцію оновлень
+  const lastSlideRef = useRef<HTMLElement>(null) // Посилання на останній слайд
   const slideRefs = useRef<(HTMLElement | null)[]>([]) // Посилання на слайди
 
   const [titlesRef, titlesApi] = useEmblaCarousel({
@@ -204,50 +207,73 @@ export function useTitlesUpdates() {
     },
   })
 
-  // Вхід та вихід із секції оновлень через кнопки Enter та Esc
-  const handleWrapperKeyDown = (e: React.KeyboardEvent) => {
-    if (!isEntered && e.key === 'Enter') {
-      e.preventDefault()
-      setIsEntered(true)
-      prevBtnRef.current?.focus()
-    } else if (isEntered && e.key === 'Escape') {
-      e.preventDefault()
-      setIsEntered(false)
-      wrapperRef.current?.focus()
-    }
-  }
+  useHotkeys([
+    // Вхід в секцію оновлень через клавішу Enter
+    {
+      hotkey: 'Enter',
+      callback: () => {
+        setIsEntered(true)
+        prevBtnRef.current?.focus()
+      },
+      options: {
+        target: wrapperRef,
+        enabled: !isEntered,
+      },
+    },
+    // Вихід із секції оновлень через клавішу Esc
+    {
+      hotkey: 'Escape',
+      callback: () => {
+        setIsEntered(false)
+        wrapperRef.current?.focus()
+      },
+      options: {
+        target: wrapperRef,
+        enabled: isEntered,
+      },
+    },
+    // Вихід із секції оновлень комбінацією клавіш Shift+Tab на кнопці "Гортати назад"
+    {
+      hotkey: 'Shift+Tab',
+      callback: () => {
+        setIsEntered(false)
+        wrapperRef.current?.focus()
+      },
+      options: {
+        target: prevBtnRef,
+        enabled: isEntered,
+      },
+    },
+    // Вихід із секції оновлень при переході з останнього слайду через клавішу Tab
+    {
+      hotkey: 'Tab',
+      callback: () => {
+        setIsEntered(false)
+        wrapperRef.current?.focus()
+      },
+      options: {
+        target: lastSlideRef,
+        enabled: isEntered,
+      },
+    },
+    // Фокус на першому видимому слайді при переході з кнопки "Гортати вперед" через клавішу Tab
+    {
+      hotkey: 'Tab',
+      callback: () => {
+        const firstVisibleIndex = titlesApi?.slidesInView()[0] ?? 0
+        slideRefs.current[firstVisibleIndex]?.focus()
+      },
+      options: {
+        target: nextBtnRef,
+        enabled: isEntered,
+      },
+    },
+  ])
 
   // Повернення стану isEntered на false, якщо дія здійснилася за межами секції оновлень
   const handleWrapperBlur = (e: React.FocusEvent) => {
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
       setIsEntered(false)
-    }
-  }
-
-  // Вихід із секції оновлень комбінацією Shift+Tab на кнопці "Гортати назад"
-  const handlePrevBtnKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Tab' && e.shiftKey) {
-      e.preventDefault()
-      setIsEntered(false)
-      wrapperRef.current?.focus()
-    }
-  }
-
-  // Фокус на першому видимому слайді при переході з кнопки "Готати вперед" через клавішу Tab
-  const handleNextBtnKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Tab' && !e.shiftKey) {
-      e.preventDefault()
-      const firstVisibleIndex = titlesApi?.slidesInView()[0] ?? 0
-      slideRefs.current[firstVisibleIndex]?.focus()
-    }
-  }
-
-  // Вихід із секції оновлень при переході з останнього слайду через клавішу Tab
-  const handleSlideKeyDown = (e: React.KeyboardEvent, index: number) => {
-    if (e.key === 'Tab' && !e.shiftKey && index === SLIDES.length - 1) {
-      e.preventDefault()
-      setIsEntered(false)
-      wrapperRef.current?.focus()
     }
   }
 
@@ -315,6 +341,8 @@ export function useTitlesUpdates() {
     titlesRef,
     wrapperRef,
     prevBtnRef,
+    nextBtnRef,
+    lastSlideRef,
     slideRefs,
     tooltipRefs,
     getReferenceProps,
@@ -322,11 +350,7 @@ export function useTitlesUpdates() {
     tooltipStyles,
     isPrevButtonDisabled,
     isNextButtonDisabled,
-    handleWrapperKeyDown,
     handleWrapperBlur,
-    handlePrevBtnKeyDown,
-    handleNextBtnKeyDown,
-    handleSlideKeyDown,
     scrollPrev,
     scrollNext,
   }

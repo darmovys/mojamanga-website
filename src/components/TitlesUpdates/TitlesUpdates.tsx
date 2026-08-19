@@ -6,6 +6,7 @@ import ShiftBy from '../ShiftBy'
 import VisuallyHidden from '../VisuallyHidden'
 import ClickTargetHelper from '../ClickTargetHelper'
 import { SLIDES, useTitlesUpdates } from './use-titles-updates'
+import { formatForDisplay } from '@tanstack/react-hotkeys'
 import clsx from 'clsx'
 import styles from './TitlesUpdates.module.scss'
 
@@ -16,18 +17,16 @@ function TitlesUpdates() {
     titlesRef,
     wrapperRef,
     prevBtnRef,
+    nextBtnRef,
     slideRefs,
+    lastSlideRef,
     tooltipRefs,
     getTooltipProps,
     getReferenceProps,
     tooltipStyles,
     isPrevButtonDisabled,
     isNextButtonDisabled,
-    handleWrapperKeyDown,
     handleWrapperBlur,
-    handlePrevBtnKeyDown,
-    handleNextBtnKeyDown,
-    handleSlideKeyDown,
     scrollPrev,
     scrollNext,
   } = useTitlesUpdates()
@@ -35,8 +34,12 @@ function TitlesUpdates() {
   function enterHelper() {
     return (
       <>
-        Натисніть <span className={styles.Hotkey}>↵ Enter</span> для навігації
-        по списку
+        Натисніть{' '}
+        <span className={styles.Hotkey}>
+          {formatForDisplay('Enter')}{' '}
+          {formatForDisplay('Enter', { useSymbols: false })}
+        </span>{' '}
+        для навігації по списку
       </>
     )
   }
@@ -44,8 +47,9 @@ function TitlesUpdates() {
   function escapeHelper() {
     return (
       <>
-        Натисніть <span className={styles.Hotkey}>Esc</span> для виходу зі
-        списку
+        Натисніть{' '}
+        <span className={styles.Hotkey}>{formatForDisplay('Escape')}</span> для
+        виходу зі списку
       </>
     )
   }
@@ -70,7 +74,6 @@ function TitlesUpdates() {
         ref={wrapperRef}
         {...getReferenceProps({ onBlur: handleWrapperBlur })}
         tabIndex={isEntered ? -1 : 0}
-        onKeyDown={handleWrapperKeyDown}
         role="region"
         aria-label="Секція останніх оновлень. Натисніть Enter, щоб увійти"
         className={styles.UpdatesCarousel}
@@ -80,7 +83,6 @@ function TitlesUpdates() {
             ref={prevBtnRef}
             className={clsx(styles.NavBtn, 'Gradient')}
             onClick={scrollPrev}
-            onKeyDownCapture={handlePrevBtnKeyDown}
             disabled={isPrevButtonDisabled}
             focusableWhenDisabled={true}
             tabIndex={isEntered ? 0 : -1} // Доступні лише всередині секції
@@ -90,9 +92,9 @@ function TitlesUpdates() {
             <ClickTargetHelper />
           </MotionButton>
           <MotionButton
+            ref={nextBtnRef}
             className={clsx(styles.NavBtn, 'Gradient')}
             onClick={scrollNext}
-            onKeyDownCapture={handleNextBtnKeyDown}
             disabled={isNextButtonDisabled}
             focusableWhenDisabled={true}
             tabIndex={isEntered ? 0 : -1}
@@ -105,15 +107,18 @@ function TitlesUpdates() {
         <div className={styles.Viewport} ref={titlesRef}>
           <div className={styles.Container}>
             {SLIDES.map((t, index) => {
+              const isLast = index === SLIDES.length - 1
               return (
                 <div key={t.id} className={styles.Slide}>
                   <Button
                     ref={(el) => {
                       slideRefs.current[index] = el
+                      if (isLast) {
+                        lastSlideRef.current = el
+                      }
                     }}
                     className={styles.Card}
                     tabIndex={isEntered ? 0 : -1} // Фокусується лише після натискання enter
-                    onKeyDown={(e) => handleSlideKeyDown(e, index)}
                   >
                     <Image
                       layout="fullWidth"
