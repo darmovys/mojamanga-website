@@ -1,0 +1,13 @@
+@use '../../styles/breakpoints' as *;
+
+.Wrapper {
+  --padding-inline: var(--12px);
+  --padding-block: var(--16px);
+  flex: 1;
+  padding: var(--padding-block) var(--padding-inline);
+  color: var(--sys-primary);
+
+  @include up('laptop') {
+    --padding-inline: var(--40px);
+  }
+}

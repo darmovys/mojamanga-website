@@ -1,0 +1,227 @@
+@use '../../styles/breakpoints' as *;
+@use '../../styles/utils' as *;
+
+.UpdatesWrapper {
+  --slide-size: 100%;
+  --slide-spacing: var(--12px);
+  margin-block-start: var(--12px);
+}
+
+.Heading {
+  font-size: var(--20px);
+}
+
+.UpdatesCarousel {
+  display: flex;
+  flex-direction: row-reverse;
+  border-radius: var(--12px);
+  outline: none;
+
+  &:focus-visible {
+    outline-offset: 3px;
+    outline: var(--default-outline);
+  }
+}
+
+.Viewport {
+  overflow: clip;
+  flex: 1;
+  min-width: 0;
+}
+
+.Container {
+  display: flex;
+  touch-action: pan-y pinch-zoom;
+  margin-inline-start: calc(var(--slide-spacing) * -1);
+  padding-block: var(--4px);
+}
+
+.Slide {
+  --width: #{rem(145px)};
+  flex: 0 0 var(--width);
+  min-width: 0;
+  padding-inline-start: var(--slide-spacing);
+  display: flex;
+  flex-direction: column;
+  gap: var(--8px);
+
+  @include up('tablet') {
+    --width: #{rem(175px)};
+  }
+}
+
+.Card {
+  position: relative;
+  border-radius: var(--10px);
+  overflow: clip;
+  inline-size: 100%;
+  aspect-ratio: 2 / 3;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: var(--default-outline);
+  }
+
+  img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+}
+
+.HoverOverlay {
+  position: absolute;
+  inset: 0;
+  padding: var(--10px);
+  background-color: oklch(from var(--sys-primary) l c h / 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--4px);
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    backdrop-filter 0.2s var(--emulate-spring);
+  text-align: start;
+
+  .Card:hover &,
+  .Card:focus-visible & {
+    backdrop-filter: blur(4px);
+    opacity: 1;
+  }
+}
+
+.OverlayTitle {
+  font-weight: 700;
+  color: var(--sys-on-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  inline-size: 100%;
+}
+
+.OverlayAuthor {
+  font-size: var(--12px);
+  color: var(--sys-on-light-overlay);
+  margin-block-end: var(--16px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  inline-size: 100%;
+}
+
+.OverlayBadge {
+  display: flex;
+  align-items: center;
+  gap: rem(1px);
+  background-color: var(--sys-on-primary);
+  color: var(--sys-primary);
+  font-size: var(--14px);
+  font-weight: 700;
+  padding: var(--2px) var(--6px);
+  border-radius: var(--4px);
+
+  svg {
+    stroke-width: 3;
+  }
+}
+
+.OverlayChapterTitle {
+  font-size: var(--14px);
+  color: var(--sys-on-light-overlay);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  inline-size: 100%;
+}
+
+.OverlayViews {
+  font-size: var(--10px);
+  color: var(--sys-on-light-overlay-secondary);
+  margin-block-start: auto;
+}
+
+.SlideMeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--2px);
+}
+
+.SlideTitle {
+  font-weight: 700;
+  color: var(--sys-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  inline-size: 100%;
+}
+
+.SlideInfoRow {
+  display: flex;
+  align-items: center;
+  gap: var(--6px);
+  font-size: var(--12px);
+}
+
+.SlideChapter {
+  font-weight: 700;
+  color: var(--sys-primary);
+  display: flex;
+  align-items: center;
+
+  svg {
+    stroke-width: 3;
+  }
+}
+
+.SlideViews {
+  color: var(--sys-on-surface-highest-variant);
+}
+
+.Controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--10px);
+  padding-block: var(--4px);
+}
+
+.NavBtn {
+  position: relative; // Для компонента <ClickTargetHelper />
+  background-color: var(--blue-200);
+  inline-size: var(--24px);
+  flex-grow: 1;
+  margin-inline-start: var(--10px);
+  border-radius: var(--10px);
+  color: var(--sys-on-primary);
+  background-color: var(--sys-primary);
+  transition: opacity 0.2s ease;
+
+  &::before {
+    border-radius: var(--10px) !important;
+  }
+
+  &[data-disabled] {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+.KeyboardHelp {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  background-color: var(--sys-surface);
+  border: 1px solid var(--sys-on-surface-highest);
+  border-radius: var(--8px);
+  padding: var(--6px) var(--10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  font-size: var(--14px);
+}
+
+.Hotkey {
+  font-weight: 600;
+  background-color: var(--sys-on-surface-highest);
+  padding: var(--2px) var(--4px) rem(2px) var(--4px);
+  border-radius: var(--4px);
+}
