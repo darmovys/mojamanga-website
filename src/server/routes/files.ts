@@ -6,7 +6,7 @@ import { Elysia, fileType } from 'elysia'
 import { z } from 'zod'
 import { betterAuthPlugin } from '../plugins/auth'
 import sharp from 'sharp'
-import { uploadTeamImageRateLimit } from '@/lib/redis'
+import { extractAccentColor } from '@/lib/extract-accent-color.server'
 
 const uploadRequestSchema = z.object({
   fileName: z.string(),
@@ -25,6 +25,17 @@ const gifSchema = z.object({
     .file()
     .refine((file) => fileType(file, 'image/gif'), {
       error: 'Файл не відповідає типу GIF',
+    })
+    .refine((file) => file.size <= fileSizeLimit, {
+      error: 'Файл не має перевищувати розмір в 5 МБ',
+    }),
+})
+
+const imageToExtractColorSchema = z.object({
+  file: z
+    .file()
+    .refine((file) => fileType(file, 'image/*'), {
+      error: 'Не підтримуваний формат файлу',
     })
     .refine((file) => file.size <= fileSizeLimit, {
       error: 'Файл не має перевищувати розмір в 5 МБ',
@@ -152,5 +163,26 @@ export const filesRouter = new Elysia({
           }
         },
         { body: gifSchema, authed: true },
+      )
+      .onError(({ code, status, error }) => {
+        if (code === 'VALIDATION')
+          return status(422, error.messageValue?.message)
+      })
+      .post(
+        '/extract-accent-color',
+        async ({ body: { file }, set }) => {
+          try {
+            const buffer = Buffer.from(await file.arrayBuffer())
+            const accentColor = await extractAccentColor(buffer)
+
+            return { accentColor }
+          } catch (error) {
+            set.status = 422
+            return { error: (error as Error).message }
+          }
+        },
+        {
+          body: imageToExtractColorSchema,
+        },
       )
   })

@@ -28,6 +28,7 @@ export type ActiveLinkOutput = z.output<typeof activeLinkSchema>
 export const sendNewTeamDataSchema = z.object({
   coverKey: z.string({ error: 'Прикріпіть обкладинку своєї команди' }),
   backgroundKey: z.string().nullable().optional(),
+  backgroundAccentColor: z.string().nullable().optional(),
   title: z.string().trim().min(1, { error: 'Надайте назву своїй команді' }),
   description: z.string(),
   links: z.array(activeLinkSchema).default([]),

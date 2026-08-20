@@ -107,12 +107,13 @@ model Verification {
 // ================= TEAMS =================
 
 model Team {
-  id            String     @id @default(cuid(2))
-  name          String
-  coverUrl      String?    @map("cover_url")
-  backgroundUrl String?    @map("background_url")
-  description   String?
-  status        TeamStatus @default(PENDING)
+  id                    String     @id @default(cuid(2))
+  name                  String
+  coverUrl              String?    @map("cover_url")
+  backgroundUrl         String?    @map("background_url")
+  backgroundAccentColor String?    @map("background_accent_color")
+  description           String?
+  status                TeamStatus @default(PENDING)
 
   moderationFeedback String? @map("moderation_feedback")
 

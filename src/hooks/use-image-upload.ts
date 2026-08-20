@@ -13,18 +13,22 @@ interface FileState {
   isDeleting: boolean
   error: boolean
   objectUrl?: string
+  accentColor?: string
+  isExtractingAccentColor: boolean
 }
 
 interface ImageUploadConfig {
   width: number
   height: number
   onKeyChange?: (key: string | null) => void
+  onAccentColorChange?: (color: string | null) => void
 }
 
 export function useImageUpload({
   width,
   height,
   onKeyChange,
+  onAccentColorChange,
 }: ImageUploadConfig) {
   const [fileState, setFileState] = useState<FileState | null>(null)
   const [imageToCrop, setImageToCrop] = useState<File | null>(null)
@@ -109,6 +113,7 @@ export function useImageUpload({
       }
 
       onKeyChange?.(null)
+      onAccentColorChange?.(null)
       setFileState(null)
     } catch (_) {
       showTimedToast(
@@ -125,8 +130,48 @@ export function useImageUpload({
     }
   }
 
+  async function getImageAccentColor(file: File) {
+    try {
+      const { error, data } = await api().files['extract-accent-color'].post({
+        file,
+      })
+
+      if (error || !data.accentColor) {
+        setFileState((prev) =>
+          prev
+            ? { ...prev, accentColor: undefined, extractingColor: false }
+            : null,
+        )
+        onAccentColorChange?.(null)
+        return
+      }
+
+      setFileState((prev) =>
+        prev
+          ? { ...prev, accentColor: data.accentColor, extractingColor: false }
+          : null,
+      )
+
+      onAccentColorChange?.(data.accentColor)
+    } catch (_) {
+      setFileState((prev) =>
+        prev
+          ? { ...prev, accentColor: undefined, extractingColor: false }
+          : null,
+      )
+      onAccentColorChange?.(null)
+    }
+  }
+
   async function uploadFile(file: File) {
     const objectUrl = URL.createObjectURL(file)
+
+    if (
+      fileState?.uploading ||
+      fileState?.isExtractingAccentColor ||
+      fileState?.isDeleting
+    )
+      return
 
     setFileState({
       file,
@@ -135,6 +180,8 @@ export function useImageUpload({
       isDeleting: false,
       error: false,
       objectUrl,
+      accentColor: undefined,
+      isExtractingAccentColor: true,
     })
 
     try {
@@ -164,7 +211,14 @@ export function useImageUpload({
         }
 
         setFileState((prev) =>
-          prev ? { ...prev, uploading: false, error: true } : null,
+          prev
+            ? {
+                ...prev,
+                uploading: false,
+                error: true,
+                isExtractingAccentColor: false,
+              }
+            : null,
         )
         return
       }
@@ -201,13 +255,28 @@ export function useImageUpload({
               3000,
             )
             onKeyChange?.(key)
+            getImageAccentColor(file)
             resolve()
           } else {
+            setFileState((prev) =>
+              prev
+                ? { ...prev, accentColor: undefined, extractingColor: false }
+                : null,
+            )
+            onAccentColorChange?.(null)
             reject(new Error(`Помилка завантаження. Статус: ${xhr.status}`))
           }
         }
 
-        xhr.onerror = () => reject(new Error('Помилка завантаження'))
+        xhr.onerror = () => {
+          setFileState((prev) =>
+            prev
+              ? { ...prev, accentColor: undefined, extractingColor: false }
+              : null,
+          )
+          onAccentColorChange?.(null)
+          reject(new Error('Помилка завантаження'))
+        }
 
         xhr.open('PUT', presignedUrl)
         xhr.setRequestHeader('Content-Type', file.type)
@@ -216,7 +285,15 @@ export function useImageUpload({
     } catch (error) {
       showTimedToast({ type: 'error', title: 'Помилка завантаження' }, 3000)
       setFileState((prev) =>
-        prev ? { ...prev, uploading: false, error: true, progress: 0 } : null,
+        prev
+          ? {
+              ...prev,
+              uploading: false,
+              error: true,
+              progress: 0,
+              isExtractingAccentColor: false,
+            }
+          : null,
       )
     }
   }
@@ -343,6 +420,10 @@ export function useImageUpload({
       'image/*': [],
     },
     multiple: false,
+    disabled:
+      fileState?.isDeleting ||
+      fileState?.isExtractingAccentColor ||
+      fileState?.uploading,
   })
 
   return {

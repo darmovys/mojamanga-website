@@ -21,6 +21,7 @@ export function useTeamForm(initialData?: TeamEditData, isEditMode = false) {
     defaultValues: {
       coverKey: initialData?.coverUrl ?? null,
       backgroundKey: initialData?.backgroundUrl ?? null,
+      backgroundAccentColor: '',
       title: initialData?.name ?? '',
       description: initialData?.description ?? '',
       links: initialData?.links ?? ([] as ActiveLinkInput[]),
@@ -100,13 +101,7 @@ export function useTeamForm(initialData?: TeamEditData, isEditMode = false) {
       }
 
       startUploadingTransition(async () => {
-        const { error, data } = await api().teams['create-team'].post({
-          title: validData.title,
-          description: validData.description,
-          coverKey: validData.coverKey,
-          backgroundKey: validData.backgroundKey,
-          links: validData.links,
-        })
+        const { error, data } = await api().teams['create-team'].post(validData)
         if (error) {
           if (error.status === 401) {
             showAuthToast()
@@ -180,6 +175,10 @@ export function useTeamForm(initialData?: TeamEditData, isEditMode = false) {
     onKeyChange: (key) => {
       form.setFieldValue('backgroundKey', key ?? '')
       form.validateField('backgroundKey', 'change')
+    },
+    onAccentColorChange: (color) => {
+      form.setFieldValue('backgroundAccentColor', color ?? '')
+      form.validateField('backgroundAccentColor', 'change')
     },
   })
 

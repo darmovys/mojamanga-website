@@ -101,6 +101,9 @@ export const teamsRouter = new Elysia({
                 description: body.description,
                 coverUrl: newCoverKey,
                 backgroundUrl: newBackgroundKey,
+                backgroundAccentColor: newBackgroundKey
+                  ? (body.backgroundAccentColor ?? null)
+                  : null,
                 status: 'PENDING',
                 creatorId: user.id,
 
@@ -486,11 +489,13 @@ export const teamsRouter = new Elysia({
                 }
 
                 let finalBGKey = team.backgroundUrl
+                let isNewBackgroundUploaded = false
 
                 if (
                   body.backgroundKey &&
                   body.backgroundKey.includes('/temp/')
                 ) {
+                  isNewBackgroundUploaded = true
                   const bgFileName = body.backgroundKey.split('/').pop()
                   finalBGKey = `${teamFolder}/background/${bgFileName}`
 
@@ -550,6 +555,18 @@ export const teamsRouter = new Elysia({
                     description: body.description,
                     coverUrl: finalCoverKey,
                     backgroundUrl: finalBGKey,
+                    // Колір чіпаємо лише у двох випадках: новий фон завантажено (довіряємо
+                    // свіжому значенню з тіла запиту) або фон прибрано повністю (колір
+                    // теж має зникнути). Якщо фон просто не чіпали — поле взагалі не
+                    // потрапляє в data, і Prisma не займає його існуюче значення.
+                    ...(isNewBackgroundUploaded
+                      ? {
+                          backgroundAccentColor:
+                            body.backgroundAccentColor ?? null,
+                        }
+                      : !finalBGKey
+                        ? { backgroundAccentColor: null }
+                        : {}),
                     links: {
                       deleteMany: {},
                       create: body.links.map((link) => ({

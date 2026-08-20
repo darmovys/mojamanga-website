@@ -144,6 +144,20 @@ function TeamForm({
 
                   const shouldShowPreview = hasNewCover || hasOriginalCover
 
+                  const shouldShowTrashButton =
+                    !hasNewCover || !cover.fileState!.uploading
+
+                  const shouldShowUploadProgress =
+                    hasNewCover &&
+                    cover.fileState!.uploading &&
+                    !cover.fileState!.isDeleting
+
+                  const shouldShowUploadError =
+                    hasNewCover &&
+                    !cover.fileState!.uploading &&
+                    !cover.fileState!.isDeleting &&
+                    Boolean(cover.fileState!.error)
+
                   return (
                     <Field.Root
                       invalid={
@@ -204,27 +218,22 @@ function TeamForm({
                               draggable={false}
                             />
 
-                            {hasNewCover &&
-                              cover.fileState!.uploading &&
-                              !cover.fileState!.isDeleting && (
-                                <div className={styles.Overlay}>
-                                  {cover.fileState!.progress}%
-                                </div>
-                              )}
+                            {shouldShowUploadProgress && (
+                              <div className={styles.Overlay}>
+                                {cover.fileState!.progress}%
+                              </div>
+                            )}
 
-                            {hasNewCover &&
-                              !cover.fileState!.uploading &&
-                              !cover.fileState!.isDeleting &&
-                              cover.fileState!.error && (
-                                <div className={styles.Overlay}>
-                                  <CircleAlert
-                                    className={styles.Error}
-                                    size={30}
-                                  />
-                                </div>
-                              )}
+                            {shouldShowUploadError && (
+                              <div className={styles.Overlay}>
+                                <CircleAlert
+                                  className={styles.Error}
+                                  size={30}
+                                />
+                              </div>
+                            )}
 
-                            {(!hasNewCover || !cover.fileState!.uploading) && (
+                            {shouldShowTrashButton && (
                               <div className={styles.TrashButtonWrapper}>
                                 <MotionButton
                                   focusableWhenDisabled={true}
@@ -310,6 +319,20 @@ function TeamForm({
                   const shouldShowPreview =
                     hasNewBackground || hasOriginalBackground
 
+                  const shouldShowTrashButton =
+                    !hasNewBackground || !background.fileState!.uploading
+
+                  const shouldShowUploadProgress =
+                    hasNewBackground &&
+                    background.fileState!.uploading &&
+                    !background.fileState!.isDeleting
+
+                  const shouldShowUploadError =
+                    hasNewBackground &&
+                    !background.fileState!.uploading &&
+                    !background.fileState!.isDeleting &&
+                    Boolean(background.fileState!.error)
+
                   return (
                     <Field.Root
                       invalid={
@@ -362,28 +385,22 @@ function TeamForm({
                               draggable={false}
                             />
 
-                            {hasNewBackground &&
-                              background.fileState!.uploading &&
-                              !background.fileState!.isDeleting && (
-                                <div className={styles.Overlay}>
-                                  {background.fileState!.progress}%
-                                </div>
-                              )}
+                            {shouldShowUploadProgress && (
+                              <div className={styles.Overlay}>
+                                {background.fileState!.progress}%
+                              </div>
+                            )}
 
-                            {hasNewBackground &&
-                              !background.fileState!.uploading &&
-                              !background.fileState!.isDeleting &&
-                              background.fileState!.error && (
-                                <div className={styles.Overlay}>
-                                  <CircleAlert
-                                    className={styles.Error}
-                                    size={30}
-                                  />
-                                </div>
-                              )}
+                            {shouldShowUploadError && (
+                              <div className={styles.Overlay}>
+                                <CircleAlert
+                                  className={styles.Error}
+                                  size={30}
+                                />
+                              </div>
+                            )}
 
-                            {(!hasNewBackground ||
-                              !background.fileState!.uploading) && (
+                            {shouldShowTrashButton && (
                               <div className={styles.TrashButtonWrapper}>
                                 <MotionButton
                                   className={styles.TrashButton}
@@ -391,6 +408,9 @@ function TeamForm({
                                   disabled={
                                     hasNewBackground
                                       ? background.fileState!.isDeleting ||
+                                        background.fileState!.uploading ||
+                                        background.fileState!
+                                          .isExtractingAccentColor ||
                                         isUploading
                                       : isUploading
                                   }
