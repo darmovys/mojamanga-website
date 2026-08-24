@@ -68,6 +68,16 @@ function CropImageDialog({
           case 401:
             showAuthToast()
             break
+          case 429:
+            showTimedToast(
+              {
+                type: 'warning',
+                title: 'Попередження',
+                description: error.value,
+              },
+              4000,
+            )
+            break
           default:
             showTimedToast(
               {

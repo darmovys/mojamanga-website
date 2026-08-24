@@ -210,9 +210,22 @@ export function useImageUpload({
             },
             4000,
           )
+        } else if (error.status === 400 || error.status === 429) {
+          showTimedToast(
+            {
+              type: 'warning',
+              title: 'Попередження',
+              description: error.value,
+            },
+            4000,
+          )
         } else {
           showTimedToast(
-            { type: 'error', title: 'Помилка', description: error.value },
+            {
+              type: 'error',
+              title: 'Помилка',
+              description: error.value,
+            },
             4000,
           )
         }
