@@ -215,6 +215,37 @@ export const getImageDimensions = (
   })
 }
 
+/**
+ * Конвертує вхідний файл зображення у формат WebP за допомогою нативного Canvas API.
+ * @param file - Початковий файл зображення для конвертації.
+ * @returns Проміс, що повертає новий об'єкт `File` у форматі `image/webp` із максимальною якістю (1.0).
+ * @throws {Error} Якщо не вдалося отримати 2D контекст canvas або створити blob.
+ */
+export async function convertToWebP(file: File): Promise<File> {
+  const bitmap = await createImageBitmap(file)
+  const canvas = document.createElement('canvas')
+  canvas.width = bitmap.width
+  canvas.height = bitmap.height
+
+  const ctx = canvas.getContext('2d')
+  ctx?.drawImage(bitmap, 0, 0)
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error('Помилка конвертації зображення у WebP'))
+          return
+        }
+        const newFileName = file.name.replace(/\.[^/.]+$/, '') + '.webp'
+        resolve(new File([blob], newFileName, { type: 'image/webp' }))
+      },
+      'image/webp',
+      1.0,
+    )
+  })
+}
+
 // ============================================================================
 // РОБОТА З LOCAL STORAGE (CLIENT ONLY)
 // ============================================================================

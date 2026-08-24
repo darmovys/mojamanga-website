@@ -158,9 +158,6 @@ importers:
       react-email:
         specifier: 6.7.0
         version: 6.7.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react-image-file-resizer:
-        specifier: ^0.4.8
-        version: 0.4.8
       resend:
         specifier: ^6.17.2
         version: 6.17.2(@react-email/render@2.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
@@ -5249,9 +5246,6 @@ packages:
     peerDependencies:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
       react-dom: ^18.0 || ^19.0 || ^19.0.0-rc
-
-  react-image-file-resizer@0.4.8:
-    resolution: {integrity: sha512-Ue7CfKnSlsfJ//SKzxNMz8avDgDSpWQDOnTKOp/GNRFJv4dO9L5YGHNEnj40peWkXXAK2OK0eRIoXhOYpUzUTQ==}
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -11495,8 +11489,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-
-  react-image-file-resizer@0.4.8: {}
 
   react-is@16.13.1: {}
 

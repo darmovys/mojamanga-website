@@ -1,9 +1,8 @@
 import { api } from '@/lib/api-client'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
-import { getImageDimensions } from '@/lib/utils'
+import { convertToWebP, getImageDimensions } from '@/lib/utils'
 import { useCallback, useEffect, useState } from 'react'
 import { useDropzone, FileRejection } from 'react-dropzone'
-import Resizer from 'react-image-file-resizer'
 
 interface FileState {
   file: File
@@ -314,20 +313,12 @@ export function useImageUpload({
     }
   }
 
-  function cropFile(file: File) {
+  async function cropFile(file: File) {
     if (file.type === 'image/gif') {
       setImageToCrop(file)
     } else {
-      Resizer.imageFileResizer(
-        file,
-        99999,
-        99999,
-        'webp',
-        100,
-        0,
-        (uri) => setImageToCrop(uri as File),
-        'file',
-      )
+      const webpFile = await convertToWebP(file)
+      setImageToCrop(webpFile)
     }
   }
 
@@ -363,16 +354,8 @@ export function useImageUpload({
             if (receivedFile.type === 'image/gif') {
               uploadFile(receivedFile)
             } else {
-              Resizer.imageFileResizer(
-                receivedFile,
-                99999,
-                99999,
-                'webp',
-                100,
-                0,
-                (uri) => uploadFile(uri as File),
-                'file',
-              )
+              const webpFile = await convertToWebP(receivedFile)
+              uploadFile(webpFile)
             }
           } else {
             cropFile(receivedFile)
