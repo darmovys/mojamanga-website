@@ -139,7 +139,11 @@ export function useImageUpload({
       if (error || !data.accentColor) {
         setFileState((prev) =>
           prev
-            ? { ...prev, accentColor: undefined, extractingColor: false }
+            ? {
+                ...prev,
+                accentColor: undefined,
+                isExtractingAccentColor: false,
+              }
             : null,
         )
         onAccentColorChange?.(null)
@@ -148,7 +152,11 @@ export function useImageUpload({
 
       setFileState((prev) =>
         prev
-          ? { ...prev, accentColor: data.accentColor, extractingColor: false }
+          ? {
+              ...prev,
+              accentColor: data.accentColor,
+              isExtractingAccentColor: false,
+            }
           : null,
       )
 
@@ -156,7 +164,7 @@ export function useImageUpload({
     } catch (_) {
       setFileState((prev) =>
         prev
-          ? { ...prev, accentColor: undefined, extractingColor: false }
+          ? { ...prev, accentColor: undefined, isExtractingAccentColor: false }
           : null,
       )
       onAccentColorChange?.(null)
@@ -260,7 +268,11 @@ export function useImageUpload({
           } else {
             setFileState((prev) =>
               prev
-                ? { ...prev, accentColor: undefined, extractingColor: false }
+                ? {
+                    ...prev,
+                    accentColor: undefined,
+                    isExtractingAccentColor: false,
+                  }
                 : null,
             )
             onAccentColorChange?.(null)
@@ -271,7 +283,11 @@ export function useImageUpload({
         xhr.onerror = () => {
           setFileState((prev) =>
             prev
-              ? { ...prev, accentColor: undefined, extractingColor: false }
+              ? {
+                  ...prev,
+                  accentColor: undefined,
+                  isExtractingAccentColor: false,
+                }
               : null,
           )
           onAccentColorChange?.(null)
