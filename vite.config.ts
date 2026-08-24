@@ -1,11 +1,9 @@
 import { defineConfig } from 'vite'
 import { devtools } from '@tanstack/devtools-vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import { fileURLToPath, URL } from 'url'
 import contentCollections from '@content-collections/vite'
-
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import viteReact from '@vitejs/plugin-react-swc'
+import viteReact from '@vitejs/plugin-react'
 import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
@@ -13,12 +11,12 @@ const config = defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+    tsconfigPaths: true,
   },
   plugins: [
     contentCollections(),
     devtools(),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
-    tsconfigPaths({ projects: ['./tsconfig.json'] }),
+    nitro(),
     tanstackStart(),
     viteReact(),
   ],
