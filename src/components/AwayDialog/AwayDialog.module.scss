@@ -22,6 +22,7 @@
   color: var(--sys-primary);
   padding: var(--40px) var(--24px) var(--24px) var(--24px);
   user-select: none;
+  box-shadow: var(--shadow-border);
 
   @include up('tablet') {
     block-size: revert;
