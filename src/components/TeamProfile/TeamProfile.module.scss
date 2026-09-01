@@ -1,0 +1,53 @@
+@use '../../styles/breakpoints' as *;
+
+.GoBackHeader {
+  position: sticky;
+  inset-block-start: 0;
+  margin-inline: calc(var(--padding) * -1);
+  z-index: 10;
+  color: var(--sys-on-surface);
+  background-color: oklch(from var(--sys-surface) l c h / 0.8);
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  padding: var(--14px) var(--8px);
+  backdrop-filter: blur(5px);
+  box-shadow: var(--shadow-border);
+
+  @include up('tablet') {
+    display: none;
+  }
+}
+
+.GoBackHeading {
+  font-size: var(--16px);
+  font-weight: 460;
+}
+
+.GoBackHeaderButton {
+  block-size: var(--32px);
+  inline-size: var(--32px);
+  border-radius: 100vmax;
+  outline-offset: 2px;
+  position: relative; // for click target helper
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
+
+.MoreButton {
+  composes: GoBackHeaderButton;
+  color: inherit;
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
