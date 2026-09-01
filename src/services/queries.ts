@@ -35,6 +35,9 @@ export type PendingTeam = NonNullable<
 >['teams'][number]
 
 export type TeamEditData = Treaty.Data<ReturnType<Api['teams']>['edit']['get']>
+export type TeamDetailedProfileData = Treaty.Data<
+  ReturnType<Api['teams']>['detailed-profile-info']['get']
+>
 
 export const teamsQueries = {
   all: ['teams'] as const,
@@ -56,6 +59,75 @@ export const teamsQueries = {
         }
         return response.data
       },
+    }),
+  teamProfile: (id: string) =>
+    queryOptions({
+      queryKey: [...teamsQueries.all, id, 'profile'],
+      queryFn: async () => {
+        const response = await api().teams({ id }).profile.get()
+        const { error } = response
+        if (error) {
+          if (error.status === 404) {
+            throw notFound()
+          } else {
+            throw error
+          }
+        }
+        return response.data
+      },
+    }),
+  teamDetailedProfile: (id: string) =>
+    queryOptions({
+      queryKey: [...teamsQueries.all, id, 'profile-full'],
+      queryFn: async () => {
+        const response = await api()
+          .teams({ id })
+          ['detailed-profile-info'].get()
+        const { error } = response
+        if (error) {
+          if (error.status === 404) {
+            throw notFound()
+          } else {
+            throw error
+          }
+        }
+        return response.data
+      },
+    }),
+  averageTeamChaptersPerMonth: (id: string) =>
+    queryOptions({
+      queryKey: [...teamsQueries.all, id, 'avg-chapters'],
+      queryFn: async () => {
+        const { data, error } = await api()
+          .teams({ id })
+          ['average-chapters-per-month'].get()
+
+        if (error) {
+          throw error.value
+        }
+
+        return data
+      },
+      staleTime: Infinity,
+      gcTime: 1000 * 60 * 60 * 24,
+      retry: 1,
+    }),
+  getAccentColor: (id: string) =>
+    queryOptions({
+      queryKey: [...teamsQueries.all, id, 'accent-bg-color'],
+      queryFn: async () => {
+        const response = await api().teams({ id })['accent-bg-color'].get()
+        const { error } = response
+
+        if (error) {
+          throw error
+        }
+
+        return response.data
+      },
+      staleTime: Infinity,
+      gcTime: 1000 * 60 * 60 * 24,
+      retry: 1,
     }),
   pendingTeams: (page: number) =>
     queryOptions({

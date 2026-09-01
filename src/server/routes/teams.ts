@@ -3,10 +3,20 @@ import { betterAuthPlugin } from '../plugins/auth'
 import { sendNewTeamDataSchema } from '@/schemas/teams'
 import { prisma } from '@/db'
 import { createId } from '@paralleldrive/cuid2'
-import { moveS3File, ukrainianToLatin } from '@/lib/utils'
+import {
+  createDescriptionPreview,
+  moveS3File,
+  ukrainianToLatin,
+} from '@/lib/utils'
 import z from 'zod'
-import { DeleteObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
+import {
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+  GetObjectCommand,
+} from '@aws-sdk/client-s3'
 import { S3 } from '@/lib/s3-client'
+import { getTeamMonthlyChapterAverage } from '@/lib/get-team-monthly-chapter-average.server'
+import { extractAccentColor } from '@/lib/extract-accent-color.server'
 
 async function getTeamOrFail(id: string) {
   const team = await prisma.team.findUnique({ where: { id } })
@@ -402,6 +412,176 @@ export const teamsRouter = new Elysia({
               }),
             },
           )
+          .get(
+            '/profile',
+            async ({ params: { id }, status, user }) => {
+              try {
+                const rawTeamInfo = await prisma.team.findUnique({
+                  where: { id, status: { in: ['APPROVED', 'BANNED'] } },
+                  select: {
+                    name: true,
+                    description: true,
+                    coverUrl: true,
+                    backgroundUrl: true,
+                    backgroundAccentColor: true,
+                    members: {
+                      select: {
+                        roles: true,
+                        user: { select: { id: true, name: true } },
+                      },
+                    },
+                    _count: {
+                      select: { publishingVersions: true },
+                    },
+                  },
+                })
+
+                if (!rawTeamInfo) return status(404, 'Команду не знайдено')
+
+                const members = rawTeamInfo.members.map(({ user, roles }) => ({
+                  id: user.id,
+                  name: user.name,
+                  roles,
+                }))
+
+                const isMember = members.some(
+                  (member) => member.id === user?.id,
+                )
+
+                const { description, ...teamInfo } = rawTeamInfo
+
+                const result = {
+                  ...teamInfo,
+                  descriptionPreview: description
+                    ? createDescriptionPreview(description)
+                    : null,
+                  members,
+                  isMember,
+                }
+
+                return result
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при отриманні даних')
+              }
+            },
+            {
+              optionalAuth: true,
+            },
+          )
+          .get('/detailed-profile-info', async ({ params: { id }, status }) => {
+            try {
+              const [teamInfo, totalChapters] = await prisma.$transaction([
+                prisma.team.findUnique({
+                  where: { id, status: { in: ['APPROVED', 'BANNED'] } },
+                  select: {
+                    name: true,
+                    description: true,
+                    createdAt: true,
+                    links: { select: { id: true, type: true, url: true } },
+                    _count: {
+                      select: { publishingVersions: true, members: true },
+                    },
+                  },
+                }),
+                prisma.chapter.count({
+                  where: {
+                    publishingVersion: {
+                      teamId: id,
+                      team: {
+                        status: { in: ['APPROVED', 'BANNED'] },
+                      },
+                    },
+                  },
+                }),
+              ])
+
+              if (!teamInfo) return status(404, 'Команду не знайдено')
+
+              const totalMonthlyChapters =
+                await getTeamMonthlyChapterAverage(id)
+
+              const result = {
+                name: teamInfo.name,
+                description: teamInfo.description,
+                links: teamInfo.links,
+                createdAt: teamInfo.createdAt,
+                totalMembers: teamInfo._count.members,
+                totalTitles: teamInfo._count.publishingVersions,
+                totalChapters,
+                totalMonthlyChapters,
+              }
+
+              return result
+            } catch (dbError) {
+              console.error('Помилка БД: ', dbError)
+              return status(500, 'Помилка при отриманні даних')
+            }
+          })
+          .get(
+            '/average-chapters-per-month',
+            async ({ params: { id }, status }) => {
+              const response = await getTeamMonthlyChapterAverage(id)
+
+              if (response === null)
+                return status(
+                  500,
+                  'Помилка підрахунку середньої кількості розділів у місяць',
+                )
+
+              return response
+            },
+          )
+          .get('/accent-bg-color', async ({ params: { id }, status }) => {
+            try {
+              const team = await prisma.team.findUnique({
+                where: { id },
+                select: { backgroundAccentColor: true, backgroundUrl: true },
+              })
+
+              if (!team) return status(404, 'Команду не знайдено')
+
+              if (!team.backgroundUrl)
+                return status(400, 'Команда не має фонового зображення')
+
+              if (team.backgroundAccentColor)
+                return status(400, 'Акцентний колір вже визначений')
+
+              const command = new GetObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: team.backgroundUrl,
+              })
+
+              const response = await S3.send(command)
+
+              if (!response.Body)
+                return status(
+                  500,
+                  'Не вдалося завантажити зображення зі сховища',
+                )
+
+              const buffer = Buffer.from(
+                await response.Body.transformToByteArray(),
+              )
+
+              const accentColor = await extractAccentColor(buffer)
+
+              await prisma.team.updateMany({
+                where: {
+                  id,
+                  backgroundAccentColor: null, // оновиться лише тоді, коли інший запит ще не встиг записати колір
+                },
+                data: {
+                  backgroundAccentColor: accentColor,
+                },
+              })
+
+              return accentColor
+            } catch (error) {
+              console.error('Серверна помилка: ', error)
+              return status(500, 'Серверна помилка')
+            }
+          })
           .patch(
             '/edit',
             async ({ params: { id }, body, status, user }) => {

@@ -1,0 +1,748 @@
+@use '../../styles/breakpoints' as *;
+@use '../../styles/utils' as *;
+
+.Hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: var(--tone-15);
+  background-color: oklch(var(--lightness) var(--chroma) var(--hue));
+
+  min-block-size: clamp(18.75rem, 32.68vw + 11.724rem, 30.5rem);
+
+  &[data-no-background] {
+    background-color: oklch(48.162% 0.03019 224.896);
+  }
+
+  @include up('tablet') {
+    min-block-size: rem(420px);
+  }
+
+  @include up('laptop') {
+    &[data-no-background] {
+      min-block-size: rem(350px);
+    }
+  }
+}
+
+.BackgroundWrapper {
+  position: absolute;
+  inset: 0;
+
+  .Hero:not([data-no-background]) & {
+    block-size: clamp(60%, 32.68vw + 4.224rem, 70%);
+
+    @include up('laptop') {
+      inset-block-end: 0;
+      inset-inline-start: auto;
+      inset-inline-end: 0;
+      block-size: 100%;
+      inline-size: clamp(80%, 25vw + #{rem(825px)}, 100%);
+    }
+  }
+}
+
+.BackgroundImage {
+  --accent: var(--lightness) var(--chroma) var(--hue);
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+
+  .Hero:not([data-no-background]) & {
+    background-size: cover;
+    background-position: center top;
+    // 1. Мобільна та планшетна версія (знизу вгору)
+    background-image:
+      linear-gradient(
+        to top,
+        oklch(var(--accent) / 1) 0%,
+        oklch(var(--accent) / 1) 18%,
+        oklch(var(--accent) / 0.95) 28%,
+        oklch(var(--accent) / 0.75) 40%,
+        oklch(var(--accent) / 0.45) 52%,
+        oklch(var(--accent) / 0.15) 65%,
+        oklch(var(--accent) / 0) 78%
+      ),
+      var(--url);
+    // 2. Десктопна версія (зліва направо)
+    @include up('laptop') {
+      background-position: center;
+      background-image:
+        linear-gradient(
+          30deg,
+          oklch(var(--accent) / 1) 0%,
+          oklch(var(--accent) / 0.8) 15%,
+          oklch(var(--accent) / 0.45) 30%,
+          oklch(var(--accent) / 0) 48%
+        ),
+        linear-gradient(
+          to right,
+          oklch(var(--accent) / 1) 0%,
+          oklch(var(--accent) / 0.98) 6%,
+          oklch(var(--accent) / 0.9) 12%,
+          oklch(var(--accent) / 0.75) 18%,
+          oklch(var(--accent) / 0.5) 25%,
+          oklch(var(--accent) / 0.25) 32%,
+          oklch(var(--accent) / 0.08) 40%,
+          oklch(var(--accent) / 0) 48%
+        ),
+        var(--url);
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: oklch(var(--accent));
+      mix-blend-mode: overlay;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+  }
+
+  .Hero[data-no-background] & {
+    background: linear-gradient(oklch(0% 0 0 / 0) 0%, oklch(0% 0 0 / 0.5) 100%);
+  }
+}
+
+.Container {
+  --spacing: var(--16px);
+  isolation: isolate;
+  inline-size: 100%;
+  max-inline-size: var(--1100px);
+  margin-inline: auto;
+  padding-inline: var(--spacing);
+  padding-block-end: var(--spacing);
+
+  .Hero[data-no-background] & {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column-reverse;
+    align-items: center;
+    padding-block-start: var(--spacing);
+
+    @include up('laptop') {
+      padding-block-start: revert;
+      flex-direction: revert;
+      align-items: flex-end;
+    }
+  }
+
+  @include up('tablet') {
+    padding-inline: var(--32px);
+    padding-block: var(--32px) var(--40px);
+  }
+}
+
+.CoverSection {
+  padding-block: var(--20px);
+  margin-block: auto;
+  flex-shrink: 0;
+
+  @include up('tablet') {
+    padding-block: revert;
+  }
+
+  @include up('laptop') {
+    margin-block: revert;
+    margin-inline-start: auto;
+  }
+}
+
+.CoverImage {
+  --size: #{rem(120px)};
+  inline-size: var(--size);
+  block-size: var(--size);
+  object-fit: cover;
+  border-radius: var(--12px);
+
+  @include up('tablet') {
+    --size: #{rem(150px)};
+  }
+
+  @include up('laptop') {
+    --size: #{rem(260px)};
+  }
+}
+
+.Content {
+  --content-width: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @include up('laptop') {
+    align-items: flex-start;
+    text-align: start;
+  }
+}
+
+.Title {
+  text-align: center;
+  line-height: 1.2;
+  font-size: var(--28px);
+  font-weight: 700;
+  color: var(--tone-15);
+  margin-block-end: var(--8px);
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+
+  @include up('laptop') {
+    font-size: var(--40px);
+    text-align: revert;
+  }
+}
+
+.Stats {
+  display: flex;
+  align-items: center;
+  font-size: var(--14px);
+  color: var(--tone-8);
+  font-weight: 300;
+  letter-spacing: rem(0.2px);
+  margin-block-end: var(--4px);
+
+  &[data-no-description] {
+    margin-block-end: var(--12px);
+  }
+
+  .AvgChapters:first-of-type {
+    color: var(--tone-15);
+    font-weight: 500;
+
+    &::after {
+      content: '•';
+      font-weight: 500;
+      margin-inline: var(--8px);
+      color: var(--tone-8);
+    }
+  }
+}
+
+.Description {
+  --width: auto;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--tone-13);
+  margin-block-end: var(--16px);
+  max-inline-size: var(--width);
+  cursor: pointer;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+
+  &:focus-visible {
+    outline: var(--default-outline);
+    border-radius: var(--6px);
+  }
+
+  @include up('tablet') {
+    --width: var(--512px);
+    font-size: var(--14px);
+  }
+
+  @include up('laptop') {
+    -webkit-line-clamp: 3;
+    text-align: start;
+  }
+}
+
+.Actions {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--12px);
+
+  @include up('laptop') {
+    align-self: revert;
+  }
+}
+
+.PrimaryButton {
+  --size: auto;
+  flex: 1;
+  background-color: var(--tone-15);
+  color: var(--tone-2);
+  font-weight: 600;
+  padding: var(--8px) var(--16px);
+  outline: none;
+  border-radius: 100vmax;
+  max-inline-size: var(--size);
+
+  @include up('tablet') {
+    --size: var(--512px);
+    font-size: var(--14px);
+    padding: var(--8px) var(--16px);
+  }
+
+  @include up('laptop') {
+    --size: auto;
+  }
+}
+
+.MoreButton {
+  position: relative; // Для <ClickTargetHelper />
+  block-size: rem(38px);
+  inline-size: rem(38px);
+  border-radius: 100vmax;
+  color: var(--tone-15);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: oklch(100% 0 0 / 0.25);
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--default-outline);
+    outline-offset: 2px;
+  }
+}
+
+.LaptopAndUp {
+  display: none;
+
+  @include up('laptop') {
+    display: revert;
+  }
+}
+
+.TabletAndDown {
+  position: absolute;
+  inset-block-start: var(--10px);
+  inset-inline-end: var(--10px);
+  @include up('laptop') {
+    display: none;
+  }
+}
+
+// ==========================================
+// Стилі списку меню команди
+// ==========================================
+
+.Positioner {
+  outline: 0;
+}
+
+.Popup {
+  --inner-radius: var(--4px);
+  --padding: var(--4px);
+  padding: var(--padding);
+  border-radius: calc(var(--padding) + var(--inner-radius));
+  background-color: var(--sys-on-surface-highest);
+  color: var(--sys-on-surface);
+  transform-origin: var(--transform-origin);
+  transition:
+    transform 150ms,
+    opacity 150ms;
+  outline: 1px solid var(--sys-outline-variant);
+  box-shadow: var(--shadow-border);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.Item {
+  outline: 0;
+  font-size: var(--14px);
+  user-select: none;
+  padding: var(--12px);
+  line-height: 1rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  inline-size: var(--256px);
+  gap: var(--8px);
+  position: relative;
+  cursor: pointer;
+  border-radius: var(--inner-radius);
+
+  &[data-highlighted] {
+    z-index: 0;
+  }
+
+  &::before {
+    content: '';
+    z-index: -1;
+    position: absolute;
+    inset: 0;
+    background-color: var(--state-on-surface-opacity-variant-2);
+    opacity: 0;
+    border-radius: var(--inner-radius);
+    transition: opacity 0.2s var(--bg-animation);
+  }
+
+  &[data-highlighted]::before {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: var(--default-outline);
+  }
+}
+
+// ==========================================
+// Стилі діалогового вікна
+// ==========================================
+
+.DialogBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--default-overlay-color);
+  backdrop-filter: blur(4px);
+  transition:
+    opacity 200ms ease-out,
+    backdrop-filter 200ms ease-out;
+
+  will-change: opacity, backdrop-filter;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+  }
+}
+
+.DialogViewport {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 0;
+  overflow: hidden;
+
+  @include up('tablet') {
+    align-items: center;
+    padding: var(--16px) var(--24px);
+  }
+}
+
+.DialogPopup {
+  --padding-bottom: var(--20px);
+  position: relative;
+  inline-size: 100%;
+  max-block-size: min(85vh, #{rem(620px)});
+  display: flex;
+  flex-direction: column;
+  background-color: var(--sys-surface-high);
+  color: var(--sys-primary);
+  border-radius: var(--20px) var(--20px) 0 0;
+  padding-block-end: calc(
+    env(safe-area-inset-bottom, 0px) + var(--padding-bottom)
+  );
+  box-shadow: var(--shadow-border);
+  outline: none;
+  overflow: hidden;
+  transform: translateY(0%);
+
+  transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    transform: translateY(100%);
+  }
+
+  &[data-loading],
+  &[data-error] {
+    block-size: revert;
+  }
+
+  @include up('tablet') {
+    max-inline-size: rem(600px);
+    max-block-size: min(85vh, #{rem(620px)});
+    border-radius: var(--20px);
+    padding-block-end: var(--padding-bottom);
+    will-change: transform, opacity;
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
+
+    &[data-nested-dialog-open] {
+      transition: opacity 0.3s var(--emulate-spring);
+      opacity: 0;
+    }
+
+    &[data-starting-style],
+    &[data-ending-style] {
+      opacity: 0;
+      transform: translateY(5%);
+    }
+  }
+}
+
+.DialogHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--20px) var(--20px) var(--16px) var(--24px);
+  flex-shrink: 0;
+}
+
+.DialogTitle {
+  font-size: var(--20px);
+  font-weight: 700;
+  line-height: 1.25;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.DialogClose {
+  position: relative; // Для <ClickTargetHelper />
+  inline-size: var(--32px);
+  block-size: var(--32px);
+  border-radius: 50%;
+  transition: background-color 150ms ease;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--default-outline);
+    outline-offset: 2px;
+  }
+}
+
+.Loader {
+  align-self: center;
+  inline-size: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(farthest-side, var(--sys-primary) 94%, oklch(0% 0 0 / 0))
+      top/8px 8px no-repeat,
+    conic-gradient(oklch(0% 0 0 / 0) 30%, var(--sys-primary));
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    oklch(0% 0 0 / 0) calc(100% - 8px),
+    oklch(0% 0 0) 0
+  );
+  animation: spin 1s infinite linear;
+}
+
+.Error {
+  background-color: var(--danger-background);
+  color: var(--danger);
+  padding: var(--4px) var(--10px);
+  border-radius: var(--6px);
+}
+
+.RetryButton {
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+  align-self: flex-start;
+  border-radius: 100vmax;
+  padding: var(--4px) var(--10px);
+  font-size: var(--12px);
+  font-weight: 500;
+  outline: none;
+  position: relative; // Для <ClickTargetHelper />
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+
+.Statistics {
+  margin-block-start: auto;
+}
+
+.StatsList {
+  list-style-type: none;
+  padding-inline-start: var(--4px);
+  margin-block-end: var(--2px);
+  display: flex;
+  flex-direction: column;
+}
+
+.Stat {
+  display: flex;
+  align-items: center;
+  gap: var(--6px);
+}
+
+.StatCount {
+  font-weight: 450;
+  font-size: var(--18px);
+}
+
+.StatTooltip {
+  display: flex;
+
+  &:focus-visible {
+    outline: var(--default-outline);
+    outline-offset: 2px;
+    border-radius: var(--4px);
+  }
+}
+
+.Links {
+  margin-block: var(--2px) var(--6px);
+}
+
+.LinksTitle {
+  margin-block-end: var(--4px);
+}
+
+.LinksList {
+  list-style-type: none;
+  padding-inline-start: 0;
+  display: flex;
+  gap: var(--6px);
+  flex-wrap: wrap;
+}
+
+.LinkItem {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: var(--4px);
+  background-color: var(--sys-surface-highest);
+  box-shadow: var(--shadow-border);
+  border-radius: var(--6px);
+  padding: var(--4px) var(--8px);
+  transition: background-color 0.2s var(--bg-animation);
+
+  &:focus-visible {
+    outline: var(--default-outline);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--sys-on-button);
+    }
+  }
+}
+
+.LinkLogo {
+  --size: var(--18px);
+  block-size: var(--size);
+  inline-size: var(--size);
+}
+
+// ==========================================
+// Стилі області прогрутки
+// ==========================================
+
+.BodyRoot {
+  --scrollbar-width: var(--6px);
+  --right-padding: var(--24px);
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  min-block-size: 0;
+  overflow: hidden;
+
+  @media (pointer: fine) {
+    --scrollbar-width: var(--14px);
+    --right-padding: var(--12px);
+  }
+}
+
+.BodyViewport {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overscroll-behavior: contain;
+
+  &:focus-visible {
+    outline: var(--default-outline);
+    outline-offset: -2px;
+  }
+}
+
+.BodyContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--10px);
+  padding: 0 var(--right-padding) var(--16px) var(--24px);
+  font-size: var(--14px);
+  line-height: 1.6;
+  min-block-size: 100%;
+  flex: 1;
+  justify-content: center;
+
+  @media (pointer: fine) {
+    padding-inline-end: calc(
+      var(--scrollbar-width) + var(--right-padding) + var(--6px)
+    );
+  }
+}
+
+.BodyScrollbar {
+  border-radius: 100vmax;
+  inset-inline-end: var(--6px) !important;
+  display: flex;
+  justify-content: center;
+  inline-size: var(--scrollbar-width);
+  transition: opacity 150ms;
+  pointer-events: none;
+  opacity: 0;
+
+  @media (pointer: fine) {
+    opacity: 1;
+    padding-block: rem(3.5px);
+    inset-inline-end: var(--right-padding) !important;
+    box-shadow: var(--inset-shadow);
+    background-color: oklch(34.644% 0.03201 18.761 / 0.12);
+
+    :global(html.dark) & {
+      background-color: oklch(100% 0.00011 271.152 / 0.12);
+    }
+  }
+
+  &[data-scrolling] {
+    transition-duration: 0ms;
+  }
+
+  &[data-hovering],
+  &[data-scrolling] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.BodyScrollbarThumb {
+  inline-size: 60%;
+  border-radius: 100vmax;
+  background-color: oklch(66.494% 0.00233 15.434);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: oklch(54.348% 0.00246 15.852);
+    }
+  }
+
+  :global(html.dark) & {
+    background-color: oklch(67.933% 0.01301 17.153);
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: oklch(86.995% 0.0001 271.152);
+      }
+    }
+  }
+}
