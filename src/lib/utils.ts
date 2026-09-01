@@ -167,6 +167,43 @@ export function ukrainianToLatin(text: string): string {
   return [...text].map((char) => UKRAINIAN_TO_LATIN[char] ?? char).join('')
 }
 
+/**
+ * Створює короткий попередній перегляд тексту (preview).
+ * @param text - Вхідний рядок опису.
+ * @param minLength - Мінімальна кількість символів перед пошуком крапки (за замовчуванням 220).
+ * @returns Обрізаний рядок для попереднього перегляду.
+ */
+export function createDescriptionPreview(
+  text: string,
+  minLength: number = 220,
+): string {
+  // 1. Якщо текст порожній або його довжина менша за мінімальний ліміт
+  if (!text || text.length <= minLength) {
+    return text || ''
+  }
+
+  // 2. Беремо частину тексту, починаючи з 220-го символу
+  const textFromMinLength = text.slice(minLength)
+
+  // 3. Шукаємо першу крапку, після якої йде пробіл або перенесення рядка
+  const dotWithSpaceMatch = textFromMinLength.match(/\.\s/)
+
+  if (dotWithSpaceMatch && typeof dotWithSpaceMatch.index === 'number') {
+    // Індекс знайденої крапки відносно початку всього тексту + 1 (щоб включити саму крапку)
+    const cutIndex = minLength + dotWithSpaceMatch.index + 1
+    return text.slice(0, cutIndex).trim()
+  }
+
+  // 4. Fallback: якщо крапки з пробілом немає, шукаємо перший доступний пробіл після 220 символів
+  const nextSpaceIndex = text.indexOf(' ', minLength)
+  if (nextSpaceIndex !== -1) {
+    return text.slice(0, nextSpaceIndex).trim() + '...'
+  }
+
+  // Якщо пробілів взагалі немає — повертаємо початкові 220 символів
+  return text.slice(0, minLength).trim() + '...'
+}
+
 // ============================================================================
 // ВАЛІДАЦІЯ
 // ============================================================================
