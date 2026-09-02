@@ -121,7 +121,12 @@ function UserProfile() {
               data-offline={!data.isOnline ? '' : undefined}
               data-online={data.isOnline ? '' : undefined}
               className={styles.OnlineStatus}
-            />
+            >
+              <VisuallyHidden>
+                Користувач {data.isOnline ? 'в мережі' : 'не в мережі'}
+              </VisuallyHidden>
+              <span className={styles.Pulse} />
+            </span>
           </div>
           {data.user.role !== 'USER' && (
             <ShiftBy

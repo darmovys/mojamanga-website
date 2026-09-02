@@ -190,6 +190,21 @@
   }
 }
 
+.Pulse {
+  display: none;
+  .OnlineStatus[data-online] & {
+    @media (prefers-reduced-motion: no-preference) {
+      display: block;
+      background-color: inherit;
+      inline-size: var(--status-size);
+      block-size: var(--status-size);
+      opacity: 0.7;
+      border-radius: 50%;
+      animation: pulse 1s linear infinite;
+    }
+  }
+}
+
 .Username {
   display: flex;
   align-items: flex-end;
@@ -424,4 +439,11 @@
   inset-inline-start: 0;
   inset-inline-end: 0;
   background-color: var(--blue-400);
+}
+
+@keyframes pulse {
+  100% {
+    transform: scale(2, 2);
+    opacity: 0;
+  }
 }
