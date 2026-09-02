@@ -509,7 +509,7 @@ button {
     padding: 2px;
 
     background: var(--blue-400);
-    border-radius: 100vmax;
+    border-radius: inherit;
     opacity: 0;
     transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
     mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);

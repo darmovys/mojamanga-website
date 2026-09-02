@@ -156,10 +156,6 @@
   border-radius: var(--8px);
   padding: var(--6px) var(--14px);
   transition: background-color 0.2s var(--bg-animation);
-
-  &::before {
-    border-radius: var(--8px) !important;
-  }
 }
 
 .SecondaryButton {

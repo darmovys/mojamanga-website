@@ -126,7 +126,4 @@
   background-color: var(--sys-primary);
   color: var(--sys-on-primary);
   border-radius: var(--8px);
-  &::before {
-    border-radius: var(--8px) !important;
-  }
 }

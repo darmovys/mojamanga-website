@@ -197,10 +197,6 @@
   background-color: var(--sys-primary);
   transition: opacity 0.2s ease;
 
-  &::before {
-    border-radius: var(--10px) !important;
-  }
-
   &[data-disabled] {
     opacity: 0.3;
     cursor: not-allowed;

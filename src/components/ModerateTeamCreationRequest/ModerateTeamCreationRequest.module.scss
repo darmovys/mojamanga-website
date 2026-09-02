@@ -300,10 +300,6 @@
     animation: spin 1000ms linear infinite;
   }
 
-  &::before {
-    border-radius: var(--8px) !important;
-  }
-
   &.Pending {
     opacity: 0.7;
     cursor: not-allowed;

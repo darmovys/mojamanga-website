@@ -670,9 +670,6 @@
 .FooterButtonBase {
   padding: var(--4px) var(--10px);
   border-radius: var(--8px);
-  &::before {
-    border-radius: var(--8px) !important;
-  }
 
   &.Loading {
     opacity: 0.7;

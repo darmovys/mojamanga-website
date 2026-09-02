@@ -267,10 +267,6 @@
   gap: var(--4px);
   align-self: flex-start;
 
-  &::before {
-    border-radius: var(--8px) !important;
-  }
-
   &.Loading {
     opacity: 0.7;
     pointer-events: none;
