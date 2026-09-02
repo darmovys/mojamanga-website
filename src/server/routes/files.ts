@@ -2,13 +2,18 @@ import { S3 } from '@/lib/s3-client'
 import { DeleteObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { createId } from '@paralleldrive/cuid2'
-import { Elysia, fileType } from 'elysia'
+import { Elysia } from 'elysia'
 import { rateLimit } from 'elysia-rate-limit'
 import { z } from 'zod'
 import { betterAuthPlugin } from '../plugins/auth'
 import sharp from 'sharp'
 import { extractAccentColor } from '@/lib/extract-accent-color.server'
 import { RateLimitError } from '@/lib/rate-limit'
+import {
+  uploadRequestSchema,
+  gifSchema,
+  imageToExtractColorSchema,
+} from '@/schemas/files'
 
 const uploadRateLimit = rateLimit({
   duration: 60 * 1000,
@@ -37,42 +42,6 @@ const colorExtractionRateLimit = rateLimit({
   scoping: 'scoped',
 })
 
-const uploadRequestSchema = z.object({
-  fileName: z.string(),
-  contentType: z.string(),
-  size: z.number(),
-})
-
-const fileSizeLimit = 5 * 1024 * 1024 // 5 МБ
-
-const gifSchema = z.object({
-  x: z.coerce.number({ error: 'Значення x не є числом' }),
-  y: z.coerce.number({ error: 'Значення y не є числом' }),
-  width: z.coerce.number({ error: 'Значення width не є числом' }),
-  height: z.coerce.number({ error: 'Значення height не є числом' }),
-  originalFile: z
-    .file()
-    .refine((file) => fileType(file, 'image/gif'), {
-      error: 'Файл не відповідає типу GIF',
-    })
-    .refine((file) => file.size <= fileSizeLimit, {
-      error: 'Файл не має перевищувати розмір в 5 МБ',
-    }),
-})
-
-const imageToExtractColorSchema = z.object({
-  file: z
-    .file()
-    .refine((file) => fileType(file, 'image/*'), {
-      error: 'Не підтримуваний формат файлу',
-    })
-    .refine((file) => file.size <= fileSizeLimit, {
-      error: 'Файл не має перевищувати розмір в 5 МБ',
-    }),
-})
-
-export type RequestSchemaTypes = z.infer<typeof uploadRequestSchema>
-
 export const filesRouter = new Elysia({
   name: 'files-router',
   tags: ['Files'],
@@ -98,9 +67,16 @@ export const filesRouter = new Elysia({
             return uploadGroup.use(uploadRateLimit).post(
               '/upload',
               async ({ body, status, user }) => {
-                const { contentType, fileName, size } = body
+                const { contentType, size } = body
 
-                const uniqueKey = `uploads/temp/${user.id}/${createId()}-${fileName.replace(/\s+/g, '_')}`
+                const type =
+                  contentType === 'image/gif'
+                    ? '.gif'
+                    : contentType === 'image/webp'
+                      ? '.webp'
+                      : ''
+
+                const uniqueKey = `uploads/temp/${user.id}/${createId()}${type}`
 
                 try {
                   const command = new PutObjectCommand({

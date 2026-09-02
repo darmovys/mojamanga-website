@@ -1,6 +1,7 @@
 import { api } from '@/lib/api-client'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { convertToWebP, getImageDimensions } from '@/lib/utils'
+import { uploadRequestSchema } from '@/schemas/files'
 import { useCallback, useEffect, useState } from 'react'
 import { useDropzone, FileRejection } from 'react-dropzone'
 
@@ -173,6 +174,22 @@ export function useImageUpload({
   async function uploadFile(file: File) {
     const objectUrl = URL.createObjectURL(file)
 
+    const parsedResult = uploadRequestSchema.safeParse({
+      contentType: file.type,
+      size: file.size,
+    })
+
+    if (!parsedResult.success) {
+      showTimedToast({
+        type: 'warning',
+        title: 'Попередження',
+        description: parsedResult.error.issues[0].message,
+      })
+      return
+    }
+
+    const validData = parsedResult.data
+
     if (
       fileState?.uploading ||
       fileState?.isExtractingAccentColor ||
@@ -193,9 +210,8 @@ export function useImageUpload({
 
     try {
       const { data, error } = await api().files.temp.upload.post({
-        fileName: file.name,
-        contentType: file.type,
-        size: file.size,
+        contentType: validData.contentType,
+        size: validData.size,
       })
 
       if (error !== null) {
