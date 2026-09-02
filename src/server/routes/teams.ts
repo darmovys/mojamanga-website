@@ -6,6 +6,7 @@ import { createId } from '@paralleldrive/cuid2'
 import {
   createDescriptionPreview,
   moveS3File,
+  slugify,
   ukrainianToLatin,
 } from '@/lib/utils'
 import z from 'zod'
@@ -76,7 +77,7 @@ export const teamsRouter = new Elysia({
           const teamId = createId()
           const latinizedName = ukrainianToLatin(body.title)
 
-          const teamFolder = `uploads/teams/${latinizedName}-${teamId}`
+          const teamFolder = `uploads/teams/${slugify(latinizedName)}--${teamId}`
 
           const coverFileName = body.coverKey.split('/').pop()
           const newCoverKey = `${teamFolder}/cover/${coverFileName}`
@@ -616,7 +617,7 @@ export const teamsRouter = new Elysia({
 
                 const latinizedName = ukrainianToLatin(body.title)
 
-                const teamFolder = `uploads/teams/${latinizedName}-${team.id}`
+                const teamFolder = `uploads/teams/${slugify(latinizedName)}--${team.id}`
 
                 let finalCoverKey = team.coverUrl
 

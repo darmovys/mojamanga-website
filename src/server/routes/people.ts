@@ -4,7 +4,7 @@ import { prisma } from '@/db'
 import { createId } from '@paralleldrive/cuid2'
 import z from 'zod'
 import { createPersonSchema } from '@/schemas/people'
-import { moveS3File } from '@/lib/utils'
+import { moveS3File, slugify } from '@/lib/utils'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { S3 } from '@/lib/s3-client'
 
@@ -55,7 +55,7 @@ export const peopleRouter = new Elysia({
             )
 
           const personId = createId()
-          const personFolder = `uploads/people/${body.nameLat}-${personId}`
+          const personFolder = `uploads/people/${slugify(body.nameLat)}--${personId}`
 
           let newCoverKey = null
           if (body.coverKey) {

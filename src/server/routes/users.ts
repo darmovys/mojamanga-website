@@ -9,7 +9,7 @@ import {
   userTeamsRequestsSchema,
   userTitlesRequestsSchema,
 } from '@/schemas/users'
-import { moveS3File } from '@/lib/utils'
+import { moveS3File, slugify } from '@/lib/utils'
 import { S3 } from '@/lib/s3-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { auth } from '@/lib/auth'
@@ -233,7 +233,7 @@ export const usersRouter = new Elysia({
                 }
               }
 
-              const userFolder = `uploads/users/${body.username}-${id}`
+              const userFolder = `uploads/users/${slugify(body.username)}--${id}`
 
               // --- ЛОГІКА ДЛЯ АВАТАРКИ ---
               let finalAvatarKey = currentUser.image

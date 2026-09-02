@@ -2,7 +2,7 @@ import { Elysia } from 'elysia'
 import { betterAuthPlugin } from '../plugins/auth'
 import { prisma } from '@/db'
 import { createId } from '@paralleldrive/cuid2'
-import { moveS3File } from '@/lib/utils'
+import { moveS3File, slugify } from '@/lib/utils'
 import { S3 } from '@/lib/s3-client'
 import { sendNewTitleDataSchema } from '@/schemas/titles'
 import { DeleteObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
@@ -118,7 +118,7 @@ export const titlesRouter = new Elysia({
           const titleId = createId()
 
           // Створюємо папку для збереження зображень твору
-          const titlesFolder = `uploads/titles/${body.enName}-${titleId}`
+          const titlesFolder = `uploads/titles/${slugify(body.enName)}--${titleId}`
 
           // Створюємо новий ключ для обкладинки твору
           const coverFileName = body.coverKey.split('/').pop()
@@ -702,7 +702,7 @@ export const titlesRouter = new Elysia({
                       .filter(Boolean)
                   : []
 
-                const titleFolder = `uploads/titles/${body.enName}-${title.id}`
+                const titleFolder = `uploads/titles/${slugify(body.enName)}--${title.id}`
 
                 // 4. Обробка обкладинки в S3
                 let finalCoverKey = title.currentVersion.coverUrl
