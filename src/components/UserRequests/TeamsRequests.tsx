@@ -117,7 +117,7 @@ function TeamCard({ coverUrl, name, status, teamId }: TeamCardProps) {
       data-is-deleting={isDeleting ? '' : undefined}
     >
       <div
-        className={styles.ImageWrapper}
+        className={styles.TeamImageWrapper}
         data-rejected={status === 'REJECTED' ? '' : undefined}
       >
         {coverUrl ? (
@@ -208,14 +208,14 @@ export function TeamsRequestsSkeleton() {
         ))}
       </nav>
       <main
-        className={styles.MainSkeletonSection}
+        className={styles.MainTeamSkeletonSection}
         data-rejected={status === 'rejected' ? '' : undefined}
       >
         {range(5).map((index) => (
           <div key={index}>
             <div className={styles.CardSkeletonItem}>
               <Skeleton
-                className={styles.CardSkeletonItemImage}
+                className={styles.TeamCardSkeletonItemImage}
                 width="100%"
                 height="100%"
                 borderRadius="var(--4px)"

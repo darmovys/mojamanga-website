@@ -161,8 +161,8 @@ export function useTeamForm(initialData?: TeamEditData, isEditMode = false) {
   })
 
   const cover = useImageUpload({
-    width: 375,
-    height: 525,
+    width: 260,
+    height: 260,
     onKeyChange: (key) => {
       form.setFieldValue('coverKey', key ?? '')
       form.validateField('coverKey', 'change')

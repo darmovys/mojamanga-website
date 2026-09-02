@@ -1,4 +1,5 @@
 @use '../../styles/breakpoints' as *;
+@use '../../styles/utils' as *;
 
 .MaxWidthWrapper {
   min-block-size: 100dvh;
@@ -137,15 +138,6 @@
   gap: var(--16px);
   --enter-time: 350ms;
   --leave-time: 450ms;
-}
-
-.CoversWrapper {
-  display: grid;
-  gap: var(--16px);
-
-  @include up('tablet') {
-    grid-template-columns: var(--160px) 1fr;
-  }
 }
 
 .Label {
@@ -374,28 +366,30 @@
 }
 
 .UploadWrapper {
-  --height: var(--200px);
   --border-radius: var(--8px);
   display: flex;
   gap: var(--16px);
-
-  @include up('tablet') {
-    --height: var(--220px);
-  }
 }
 
 .UploadCoverWrapper {
   composes: UploadWrapper;
-  --width: var(--140px);
+  --height: #{rem(120px)};
+  --width: #{rem(120px)};
 
   @include up('tablet') {
-    --width: var(--160px);
+    --width: #{rem(180px)};
+    --height: #{rem(180px)};
   }
 }
 
 .UploadBackgroundWrapper {
   composes: UploadWrapper;
   --width: 100%;
+  --height: #{rem(130px)};
+
+  @include up('tablet') {
+    --height: var(--220px);
+  }
 }
 
 .CoverBlock {
@@ -626,8 +620,8 @@
 }
 
 .Tooltip {
-  inset-block-start: -0.125rem;
-  inset-inline-start: -0.175rem;
+  inset-block-start: rem(-2px);
+  inset-inline-start: rem(-2.8px);
 }
 
 .RedTooltip {

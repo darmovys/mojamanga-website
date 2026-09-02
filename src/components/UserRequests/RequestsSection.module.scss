@@ -46,6 +46,11 @@
   }
 }
 
+.TeamImageWrapper {
+  composes: ImageWrapper;
+  aspect-ratio: 1 /1;
+}
+
 .ButtonsSection {
   display: flex;
   flex-direction: column;
@@ -176,6 +181,24 @@
   }
 }
 
+.MainTeamSkeletonSection {
+  composes: MainSkeletonSection;
+
+  --height: #{rem(190px)};
+
+  @include up('tablet') {
+    --height: #{rem(240px)};
+  }
+
+  &[data-rejected] {
+    --height: #{rem(280px)};
+
+    @include up('tablet') {
+      --height: #{rem(260px)};
+    }
+  }
+}
+
 .CardSkeletonItem {
   block-size: 100%;
   inline-size: 100%;
@@ -186,4 +209,8 @@
 
 .CardSkeletonItemImage {
   aspect-ratio: 3 / 3.4;
+}
+
+.TeamCardSkeletonItemImage {
+  aspect-ratio: 1 / 1;
 }

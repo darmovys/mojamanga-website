@@ -128,37 +128,35 @@ function TeamCard({ teamId, coverUrl, status, name }: TeamCardProps) {
         {status === 'REJECTED' && (
           <div className={styles.StatusRejectedCover}>
             <span>Відхилено</span>
-            <div className={styles.ButtonsWrapper}>
-              <MotionButton
-                nativeButton={false}
-                disabled={isDeleting}
-                render={<Link to="/team/$id/edit" params={{ id: teamId }} />}
-                className={styles.ReviseButton}
-              >
-                <ClickTargetHelper />
-                <SquarePenIcon size={14} />
-                Переробити
-              </MotionButton>
-              <MotionButton
-                onClick={() => setIsDialogOpen(!isDialogOpen)}
-                disabled={isDeleting}
-                className={styles.DeleteButton}
-              >
-                <ClickTargetHelper />
-                <XIcon size={16} />
-                Видалити
-              </MotionButton>
-              <ConfirmDialog
-                isOpen={isDialogOpen}
-                onIsOpenChange={setIsDialogOpen}
-                description="Ви точно хочете видалити цей запит?"
-                onConfirm={() => {
-                  setIsDialogOpen(false)
-                  if (isDeleting) return
-                  deleteTeam()
-                }}
-              />
-            </div>
+            <MotionButton
+              nativeButton={false}
+              disabled={isDeleting}
+              render={<Link to="/team/$id/edit" params={{ id: teamId }} />}
+              className={styles.ReviseButton}
+            >
+              <ClickTargetHelper />
+              <SquarePenIcon size={14} />
+              Переробити
+            </MotionButton>
+            <MotionButton
+              onClick={() => setIsDialogOpen(!isDialogOpen)}
+              disabled={isDeleting}
+              className={styles.DeleteButton}
+            >
+              <ClickTargetHelper />
+              <XIcon size={16} />
+              Видалити
+            </MotionButton>
+            <ConfirmDialog
+              isOpen={isDialogOpen}
+              onIsOpenChange={setIsDialogOpen}
+              description="Ви точно хочете видалити цей запит?"
+              onConfirm={() => {
+                setIsDialogOpen(false)
+                if (isDeleting) return
+                deleteTeam()
+              }}
+            />
           </div>
         )}
       </div>
@@ -188,11 +186,7 @@ export function TeamsSectionSkeleton() {
       <ul className={styles.TeamsList}>
         {range(4).map((index) => (
           <li className={styles.TeamItem} key={index}>
-            <Skeleton
-              width="100%"
-              height="15.625rem"
-              borderRadius="var(--6px)"
-            />
+            <Skeleton width="100%" height="10rem" borderRadius="var(--6px)" />
             <Skeleton width="100%" height="3.25rem" borderRadius="var(--6px)" />
           </li>
         ))}

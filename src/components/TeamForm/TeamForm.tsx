@@ -129,350 +129,339 @@ function TeamForm({
               form.handleSubmit()
             }}
           >
-            <div className={styles.CoversWrapper}>
-              <form.Field
-                name="coverKey"
-                children={(field) => {
-                  const currentCoverKey = field.state.value
+            <form.Field
+              name="coverKey"
+              children={(field) => {
+                const currentCoverKey = field.state.value
 
-                  const hasNewCover = Boolean(cover.fileState?.objectUrl)
+                const hasNewCover = Boolean(cover.fileState?.objectUrl)
 
-                  const hasOriginalCover =
-                    !cover.fileState &&
-                    Boolean(initialData?.coverUrl) &&
-                    currentCoverKey === initialData?.coverUrl
+                const hasOriginalCover =
+                  !cover.fileState &&
+                  Boolean(initialData?.coverUrl) &&
+                  currentCoverKey === initialData?.coverUrl
 
-                  const shouldShowPreview = hasNewCover || hasOriginalCover
+                const shouldShowPreview = hasNewCover || hasOriginalCover
 
-                  const shouldShowTrashButton =
-                    !hasNewCover || !cover.fileState!.uploading
+                const shouldShowTrashButton =
+                  !hasNewCover || !cover.fileState!.uploading
 
-                  const shouldShowUploadProgress =
-                    hasNewCover &&
-                    cover.fileState!.uploading &&
-                    !cover.fileState!.isDeleting
+                const shouldShowUploadProgress =
+                  hasNewCover &&
+                  cover.fileState!.uploading &&
+                  !cover.fileState!.isDeleting
 
-                  const shouldShowUploadError =
-                    hasNewCover &&
-                    !cover.fileState!.uploading &&
-                    !cover.fileState!.isDeleting &&
-                    Boolean(cover.fileState!.error)
+                const shouldShowUploadError =
+                  hasNewCover &&
+                  !cover.fileState!.uploading &&
+                  !cover.fileState!.isDeleting &&
+                  Boolean(cover.fileState!.error)
 
-                  return (
-                    <Field.Root
-                      invalid={
-                        !field.state.meta.isValid &&
-                        form.state.submissionAttempts > 0
-                      }
+                return (
+                  <Field.Root
+                    invalid={
+                      !field.state.meta.isValid &&
+                      form.state.submissionAttempts > 0
+                    }
+                  >
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<span />}
+                      className={styles.Label}
                     >
-                      <Field.Label
-                        nativeLabel={false}
-                        render={<span />}
-                        className={styles.Label}
+                      Обкладинка
+                      <Tooltip
+                        className={styles.RedTooltip}
+                        text="Обов'язкове поле"
+                        align="start"
                       >
-                        Обкладинка
-                        <Tooltip
-                          className={styles.RedTooltip}
-                          text="Обов'язкове поле"
-                          align="start"
+                        <Asterisk size={14} />
+                      </Tooltip>
+                    </Field.Label>
+
+                    <div className={styles.UploadCoverWrapper}>
+                      {!shouldShowPreview && (
+                        <motion.div
+                          {...tapAnimation}
+                          {...cover.getRootProps({
+                            role: 'button',
+                            'aria-label': 'drag and drop area',
+                          })}
+                          className={styles.UploadZone}
+                          data-drag-active={cover.isDragActive}
                         >
-                          <Asterisk size={14} />
-                        </Tooltip>
-                      </Field.Label>
+                          <input {...cover.getInputProps()} />
+                          <UploadCloud size={20} />
+                          <span>Завантажте</span>
+                          <span>фото</span>
 
-                      <div className={styles.UploadCoverWrapper}>
-                        {!shouldShowPreview && (
-                          <motion.div
-                            {...tapAnimation}
-                            {...cover.getRootProps({
-                              role: 'button',
-                              'aria-label': 'drag and drop area',
-                            })}
-                            className={styles.UploadZone}
-                            data-drag-active={cover.isDragActive}
+                          <svg
+                            className={styles.UploadZoneBorder}
+                            xmlns="http://www.w3.org/2000/svg"
                           >
-                            <input {...cover.getInputProps()} />
-                            <UploadCloud size={20} />
-                            <span>Завантажте</span>
-                            <span>фото</span>
+                            <rect className={styles.Rectangle} />
+                          </svg>
+                        </motion.div>
+                      )}
 
-                            <svg
-                              className={styles.UploadZoneBorder}
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <rect className={styles.Rectangle} />
-                            </svg>
-                          </motion.div>
-                        )}
+                      {shouldShowPreview && (
+                        <div className={styles.UploadedCover}>
+                          <Image
+                            layout="fullWidth"
+                            alt="Обкладинка команди"
+                            src={
+                              hasNewCover
+                                ? cover.fileState!.objectUrl!
+                                : `${import.meta.env.VITE_STORAGE_URL}${initialData!.coverUrl}`
+                            }
+                            draggable={false}
+                          />
 
-                        {shouldShowPreview && (
-                          <div className={styles.UploadedCover}>
-                            <Image
-                              layout="fullWidth"
-                              alt="Обкладинка команди"
-                              src={
-                                hasNewCover
-                                  ? cover.fileState!.objectUrl!
-                                  : `${import.meta.env.VITE_STORAGE_URL}${initialData!.coverUrl}`
-                              }
-                              draggable={false}
-                            />
-
-                            {shouldShowUploadProgress && (
-                              <div className={styles.Overlay}>
-                                {cover.fileState!.progress}%
-                              </div>
-                            )}
-
-                            {shouldShowUploadError && (
-                              <div className={styles.Overlay}>
-                                <CircleAlert
-                                  className={styles.Error}
-                                  size={30}
-                                />
-                              </div>
-                            )}
-
-                            {shouldShowTrashButton && (
-                              <div className={styles.TrashButtonWrapper}>
-                                <MotionButton
-                                  focusableWhenDisabled={true}
-                                  disabled={
-                                    hasNewCover
-                                      ? cover.fileState!.isDeleting ||
-                                        isUploading
-                                      : isUploading
-                                  }
-                                  onClick={() => {
-                                    if (hasNewCover) {
-                                      cover.removeFile()
-                                    } else {
-                                      field.handleChange(null)
-                                    }
-                                  }}
-                                  className={styles.TrashButton}
-                                >
-                                  <ClickTargetHelper />
-                                  {hasNewCover &&
-                                  cover.fileState!.isDeleting ? (
-                                    <>
-                                      <LoaderCircle
-                                        className={styles.Loader}
-                                        size={16}
-                                      />
-                                      <VisuallyHidden>
-                                        Видаляємо зображення
-                                      </VisuallyHidden>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Trash2 size={16} />
-                                      <VisuallyHidden>
-                                        Видалити зображення
-                                      </VisuallyHidden>
-                                    </>
-                                  )}
-                                </MotionButton>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        <AnimatePresence>
-                          {cover.imageToCrop && cover.cropImageUrl && (
-                            <CropImageDialog
-                              src={cover.cropImageUrl}
-                              originalName={cover.imageToCrop.name}
-                              fileType={cover.imageToCrop.type}
-                              originalFile={cover.imageToCrop}
-                              croppedWidth={cover.croppedWidth}
-                              croppedHeight={cover.croppedHeight}
-                              onCropped={(file) => {
-                                if (!file) return
-                                cover.uploadFile(file)
-                              }}
-                              onClose={() => {
-                                cover.setImageToCrop(null)
-                              }}
-                            />
+                          {shouldShowUploadProgress && (
+                            <div className={styles.Overlay}>
+                              {cover.fileState!.progress}%
+                            </div>
                           )}
-                        </AnimatePresence>
-                      </div>
-                    </Field.Root>
-                  )
-                }}
-              />
 
-              <form.Field
-                name="backgroundKey"
-                children={(field) => {
-                  const currentBackgroundKey = field.state.value
+                          {shouldShowUploadError && (
+                            <div className={styles.Overlay}>
+                              <CircleAlert className={styles.Error} size={30} />
+                            </div>
+                          )}
 
-                  const hasNewBackground = Boolean(
-                    background.fileState?.objectUrl,
-                  )
-
-                  const hasOriginalBackground =
-                    !background.fileState &&
-                    Boolean(initialData?.backgroundUrl) &&
-                    currentBackgroundKey === initialData?.backgroundUrl
-
-                  const shouldShowPreview =
-                    hasNewBackground || hasOriginalBackground
-
-                  const shouldShowTrashButton =
-                    !hasNewBackground || !background.fileState!.uploading
-
-                  const shouldShowUploadProgress =
-                    hasNewBackground &&
-                    background.fileState!.uploading &&
-                    !background.fileState!.isDeleting
-
-                  const shouldShowUploadError =
-                    hasNewBackground &&
-                    !background.fileState!.uploading &&
-                    !background.fileState!.isDeleting &&
-                    Boolean(background.fileState!.error)
-
-                  return (
-                    <Field.Root
-                      invalid={
-                        !field.state.meta.isValid &&
-                        form.state.submissionAttempts > 0
-                      }
-                    >
-                      <Field.Label
-                        nativeLabel={false}
-                        render={<span />}
-                        className={styles.Label}
-                      >
-                        Фонове зображення
-                      </Field.Label>
-                      <div className={styles.UploadBackgroundWrapper}>
-                        {!shouldShowPreview && (
-                          <motion.div
-                            {...tapAnimation}
-                            {...background.getRootProps({
-                              role: 'button',
-                              'aria-label': 'drag and drop area',
-                            })}
-                            className={styles.UploadZone}
-                            data-drag-active={background.isDragActive}
-                          >
-                            <input {...background.getInputProps()} />
-                            <UploadCloud size={20} />
-                            <span>Завантажте</span>
-                            <span>фото</span>
-
-                            <svg
-                              className={styles.UploadZoneBorder}
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <rect className={styles.Rectangle} />
-                            </svg>
-                          </motion.div>
-                        )}
-
-                        {shouldShowPreview && (
-                          <div className={styles.UploadedCover}>
-                            <Image
-                              layout="fullWidth"
-                              alt="Фонове зображення команди"
-                              src={
-                                hasNewBackground
-                                  ? background.fileState!.objectUrl!
-                                  : `${import.meta.env.VITE_STORAGE_URL}${initialData!.backgroundUrl}`
-                              }
-                              draggable={false}
-                            />
-
-                            {shouldShowUploadProgress && (
-                              <div className={styles.Overlay}>
-                                {background.fileState!.progress}%
-                              </div>
-                            )}
-
-                            {shouldShowUploadError && (
-                              <div className={styles.Overlay}>
-                                <CircleAlert
-                                  className={styles.Error}
-                                  size={30}
-                                />
-                              </div>
-                            )}
-
-                            {shouldShowTrashButton && (
-                              <div className={styles.TrashButtonWrapper}>
-                                <MotionButton
-                                  className={styles.TrashButton}
-                                  focusableWhenDisabled={true}
-                                  disabled={
-                                    hasNewBackground
-                                      ? background.fileState!.isDeleting ||
-                                        background.fileState!.uploading ||
-                                        background.fileState!
-                                          .isExtractingAccentColor ||
-                                        isUploading
-                                      : isUploading
+                          {shouldShowTrashButton && (
+                            <div className={styles.TrashButtonWrapper}>
+                              <MotionButton
+                                focusableWhenDisabled={true}
+                                disabled={
+                                  hasNewCover
+                                    ? cover.fileState!.isDeleting || isUploading
+                                    : isUploading
+                                }
+                                onClick={() => {
+                                  if (hasNewCover) {
+                                    cover.removeFile()
+                                  } else {
+                                    field.handleChange(null)
                                   }
-                                  onClick={() => {
-                                    if (hasNewBackground) {
-                                      background.removeFile()
-                                    } else {
-                                      field.handleChange(null)
-                                    }
-                                  }}
-                                >
-                                  <ClickTargetHelper />
-                                  {hasNewBackground &&
-                                  background.fileState!.isDeleting ? (
-                                    <>
-                                      <LoaderCircle
-                                        className={styles.Loader}
-                                        size={16}
-                                      />
-                                      <VisuallyHidden>
-                                        Видаляємо зображення
-                                      </VisuallyHidden>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Trash2 size={16} />
-                                      <VisuallyHidden>
-                                        Видалити зображення
-                                      </VisuallyHidden>
-                                    </>
-                                  )}
-                                </MotionButton>
-                              </div>
-                            )}
-                          </div>
+                                }}
+                                className={styles.TrashButton}
+                              >
+                                <ClickTargetHelper />
+                                {hasNewCover && cover.fileState!.isDeleting ? (
+                                  <>
+                                    <LoaderCircle
+                                      className={styles.Loader}
+                                      size={16}
+                                    />
+                                    <VisuallyHidden>
+                                      Видаляємо зображення
+                                    </VisuallyHidden>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Trash2 size={16} />
+                                    <VisuallyHidden>
+                                      Видалити зображення
+                                    </VisuallyHidden>
+                                  </>
+                                )}
+                              </MotionButton>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <AnimatePresence>
+                        {cover.imageToCrop && cover.cropImageUrl && (
+                          <CropImageDialog
+                            src={cover.cropImageUrl}
+                            originalName={cover.imageToCrop.name}
+                            fileType={cover.imageToCrop.type}
+                            originalFile={cover.imageToCrop}
+                            croppedWidth={cover.croppedWidth}
+                            croppedHeight={cover.croppedHeight}
+                            onCropped={(file) => {
+                              if (!file) return
+                              cover.uploadFile(file)
+                            }}
+                            onClose={() => {
+                              cover.setImageToCrop(null)
+                            }}
+                          />
                         )}
-                        <AnimatePresence>
-                          {background.imageToCrop &&
-                            background.cropImageUrl && (
-                              <CropImageDialog
-                                src={background.cropImageUrl}
-                                originalName={background.imageToCrop.name}
-                                fileType={background.imageToCrop.type}
-                                originalFile={background.imageToCrop}
-                                croppedWidth={background.croppedWidth}
-                                croppedHeight={background.croppedHeight}
-                                onCropped={(file) => {
-                                  if (!file) return
-                                  background.uploadFile(file)
+                      </AnimatePresence>
+                    </div>
+                  </Field.Root>
+                )
+              }}
+            />
+
+            <form.Field
+              name="backgroundKey"
+              children={(field) => {
+                const currentBackgroundKey = field.state.value
+
+                const hasNewBackground = Boolean(
+                  background.fileState?.objectUrl,
+                )
+
+                const hasOriginalBackground =
+                  !background.fileState &&
+                  Boolean(initialData?.backgroundUrl) &&
+                  currentBackgroundKey === initialData?.backgroundUrl
+
+                const shouldShowPreview =
+                  hasNewBackground || hasOriginalBackground
+
+                const shouldShowTrashButton =
+                  !hasNewBackground || !background.fileState!.uploading
+
+                const shouldShowUploadProgress =
+                  hasNewBackground &&
+                  background.fileState!.uploading &&
+                  !background.fileState!.isDeleting
+
+                const shouldShowUploadError =
+                  hasNewBackground &&
+                  !background.fileState!.uploading &&
+                  !background.fileState!.isDeleting &&
+                  Boolean(background.fileState!.error)
+
+                return (
+                  <Field.Root
+                    invalid={
+                      !field.state.meta.isValid &&
+                      form.state.submissionAttempts > 0
+                    }
+                  >
+                    <Field.Label
+                      nativeLabel={false}
+                      render={<span />}
+                      className={styles.Label}
+                    >
+                      Фонове зображення
+                    </Field.Label>
+                    <div className={styles.UploadBackgroundWrapper}>
+                      {!shouldShowPreview && (
+                        <motion.div
+                          {...tapAnimation}
+                          {...background.getRootProps({
+                            role: 'button',
+                            'aria-label': 'drag and drop area',
+                          })}
+                          className={styles.UploadZone}
+                          data-drag-active={background.isDragActive}
+                        >
+                          <input {...background.getInputProps()} />
+                          <UploadCloud size={20} />
+                          <span>Завантажте</span>
+                          <span>фото</span>
+
+                          <svg
+                            className={styles.UploadZoneBorder}
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <rect className={styles.Rectangle} />
+                          </svg>
+                        </motion.div>
+                      )}
+
+                      {shouldShowPreview && (
+                        <div className={styles.UploadedCover}>
+                          <Image
+                            layout="fullWidth"
+                            alt="Фонове зображення команди"
+                            src={
+                              hasNewBackground
+                                ? background.fileState!.objectUrl!
+                                : `${import.meta.env.VITE_STORAGE_URL}${initialData!.backgroundUrl}`
+                            }
+                            draggable={false}
+                          />
+
+                          {shouldShowUploadProgress && (
+                            <div className={styles.Overlay}>
+                              {background.fileState!.progress}%
+                            </div>
+                          )}
+
+                          {shouldShowUploadError && (
+                            <div className={styles.Overlay}>
+                              <CircleAlert className={styles.Error} size={30} />
+                            </div>
+                          )}
+
+                          {shouldShowTrashButton && (
+                            <div className={styles.TrashButtonWrapper}>
+                              <MotionButton
+                                className={styles.TrashButton}
+                                focusableWhenDisabled={true}
+                                disabled={
+                                  hasNewBackground
+                                    ? background.fileState!.isDeleting ||
+                                      background.fileState!.uploading ||
+                                      background.fileState!
+                                        .isExtractingAccentColor ||
+                                      isUploading
+                                    : isUploading
+                                }
+                                onClick={() => {
+                                  if (hasNewBackground) {
+                                    background.removeFile()
+                                  } else {
+                                    field.handleChange(null)
+                                  }
                                 }}
-                                onClose={() => {
-                                  background.setImageToCrop(null)
-                                }}
-                              />
-                            )}
-                        </AnimatePresence>
-                      </div>
-                    </Field.Root>
-                  )
-                }}
-              />
-            </div>
+                              >
+                                <ClickTargetHelper />
+                                {hasNewBackground &&
+                                background.fileState!.isDeleting ? (
+                                  <>
+                                    <LoaderCircle
+                                      className={styles.Loader}
+                                      size={16}
+                                    />
+                                    <VisuallyHidden>
+                                      Видаляємо зображення
+                                    </VisuallyHidden>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Trash2 size={16} />
+                                    <VisuallyHidden>
+                                      Видалити зображення
+                                    </VisuallyHidden>
+                                  </>
+                                )}
+                              </MotionButton>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <AnimatePresence>
+                        {background.imageToCrop && background.cropImageUrl && (
+                          <CropImageDialog
+                            src={background.cropImageUrl}
+                            originalName={background.imageToCrop.name}
+                            fileType={background.imageToCrop.type}
+                            originalFile={background.imageToCrop}
+                            croppedWidth={background.croppedWidth}
+                            croppedHeight={background.croppedHeight}
+                            onCropped={(file) => {
+                              if (!file) return
+                              background.uploadFile(file)
+                            }}
+                            onClose={() => {
+                              background.setImageToCrop(null)
+                            }}
+                          />
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </Field.Root>
+                )
+              }}
+            />
 
             <form.Field
               name="title"
