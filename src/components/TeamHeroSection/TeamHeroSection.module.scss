@@ -369,9 +369,15 @@
   position: relative;
   cursor: pointer;
   border-radius: var(--inner-radius);
+  transition: opacity 0.2s ease;
 
   &[data-highlighted] {
     z-index: 0;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   &::before {
@@ -385,11 +391,11 @@
     transition: opacity 0.2s var(--bg-animation);
   }
 
-  &[data-highlighted]::before {
+  &[data-highlighted]:not([data-disabled])::before {
     opacity: 1;
   }
 
-  &:focus-visible {
+  &:focus-visible:not([data-disabled]) {
     outline-offset: 2px;
     outline: var(--default-outline);
   }

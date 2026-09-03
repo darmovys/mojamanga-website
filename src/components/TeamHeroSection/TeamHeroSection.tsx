@@ -107,7 +107,14 @@ function TeamHeroSection() {
             </MotionButton>
 
             <div className={styles.LaptopAndUp}>
-              <MoreButton size={18} onOpenAbout={handleOpenInfo} />
+              <MoreButton
+                size={18}
+                onOpenAbout={handleOpenInfo}
+                acceptsApplications={profileData.acceptsApplications}
+                currentUserRoles={profileData.currentUserRoles}
+                isMember={profileData.isMember}
+                teamId={id}
+              />
             </div>
           </div>
         </div>
@@ -126,7 +133,14 @@ function TeamHeroSection() {
       </div>
 
       <div className={styles.TabletAndDown}>
-        <MoreButton size={24} onOpenAbout={handleOpenInfo} />
+        <MoreButton
+          size={24}
+          onOpenAbout={handleOpenInfo}
+          acceptsApplications={profileData.acceptsApplications}
+          currentUserRoles={profileData.currentUserRoles}
+          isMember={profileData.isMember}
+          teamId={id}
+        />
       </div>
 
       <TeamInfoDialog

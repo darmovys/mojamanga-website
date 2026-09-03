@@ -114,6 +114,7 @@ model Team {
   backgroundAccentColor String?    @map("background_accent_color")
   description           String?
   status                TeamStatus @default(PENDING)
+  acceptsApplications   Boolean    @default(true) @map("accepts_applications")
 
   moderationFeedback String? @map("moderation_feedback")
 

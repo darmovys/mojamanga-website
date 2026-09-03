@@ -18,6 +18,7 @@ import {
 import { S3 } from '@/lib/s3-client'
 import { getTeamMonthlyChapterAverage } from '@/lib/get-team-monthly-chapter-average.server'
 import { extractAccentColor } from '@/lib/extract-accent-color.server'
+import { TeamRole } from '@/generated/prisma/enums'
 
 async function getTeamOrFail(id: string) {
   const team = await prisma.team.findUnique({ where: { id } })
@@ -425,6 +426,7 @@ export const teamsRouter = new Elysia({
                     coverUrl: true,
                     backgroundUrl: true,
                     backgroundAccentColor: true,
+                    acceptsApplications: true,
                     members: {
                       select: {
                         roles: true,
@@ -445,9 +447,14 @@ export const teamsRouter = new Elysia({
                   roles,
                 }))
 
-                const isMember = members.some(
-                  (member) => member.id === user?.id,
-                )
+                const currentMember = user?.id
+                  ? members.find((member) => member.id === user.id)
+                  : null
+
+                const isMember = Boolean(currentMember)
+                const currentUserRoles = currentMember
+                  ? currentMember.roles
+                  : null
 
                 const { description, ...teamInfo } = rawTeamInfo
 
@@ -458,6 +465,7 @@ export const teamsRouter = new Elysia({
                     : null,
                   members,
                   isMember,
+                  currentUserRoles,
                 }
 
                 return result
@@ -583,6 +591,55 @@ export const teamsRouter = new Elysia({
               return status(500, 'Серверна помилка')
             }
           })
+          .patch(
+            '/applications-state',
+            async ({ params: { id }, status, user }) => {
+              try {
+                const earlyResult = await prisma.$transaction(async (tx) => {
+                  const teamMember = await tx.teamMember.findUnique({
+                    where: {
+                      userId_teamId: {
+                        userId: user.id,
+                        teamId: id,
+                      },
+                    },
+                    select: {
+                      roles: true,
+                      team: {
+                        select: { acceptsApplications: true },
+                      },
+                    },
+                  })
+
+                  if (!teamMember)
+                    return status(403, 'Ви не є учасником цієї команди')
+
+                  if (!teamMember.roles.includes(TeamRole.ADMIN))
+                    return status(
+                      403,
+                      'У вас недостатньо прав для виконання цього запиту',
+                    )
+
+                  await tx.team.update({
+                    where: { id },
+                    data: {
+                      acceptsApplications: !teamMember.team.acceptsApplications,
+                    },
+                  })
+                })
+
+                if (earlyResult) {
+                  return status(earlyResult.code, earlyResult.response)
+                }
+
+                return status(200, 'Запит виконано')
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при роботі з БД')
+              }
+            },
+            { authed: true },
+          )
           .patch(
             '/edit',
             async ({ params: { id }, body, status, user }) => {
