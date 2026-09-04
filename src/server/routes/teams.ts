@@ -19,6 +19,7 @@ import { S3 } from '@/lib/s3-client'
 import { getTeamMonthlyChapterAverage } from '@/lib/get-team-monthly-chapter-average.server'
 import { extractAccentColor } from '@/lib/extract-accent-color.server'
 import { TeamRole } from '@/generated/prisma/enums'
+import { rateLimitPlugin } from '../plugins/rate-limit'
 
 async function getTeamOrFail(id: string) {
   const team = await prisma.team.findUnique({ where: { id } })
@@ -34,6 +35,7 @@ export const teamsRouter = new Elysia({
   tags: ['Teams'],
 })
   .use(betterAuthPlugin)
+  .use(rateLimitPlugin)
   .group('/teams', (app) => {
     return app
       .post(
@@ -638,7 +640,13 @@ export const teamsRouter = new Elysia({
                 return status(500, 'Помилка при роботі з БД')
               }
             },
-            { authed: true },
+            {
+              userRateLimit: {
+                duration: 60,
+                points: 8,
+                message: 'Забагато запитів. Зачекайте пару хвилин.',
+              },
+            },
           )
           .patch(
             '/edit',

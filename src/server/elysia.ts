@@ -10,6 +10,7 @@ import { tagsRouter } from './routes/tags'
 import { genresRouter } from './routes/genres'
 import { titlesRouter } from './routes/titles'
 import { usersRouter } from './routes/users'
+import { rateLimitPlugin } from './plugins/rate-limit'
 
 export const app = new Elysia({
   prefix: '/api',
@@ -24,6 +25,7 @@ export const app = new Elysia({
     }),
   )
   .use(betterAuthPlugin)
+  .use(rateLimitPlugin)
   .use(filesRouter)
   .use(teamsRouter)
   .use(peopleRouter)
