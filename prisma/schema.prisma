@@ -595,7 +595,10 @@ model Rating {
 
 model BookmarkFolder {
   id         String            @id @default(cuid(2))
-  name       String
+  name       String?
+  color      String?
+  isPublic   Boolean           @default(true) @map("is_public")
+  sortOrder  Int               @map("sort_order")
   isSystem   Boolean           @default(false) @map("is_system")
   systemType SystemFolderType? @map("system_type")
 
@@ -608,6 +611,8 @@ model BookmarkFolder {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([userId, name])
+  @@unique([userId, systemType])
+  @@index([userId, sortOrder])
   @@map("bookmark_folders")
 }
 

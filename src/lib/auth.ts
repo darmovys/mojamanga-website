@@ -135,33 +135,34 @@ export const auth = betterAuth({
               data: [
                 {
                   userId: user.id,
-                  name: 'Читаю',
                   isSystem: true,
                   systemType: 'READING',
+                  sortOrder: 0,
                 },
                 {
                   userId: user.id,
-                  name: 'Прочитано',
-                  isSystem: true,
-                  systemType: 'COMPLETED',
-                },
-                {
-                  userId: user.id,
-                  name: 'Відкладено',
-                  isSystem: true,
-                  systemType: 'ON_HOLD',
-                },
-                {
-                  userId: user.id,
-                  name: 'Покинуто',
-                  isSystem: true,
-                  systemType: 'DROPPED',
-                },
-                {
-                  userId: user.id,
-                  name: 'В планах',
                   isSystem: true,
                   systemType: 'PLAN_TO_READ',
+                  sortOrder: 1,
+                },
+                {
+                  userId: user.id,
+                  isSystem: true,
+                  systemType: 'COMPLETED',
+                  sortOrder: 2,
+                },
+                {
+                  userId: user.id,
+
+                  isSystem: true,
+                  systemType: 'ON_HOLD',
+                  sortOrder: 3,
+                },
+                {
+                  userId: user.id,
+                  isSystem: true,
+                  systemType: 'DROPPED',
+                  sortOrder: 4,
                 },
               ],
             })
