@@ -9,26 +9,20 @@ import { DeleteObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
 import { z } from 'zod'
 import { TitleFieldName } from '@/generated/prisma/enums'
 
-const titleSchema = z.object({
-  id: z.string(),
-  updatedAt: z.date(),
-  proposedByUser: z.object({
-    displayUsername: z.string(),
-  }),
-  currentVersion: z.object({
-    nameUkr: z.string(),
-    nameEng: z.string(),
-    description: z.string().nullable(),
-  }),
-})
-
-// Схема виведених даних для маршруту get-pending-titles
-const titlesSchema = z.object({
-  titles: z.array(titleSchema),
-  total: z.number(),
-  totalPages: z.number(),
-  currentPage: z.number(),
-})
+/**
+ * Використовується для звуження типу currentVersion,
+ * щоб поле не могло мати значення null
+ * */
+export function assertNonNullable<T, K extends keyof T>(
+  obj: T,
+  keys: K[],
+): asserts obj is T & { [P in K]-?: NonNullable<T[P]> } {
+  for (const key of keys) {
+    if (obj[key] == null) {
+      throw new Error(`Очікувалось, що поле "${String(key)}" не буде null`)
+    }
+  }
+}
 
 async function getTitleOrFail(id: string) {
   const title = await prisma.title.findUnique({ where: { id } })
@@ -297,16 +291,10 @@ export const titlesRouter = new Elysia({
               }),
             ])
 
-            /* 
-              Наразі, Prisma не вміє звужувати типи в момент фільтраці даних під час запиту до БД.
-              Тому хоч ми і вказали, що currentVersion: { isNot: null }, 
-              TypeScript все ще вважатиме, що currentVersion може бути null.
-              Код знизу змушує TypeScript важати, що значення ніколи не буде null.
-            */
-            const titles = rawTitles.map((title) => ({
-              ...title,
-              currentVersion: title.currentVersion!, // Знак оклику каже: "Тут точно не null"
-            }))
+            const titles = rawTitles.map((title) => {
+              assertNonNullable(title, ['currentVersion'])
+              return title
+            })
 
             return {
               titles,
@@ -323,79 +311,74 @@ export const titlesRouter = new Elysia({
           query: z.object({
             page: z.coerce.number().optional(),
           }),
-          /* за допомогою zod, виводимо тип даних, де currentVersion !== null */
-          response: {
-            200: titlesSchema,
-            500: z.string(),
-          },
           moderator: true,
         },
       )
       .get(
         '/title-adding-request/:id',
         async ({ params: { id }, status }) => {
-          const titleRawData = await prisma.title.findUnique({
-            where: {
-              id,
-              approvalStatus: 'PENDING',
-              currentVersion: { isNot: null },
-            },
-            select: {
-              proposedByUserId: true,
-              proposedByUser: {
-                select: { image: true, displayUsername: true },
+          try {
+            const titleData = await prisma.title.findUnique({
+              where: {
+                id,
+                approvalStatus: 'PENDING',
+                currentVersion: { isNot: null },
               },
-              lockedFields: true,
-              updatedAt: true,
-              currentVersion: {
-                select: {
-                  coverUrl: true,
-                  backgroundUrl: true,
-                  nameUkr: true,
-                  nameEng: true,
-                  alternativeNames: { select: { id: true, name: true } },
-                  description: true,
-                  type: true,
-                  titleStatus: true,
-                  translationStatus: true,
-                  ageRestriction: true,
-                  releaseYear: true,
-                  genres: {
-                    select: { genre: { select: { id: true, name: true } } },
-                  },
-                  tags: {
-                    select: { tag: { select: { id: true, name: true } } },
-                  },
-                  sources: {
-                    select: { id: true, url: true },
-                  },
-                  people: {
-                    select: {
-                      personId: true,
-                      role: true,
-                      person: { select: { nameUkr: true } },
+              select: {
+                proposedByUserId: true,
+                proposedByUser: {
+                  select: { image: true, displayUsername: true },
+                },
+                lockedFields: true,
+                updatedAt: true,
+                currentVersion: {
+                  select: {
+                    coverUrl: true,
+                    backgroundUrl: true,
+                    nameUkr: true,
+                    nameEng: true,
+                    alternativeNames: { select: { id: true, name: true } },
+                    description: true,
+                    type: true,
+                    titleStatus: true,
+                    translationStatus: true,
+                    ageRestriction: true,
+                    releaseYear: true,
+                    genres: {
+                      select: { genre: { select: { id: true, name: true } } },
+                    },
+                    tags: {
+                      select: { tag: { select: { id: true, name: true } } },
+                    },
+                    sources: {
+                      select: { id: true, url: true },
+                    },
+                    people: {
+                      select: {
+                        personId: true,
+                        role: true,
+                        person: { select: { nameUkr: true } },
+                      },
                     },
                   },
                 },
+                publishers: {
+                  select: { team: { select: { id: true, name: true } } },
+                },
               },
-              publishers: {
-                select: { team: { select: { id: true, name: true } } },
-              },
-            },
-          })
+            })
 
-          if (!titleRawData || !titleRawData.currentVersion) {
-            return status(404, 'Такої заявки не знайдено')
+            if (!titleData || !titleData.currentVersion) {
+              return status(404, 'Такої заявки не знайдено')
+            }
+
+            assertNonNullable(titleData, ['currentVersion'])
+
+            return titleData
+          } catch (dbError) {
+            console.error('Помилка БД: ', dbError)
+            return status(500, 'Помилка при отриманні даних')
           }
-
-          const titleData = titleRawData as Omit<
-            typeof titleRawData,
-            'currentVersion'
-          > & {
-            currentVersion: NonNullable<typeof titleRawData.currentVersion>
-          }
-
-          return titleData
         },
         {
           moderator: true,
@@ -663,15 +646,16 @@ export const titlesRouter = new Elysia({
                   },
                 })
 
-                if (!title) return status(404, 'Цього твору не існує')
+                if (!title || !title.currentVersion)
+                  return status(404, 'Цього твору не існує')
+
+                assertNonNullable(title, ['currentVersion'])
+
                 if (title.proposedByUserId !== user.id) {
                   return status(
                     403,
                     'У вас немає прав для редагування цього твору',
                   )
-                }
-                if (!title.currentVersion) {
-                  return status(404, 'Поточну версію твору не знайдено')
                 }
 
                 // 2. Перевірка членства користувача в усіх вказаних командах
@@ -897,7 +881,7 @@ export const titlesRouter = new Elysia({
             async ({ params: { id }, status, user }) => {
               try {
                 const title = await prisma.title.findUnique({
-                  where: { id },
+                  where: { id, currentVersion: { isNot: null } },
                   select: {
                     proposedByUserId: true,
                     approvalStatus: true,
@@ -907,7 +891,10 @@ export const titlesRouter = new Elysia({
                   },
                 })
 
-                if (!title) return status(404, 'Цього твору не існує')
+                if (!title || !title.currentVersion)
+                  return status(404, 'Цього твору не існує')
+
+                assertNonNullable(title, ['currentVersion'])
 
                 if (
                   title.proposedByUserId !== user.id ||
@@ -917,10 +904,6 @@ export const titlesRouter = new Elysia({
                     403,
                     'У вас немає прав для видалення цього запиту',
                   )
-                }
-
-                if (!title.currentVersion) {
-                  return status(404, 'Поточну версію твору не знайдено')
                 }
 
                 await prisma.title.delete({
