@@ -635,7 +635,7 @@ model Bookmark {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@unique([folderId, titleId])
+  @@unique([userId, titleId])
   @@map("bookmarks")
 }
 
