@@ -1,6 +1,7 @@
 import { S3 } from '@/lib/s3-client'
 import { CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { createClientOnlyFn } from '@tanstack/react-start'
+import { displayable, formatCss, random } from 'culori'
 import { differenceInHours, format, isSameYear } from 'date-fns'
 import { uk } from 'date-fns/locale'
 
@@ -73,6 +74,40 @@ export function formatCustomDate(dateInput: Date | number | string): string {
 
   // 3. Якщо дата з іншого року
   return format(targetDate, 'd MMM. yyyy', { locale: uk })
+}
+
+// ============================================================================
+// РОБОТА З КОЛЬОРОМ
+// ============================================================================
+
+/**
+ * Повертає випадковий колір у форматі OKLCH.
+ *
+ * Отриманий колір не буде дуже світлим або дуже темним,
+ * щоб однаково нормально відображатися на поверхнях в залежності від режиму
+ *
+ * @returns OKLCH-код кольору, напр. "oklch(0.62 0.18 250)"
+ */
+export const randomOklch = (): string => {
+  while (true) {
+    const color = random('oklch', {
+      l: [0.35, 0.75],
+      c: [0.08, 0.2],
+      h: [0, 360],
+    })
+
+    // Чи відобратиметься на sRGB-екранах
+    if (displayable(color)) {
+      const rounded = {
+        mode: 'oklch' as const,
+        l: Number(color.l.toFixed(3)),
+        c: Number(color.c.toFixed(3)),
+        h: Number(color.h?.toFixed(1)),
+      }
+
+      return formatCss(rounded)
+    }
+  }
 }
 
 // ============================================================================
