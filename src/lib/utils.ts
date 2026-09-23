@@ -412,3 +412,25 @@ export async function moveS3File(sourceKey: string, destinationKey: string) {
     return false
   }
 }
+
+// ============================================================================
+// ЗВУЖЕННЯ ТИПІВ
+// ============================================================================
+
+/**
+ * Використовується для звуження типу певного поля,
+ * щоб воно не могло мати значення null.
+ * В основному використовується дл звуження полів, які утворюються
+ * за допомогою запитів до БД через Prisma,
+ * але які сама Prisma не здатна звузити навіть попри внутрішню фільтрацію.
+ * */
+export function assertNonNullable<T, K extends keyof T>(
+  obj: T,
+  keys: K[],
+): asserts obj is T & { [P in K]-?: NonNullable<T[P]> } {
+  for (const key of keys) {
+    if (obj[key] == null) {
+      throw new Error(`Очікувалось, що поле "${String(key)}" не буде null`)
+    }
+  }
+}

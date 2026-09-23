@@ -2,27 +2,12 @@ import { Elysia } from 'elysia'
 import { betterAuthPlugin } from '../plugins/auth'
 import { prisma } from '@/db'
 import { createId } from '@paralleldrive/cuid2'
-import { moveS3File, slugify } from '@/lib/utils'
+import { assertNonNullable, moveS3File, slugify } from '@/lib/utils'
 import { S3 } from '@/lib/s3-client'
 import { sendNewTitleDataSchema } from '@/schemas/titles'
 import { DeleteObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
 import { z } from 'zod'
 import { TitleFieldName } from '@/generated/prisma/enums'
-
-/**
- * Використовується для звуження типу currentVersion,
- * щоб поле не могло мати значення null
- * */
-export function assertNonNullable<T, K extends keyof T>(
-  obj: T,
-  keys: K[],
-): asserts obj is T & { [P in K]-?: NonNullable<T[P]> } {
-  for (const key of keys) {
-    if (obj[key] == null) {
-      throw new Error(`Очікувалось, що поле "${String(key)}" не буде null`)
-    }
-  }
-}
 
 async function getTitleOrFail(id: string) {
   const title = await prisma.title.findUnique({ where: { id } })
