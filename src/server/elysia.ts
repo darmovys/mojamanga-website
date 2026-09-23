@@ -11,6 +11,7 @@ import { genresRouter } from './routes/genres'
 import { titlesRouter } from './routes/titles'
 import { usersRouter } from './routes/users'
 import { rateLimitPlugin } from './plugins/rate-limit'
+import { bookmarksRouter } from './routes/bookmarks'
 
 export const app = new Elysia({
   prefix: '/api',
@@ -33,4 +34,5 @@ export const app = new Elysia({
   .use(genresRouter)
   .use(titlesRouter)
   .use(usersRouter)
+  .use(bookmarksRouter)
   .use(cronJobsPlugin)

@@ -30,6 +30,7 @@ export const bookmarkFolderInputSchema = z.discriminatedUnion('isSystem', [
 export const systemFolderSchema = baseFolderDataSchema.extend(
   systemFolderDataSchema.shape,
 )
+
 export const userFolderSchema = baseFolderDataSchema.extend(
   userFolderDataSchema.shape,
 )
@@ -40,3 +41,23 @@ export const bookmarkFolderSchema = z.discriminatedUnion('isSystem', [
 ])
 
 export type BookmarkFolder = z.infer<typeof bookmarkFolderSchema>
+
+export const FOLDER_NAME_LENGTH_LIMIT = 30
+
+export const upsertBookmarkSchema = z.object({
+  titleId: z.cuid2(),
+  folderId: z.cuid2(),
+})
+
+export const addNewFolderSchema = z.object({
+  name: z
+    .string()
+    .min(1, { error: 'Заповніть поле' })
+    .max(FOLDER_NAME_LENGTH_LIMIT, {
+      error: `Скоротіть назву (до ${FOLDER_NAME_LENGTH_LIMIT} символ.)`,
+    }),
+})
+
+export const deleteBookmarkSchema = z.object({
+  titleId: z.cuid2(),
+})
