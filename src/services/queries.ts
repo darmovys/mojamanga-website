@@ -5,23 +5,6 @@ import { Treaty } from '@elysiajs/eden'
 import { Api } from '@/lib/api-client'
 import { UserTeamsRequests, UserTitlesRequests } from '@/schemas/users'
 
-export const authQueries = {
-  all: ['auth'] as const,
-  user: () =>
-    queryOptions({
-      queryKey: [...authQueries.all, 'user'],
-      queryFn: async () => {
-        const response = await api().user_session.get()
-
-        if (response.error) {
-          throw response.error
-        }
-
-        return response.data
-      },
-    }),
-}
-
 const fetchPendingTeams = async (page: number) => {
   const response = await api().teams['get-pending-teams'].get({
     query: { page },
@@ -38,6 +21,59 @@ export type TeamEditData = Treaty.Data<ReturnType<Api['teams']>['edit']['get']>
 export type TeamDetailedProfileData = Treaty.Data<
   ReturnType<Api['teams']>['detailed-profile-info']['get']
 >
+
+export type PendingPerson = NonNullable<
+  Awaited<ReturnType<typeof fetchPendingPeople>>
+>['people'][number]
+
+const fetchPendingPeople = async (page: number) => {
+  const response = await api().people['get-pending-people'].get({
+    query: { page },
+  })
+  if (response.error) throw response.error
+  return response.data
+}
+
+export type PendingTitle = NonNullable<
+  Awaited<ReturnType<typeof fetchPendingTitles>>
+>['titles'][number]
+
+export type TitleEditableData = Treaty.Data<
+  ReturnType<Api['titles']>['editable-data']['get']
+>
+
+export type TitlePreviewData = Treaty.Data<
+  ReturnType<Api['titles']>['preview']['get']
+>
+
+export type TeamTitlesData = Treaty.Data<
+  ReturnType<Api['teams']>['titles']['get']
+>
+
+const fetchPendingTitles = async (page: number) => {
+  const response = await api().titles['get-pending-titles'].get({
+    query: { page },
+  })
+  if (response.error) throw response.error
+  return response.data
+}
+
+export const authQueries = {
+  all: ['auth'] as const,
+  user: () =>
+    queryOptions({
+      queryKey: [...authQueries.all, 'user'],
+      queryFn: async () => {
+        const response = await api().user_session.get()
+
+        if (response.error) {
+          throw response.error
+        }
+
+        return response.data
+      },
+    }),
+}
 
 export const teamsQueries = {
   all: ['teams'] as const,
@@ -173,22 +209,6 @@ export const teamsQueries = {
     }),
 }
 
-export type TeamTitlesData = Treaty.Data<
-  ReturnType<Api['teams']>['titles']['get']
->
-
-export type PendingPerson = NonNullable<
-  Awaited<ReturnType<typeof fetchPendingPeople>>
->['people'][number]
-
-const fetchPendingPeople = async (page: number) => {
-  const response = await api().people['get-pending-people'].get({
-    query: { page },
-  })
-  if (response.error) throw response.error
-  return response.data
-}
-
 export const peopleQueries = {
   all: ['people'] as const,
   lists: () => [...peopleQueries.all, 'lists'] as const,
@@ -239,25 +259,18 @@ export const genresQueries = {
     }),
 }
 
-export type PendingTitle = NonNullable<
-  Awaited<ReturnType<typeof fetchPendingTitles>>
->['titles'][number]
-
-export type TitleEditableData = Treaty.Data<
-  ReturnType<Api['titles']>['editable-data']['get']
->
-
-const fetchPendingTitles = async (page: number) => {
-  const response = await api().titles['get-pending-titles'].get({
-    query: { page },
-  })
-  if (response.error) throw response.error
-  return response.data
-}
-
 export const titlesQueries = {
   all: ['titles'] as const,
   lists: () => [...titlesQueries.all, 'lists'] as const,
+  titlePreview: (id: string) =>
+    queryOptions({
+      queryKey: [...titlesQueries.all, id, 'preview'],
+      queryFn: async () => {
+        const response = await api().titles({ id }).preview.get()
+        if (response.error) throw response.error
+        return response.data
+      },
+    }),
   titleEditData: (id: string) =>
     queryOptions({
       queryKey: [...titlesQueries.all, id, 'edit'],

@@ -5,9 +5,10 @@ import { createId } from '@paralleldrive/cuid2'
 import { assertNonNullable, moveS3File, slugify } from '@/lib/utils'
 import { S3 } from '@/lib/s3-client'
 import { sendNewTitleDataSchema } from '@/schemas/titles'
+import { bookmarkFolderSchema } from '@/schemas/bookmarks'
 import { DeleteObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3'
 import { z } from 'zod'
-import { TitleFieldName } from '@/generated/prisma/enums'
+import { ChapterApprovalStatus, TitleFieldName } from '@/generated/prisma/enums'
 
 async function getTitleOrFail(id: string) {
   const title = await prisma.title.findUnique({ where: { id } })
@@ -608,6 +609,130 @@ export const titlesRouter = new Elysia({
               params: z.object({
                 id: z.string(),
               }),
+            },
+          )
+          .get(
+            '/preview',
+            async ({ params: { id }, status, user }) => {
+              try {
+                const [previewData, userFolders] = await Promise.all([
+                  prisma.title.findUnique({
+                    where: { id, currentVersion: { isNot: null } },
+                    select: {
+                      id: true,
+                      currentVersion: {
+                        select: {
+                          description: true,
+                          ageRestriction: true,
+                          releaseYear: true,
+                          nameUkr: true,
+                          nameEng: true,
+                          translationStatus: true,
+                          titleStatus: true,
+                          genres: {
+                            select: {
+                              genre: { select: { id: true, name: true } },
+                            },
+                          },
+                          tags: {
+                            select: {
+                              tag: { select: { id: true, name: true } },
+                            },
+                          },
+                        },
+                      },
+                      publishers: {
+                        take: 1,
+                        orderBy: {
+                          chapters: {
+                            _count: 'desc',
+                          },
+                        },
+                        select: {
+                          _count: {
+                            select: {
+                              chapters: {
+                                where: {
+                                  approvalStatus:
+                                    ChapterApprovalStatus.APPROVED,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  }),
+                  user?.id
+                    ? prisma.bookmarkFolder.findMany({
+                        where: { userId: user.id },
+                        orderBy: { sortOrder: 'asc' },
+                        select: {
+                          id: true,
+                          name: true,
+                          color: true,
+                          isSystem: true,
+                          systemType: true,
+                          bookmarks: {
+                            where: { titleId: id },
+                            select: {
+                              id: true,
+                              lastChapterId: true,
+                            },
+                          },
+                        },
+                      })
+                    : null,
+                ])
+
+                if (!previewData || !previewData.currentVersion) {
+                  return status(404, 'Твір не знайдено')
+                }
+
+                assertNonNullable(previewData, ['currentVersion'])
+
+                const chaptersCount = previewData.publishers.reduce(
+                  (max, publisher) => Math.max(max, publisher._count.chapters),
+                  0,
+                )
+
+                let activeFolder = null
+                let bookmarkFolders = null
+
+                if (userFolders) {
+                  const parsedFolders = userFolders.map((folder) =>
+                    bookmarkFolderSchema.parse(folder),
+                  )
+
+                  const activeFolderRaw = parsedFolders.find(
+                    (folder) => folder.bookmarks.length > 0,
+                  )
+
+                  bookmarkFolders = parsedFolders.map(
+                    ({ bookmarks, ...folder }) => folder,
+                  )
+
+                  if (activeFolderRaw) {
+                    const { bookmarks, ...folder } = activeFolderRaw
+                    activeFolder = folder
+                  }
+                }
+
+                const { publishers, ...restData } = previewData
+
+                return {
+                  ...restData,
+                  chaptersCount,
+                  bookmarkFolders,
+                  activeFolder,
+                }
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при отриманні даних')
+              }
+            },
+            {
+              optionalAuth: true,
             },
           )
           .patch(
