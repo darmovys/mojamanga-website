@@ -438,7 +438,11 @@ export const teamsRouter = new Elysia({
                       },
                     },
                     _count: {
-                      select: { publishingVersions: true },
+                      select: {
+                        publishingVersions: {
+                          where: { title: { approvalStatus: 'APPROVED' } },
+                        },
+                      },
                     },
                   },
                 })
@@ -493,7 +497,12 @@ export const teamsRouter = new Elysia({
                     createdAt: true,
                     links: { select: { id: true, type: true, url: true } },
                     _count: {
-                      select: { publishingVersions: true, members: true },
+                      select: {
+                        publishingVersions: {
+                          where: { title: { approvalStatus: 'APPROVED' } },
+                        },
+                        members: true,
+                      },
                     },
                   },
                 }),
