@@ -185,7 +185,7 @@ function TeamInfoContent({ data }: { data: TeamDetailedProfileData }) {
         animate="visible"
         variants={contentVariants}
       >
-        <h3>Дата створення</h3>
+        <h3>Дата заснування</h3>
         <span>{format(data.createdAt, 'd MMM yyyy р.', { locale: uk })}</span>
       </motion.div>
     </>
