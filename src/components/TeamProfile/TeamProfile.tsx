@@ -5,6 +5,7 @@ import ClickTargetHelper from '../ClickTargetHelper'
 import { ArrowLeft } from 'lucide-react'
 import VisuallyHidden from '../VisuallyHidden'
 import { useGoBack } from '@/hooks/use-go-back'
+import TeamMainSection from '../TeamMainSection'
 
 function TeamProfile() {
   const { handleGoBack } = useGoBack()
@@ -20,6 +21,7 @@ function TeamProfile() {
         <h1 className={styles.GoBackHeading}>Профіль команди</h1>
       </div>
       <TeamHeroSection />
+      <TeamMainSection />
     </>
   )
 }

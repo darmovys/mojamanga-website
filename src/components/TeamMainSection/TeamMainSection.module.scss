@@ -1,0 +1,40 @@
+@use '../../styles/breakpoints' as *;
+@use '../../styles/utils' as *;
+
+.Wrapper {
+  --card-width: #{rem(150px)};
+  flex: 1;
+  margin: var(--16px) var(--12px) 0;
+
+  @include up('laptop') {
+    margin-inline: var(--40px);
+  }
+}
+
+.Heading {
+  color: var(--sys-primary);
+  margin-block-end: var(--8px);
+  font-size: var(--20px);
+}
+
+.Grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(var(--card-width, 100%)), 1fr)
+  );
+  gap: var(--16px);
+
+  @include up('tablet') {
+    --card-width: var(--160px);
+  }
+}
+
+.NoTitles {
+  color: var(--sys-on-surface-variant);
+  min-block-size: var(--64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--18px);
+}

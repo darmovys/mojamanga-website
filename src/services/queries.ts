@@ -157,7 +157,25 @@ export const teamsQueries = {
         return response.data
       },
     }),
+  getTeamTitles: (id: string) =>
+    queryOptions({
+      queryKey: [...teamsQueries.lists(), id, 'titles'] as const,
+      queryFn: async () => {
+        const response = await api().teams({ id }).titles.get()
+        const { error } = response
+
+        if (error) {
+          throw error
+        }
+
+        return response.data
+      },
+    }),
 }
+
+export type TeamTitlesData = Treaty.Data<
+  ReturnType<Api['teams']>['titles']['get']
+>
 
 export type PendingPerson = NonNullable<
   Awaited<ReturnType<typeof fetchPendingPeople>>

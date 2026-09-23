@@ -4,6 +4,7 @@ import { sendNewTeamDataSchema } from '@/schemas/teams'
 import { prisma } from '@/db'
 import { createId } from '@paralleldrive/cuid2'
 import {
+  assertNonNullable,
   createDescriptionPreview,
   moveS3File,
   slugify,
@@ -18,8 +19,9 @@ import {
 import { S3 } from '@/lib/s3-client'
 import { getTeamMonthlyChapterAverage } from '@/lib/get-team-monthly-chapter-average.server'
 import { extractAccentColor } from '@/lib/extract-accent-color.server'
-import { TeamRole } from '@/generated/prisma/enums'
+import { TeamRole, TitleApprovalStatus } from '@/generated/prisma/enums'
 import { rateLimitPlugin } from '../plugins/rate-limit'
+import { bookmarkFolderInputSchema } from '@/schemas/bookmarks'
 
 async function getTeamOrFail(id: string) {
   const team = await prisma.team.findUnique({ where: { id } })
@@ -593,6 +595,69 @@ export const teamsRouter = new Elysia({
               return status(500, 'Серверна помилка')
             }
           })
+          .get(
+            '/titles',
+            async ({ params: { id }, status, user }) => {
+              try {
+                const rawTitles = await prisma.title.findMany({
+                  where: {
+                    publishers: { some: { teamId: id } },
+                    approvalStatus: TitleApprovalStatus.APPROVED,
+                    currentVersion: { isNot: null },
+                  },
+                  select: {
+                    id: true,
+                    currentVersion: {
+                      select: { coverUrl: true, nameUkr: true, type: true },
+                    },
+                  },
+                })
+
+                const titleIds = rawTitles.map((t) => t.id)
+
+                const bookmarks = user
+                  ? await prisma.bookmark.findMany({
+                      where: {
+                        userId: user.id,
+                        titleId: { in: titleIds },
+                      },
+                      select: {
+                        titleId: true,
+                        folder: {
+                          select: {
+                            isSystem: true,
+                            systemType: true,
+                            color: true,
+                            name: true,
+                          },
+                        },
+                      },
+                    })
+                  : []
+
+                const bookmarkFolderMap = new Map(
+                  bookmarks.map((b) => {
+                    const parsed = bookmarkFolderInputSchema.safeParse(b.folder)
+                    return [b.titleId, parsed.success ? parsed.data : null]
+                  }),
+                )
+
+                const titles = rawTitles.map((title) => {
+                  assertNonNullable(title, ['currentVersion'])
+                  return {
+                    ...title,
+                    bookmarkFolder: bookmarkFolderMap.get(title.id) ?? null,
+                  }
+                })
+
+                return titles
+              } catch (dbError) {
+                console.error('Помилка БД: ', dbError)
+                return status(500, 'Помилка при отриманні даних')
+              }
+            },
+            { optionalAuth: true },
+          )
           .patch(
             '/applications-state',
             async ({ params: { id }, status, user }) => {
