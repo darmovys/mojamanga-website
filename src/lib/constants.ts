@@ -17,6 +17,7 @@ import {
   TitleType,
   TitleFieldName,
   UserRole,
+  SystemFolderType,
 } from '@/generated/prisma/enums'
 
 import { Globe } from 'lucide-react'
@@ -31,6 +32,11 @@ type LinkMeta = {
 type RoleMeta = {
   label: string
   tone: string
+}
+
+type SystemFolderData = {
+  label: string
+  color: string
 }
 
 export const TITLE_TYPE_LABELS: Record<TitleType, string> = {
@@ -133,5 +139,31 @@ export const LINK_META: Record<LinkType, LinkMeta> = {
     icon: Globe,
     tone: '#c3c3c34d',
     toneDark: '#c3c3c31f',
+  },
+}
+
+export const BOOKMARK_SYSTEM_FOLDERS_DATA: Record<
+  SystemFolderType,
+  SystemFolderData
+> = {
+  [SystemFolderType.COMPLETED]: {
+    label: 'Прочитано',
+    color: 'oklch(0.72 0.2 152.35)',
+  },
+  [SystemFolderType.DROPPED]: {
+    label: 'Покинуто',
+    color: 'oklch(0.55 0.21 34.84)',
+  },
+  [SystemFolderType.ON_HOLD]: {
+    label: 'Відкладено',
+    color: 'oklch(0.73 0.17 75.79)',
+  },
+  [SystemFolderType.PLAN_TO_READ]: {
+    label: 'В планах',
+    color: 'oklch(0.55 0.25 347.17)',
+  },
+  [SystemFolderType.READING]: {
+    label: 'Читаю',
+    color: 'oklch(0.68 0.15 202.25)',
   },
 }
