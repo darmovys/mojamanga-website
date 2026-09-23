@@ -1,0 +1,156 @@
+@use '../../../../styles/utils' as *;
+
+.PreviewPopup {
+  inline-size: rem(400px);
+  background-color: var(--sys-surface-high);
+  border-radius: var(--6px);
+  padding: var(--16px);
+  box-shadow: 0 var(--16px) var(--40px) oklch(0% 0 0 / 0.5);
+  color: var(--sys-primary);
+
+  transform-origin: var(--transform-origin);
+
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: translateX(-2%);
+  }
+}
+
+.PreviewContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--12px);
+  animation: fadeIn 250ms both var(--emulate-spring);
+}
+
+.ErrorMessage {
+  font-size: var(--14px);
+  color: var(--danger);
+  text-align: center;
+  padding-block: var(--6px);
+  animation: fadeIn 250ms both var(--emulate-spring);
+}
+
+.PreviewHeader {
+  display: flex;
+  flex-direction: column;
+}
+
+.PopupTitle {
+  font-size: var(--16px);
+  font-weight: 700;
+  overflow: clip;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.PopupSubtitle {
+  font-size: var(--12px);
+  color: var(--sys-on-surface-variant);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: clip;
+}
+
+.MetaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--2px) var(--16px);
+  padding-block: var(--4px);
+}
+
+.MetaItem {
+  --inline-padding: var(--6px);
+  border-radius: var(--6px);
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  text-decoration: none;
+  gap: var(--2px);
+  padding: var(--4px) var(--inline-padding);
+  margin-inline: calc(var(--inline-padding) * -1);
+  transition: background-color 0.2s var(--bg-animation);
+
+  &:focus-visible {
+    outline: var(--default-outline);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+}
+
+.MetaLabel {
+  font-size: var(--12px);
+  color: var(--sys-on-surface-variant);
+}
+
+.MetaValue {
+  font-size: rem(13px);
+  font-weight: 500;
+  color: var(--sys-primary);
+}
+
+// Стилі скелетону
+
+.SkeletonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--10px);
+}
+
+.SkeletonTitle,
+.SkeletonSubtitle,
+.SkeletonMeta,
+.SkeletonText,
+.SkeletonTextShort {
+  border-radius: var(--4px);
+}
+
+.SkeletonTitle {
+  block-size: var(--20px);
+  inline-size: 70%;
+}
+
+.SkeletonSubtitle {
+  block-size: var(--14px);
+  inline-size: 40%;
+}
+
+.SkeletonGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--12px);
+  margin-block: var(--6px);
+}
+
+.SkeletonMeta {
+  block-size: var(--32px);
+}
+
+.SkeletonText {
+  block-size: var(--14px);
+  inline-size: 100%;
+}
+
+.SkeletonTextShort {
+  block-size: var(--14px);
+  inline-size: 60%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

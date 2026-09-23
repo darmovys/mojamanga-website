@@ -1,0 +1,73 @@
+.BadgesWrapper {
+  --gap: var(--6px);
+  position: relative;
+}
+
+.MeasureContainer {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+}
+
+.Badge {
+  --radius: var(--4px);
+  font-size: var(--12px);
+  padding: var(--2px) var(--8px);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: background-color 0.2s var(--bg-animation);
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: var(--default-outline);
+    border-radius: var(--radius);
+  }
+}
+
+.TagBadge {
+  composes: Badge;
+  background-color: var(--sys-surface-highest);
+  color: var(--sys-primary);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant);
+    }
+  }
+
+  :global(html.dark) & {
+    background-color: var(--tone-6);
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: var(--state-on-surface-opacity-variant);
+      }
+    }
+  }
+}
+
+.AgeBadge {
+  composes: Badge;
+  font-weight: 700;
+  color: var(--danger);
+  background-color: var(--danger-background);
+  border: 1px solid oklch(from var(--danger) l c h / 0.3);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--danger-background-active);
+    }
+  }
+}
+
+.TagsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+}

@@ -1,11 +1,12 @@
 import { Link } from '@tanstack/react-router'
 import { Image } from '@unpic/react'
-import styles from './TitleDefaultCard.module.scss'
+import TitlePreview from '../TitlePreview'
 import { SystemFolderType, TitleType } from '@/generated/prisma/enums'
 import {
   BOOKMARK_SYSTEM_FOLDERS_DATA,
   TITLE_TYPE_LABELS,
 } from '@/lib/constants'
+import styles from './TitleDefaultCard.module.scss'
 
 interface TitleCardProps {
   titleId: string
@@ -53,33 +54,35 @@ function TitleDefaultCard({
 }: TitleCardProps) {
   return (
     <div className={styles.Card}>
-      <Link to="/" className={styles.TitleLink}>
-        <Image
-          className={styles.CardImage}
-          layout="fullWidth"
-          alt={name}
-          src={import.meta.env.VITE_STORAGE_URL + coverUrl}
-        />
-        {bookmarkFolderData && (
-          <div
-            className={styles.Badge}
-            style={
-              {
-                '--accent': bookmarkFolderData.isSystem
-                  ? BOOKMARK_SYSTEM_FOLDERS_DATA[bookmarkFolderData.systemType]
-                      .color
-                  : bookmarkFolderData.color,
-              } as React.CSSProperties
-            }
-          >
-            {bookmarkFolderData.isSystem
-              ? BOOKMARK_SYSTEM_FOLDERS_DATA[bookmarkFolderData.systemType]
-                  .label
-              : bookmarkFolderData.name}
-          </div>
-        )}
-      </Link>
-
+      <TitlePreview titleId={titleId}>
+        <Link to="/" className={styles.TitleLink}>
+          <Image
+            className={styles.CardImage}
+            layout="fullWidth"
+            alt={name}
+            src={import.meta.env.VITE_STORAGE_URL + coverUrl}
+          />
+          {bookmarkFolderData && (
+            <div
+              className={styles.Badge}
+              style={
+                {
+                  '--accent': bookmarkFolderData.isSystem
+                    ? BOOKMARK_SYSTEM_FOLDERS_DATA[
+                        bookmarkFolderData.systemType
+                      ].color
+                    : bookmarkFolderData.color,
+                } as React.CSSProperties
+              }
+            >
+              {bookmarkFolderData.isSystem
+                ? BOOKMARK_SYSTEM_FOLDERS_DATA[bookmarkFolderData.systemType]
+                    .label
+                : bookmarkFolderData.name}
+            </div>
+          )}
+        </Link>
+      </TitlePreview>
       <Link to="/" className={styles.CardMeta}>
         <span className={styles.CardTitle}>{name}</span>
         <div className={styles.CardInfo}>{TITLE_TYPE_LABELS[type]}</div>
