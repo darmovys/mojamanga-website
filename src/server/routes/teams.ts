@@ -19,7 +19,11 @@ import {
 import { S3 } from '@/lib/s3-client'
 import { getTeamMonthlyChapterAverage } from '@/lib/get-team-monthly-chapter-average.server'
 import { extractAccentColor } from '@/lib/extract-accent-color.server'
-import { TeamRole, TitleApprovalStatus } from '@/generated/prisma/enums'
+import {
+  TeamPermission,
+  TeamRole,
+  TitleApprovalStatus,
+} from '@/generated/prisma/enums'
 import { rateLimitPlugin } from '../plugins/rate-limit'
 import { bookmarkFolderInputSchema } from '@/schemas/bookmarks'
 
@@ -126,10 +130,8 @@ export const teamsRouter = new Elysia({
                 members: {
                   create: {
                     userId: user.id,
-                    roles: ['ADMIN'],
-                    canPublishChapters: true,
-                    canDeleteChapters: true,
-                    canEditTeamInfo: true,
+                    roles: [TeamRole.ADMIN],
+                    permissions: Object.values(TeamPermission),
                   },
                 },
 
@@ -385,9 +387,11 @@ export const teamsRouter = new Elysia({
                   return status(403, 'Ви не є учасником цієї команди')
                 }
 
-                const canEdit = currentMember.canEditTeamInfo
-
-                if (!canEdit)
+                if (
+                  !currentMember.permissions.includes(
+                    TeamPermission.EDIT_TEAM_INFO,
+                  )
+                )
                   return status(
                     403,
                     'У вас немає прав для редагування цієї команди',
@@ -746,9 +750,11 @@ export const teamsRouter = new Elysia({
                   return status(403, 'Ви не є учасником цієї команди')
                 }
 
-                const canEdit = currentMember.canEditTeamInfo
-
-                if (!canEdit)
+                if (
+                  !currentMember.permissions.includes(
+                    TeamPermission.EDIT_TEAM_INFO,
+                  )
+                )
                   return status(
                     403,
                     'У вас немає прав для редагування цієї команди',

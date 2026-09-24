@@ -28,6 +28,7 @@ model User {
 
   createdTeams            Team[]                   @relation("TeamCreator")
   teamMemberships         TeamMember[]
+  teamApplications        TeamApplication[]
   uploadedChapters        Chapter[]
   comments                Comment[]
   likes                   Like[]
@@ -122,6 +123,7 @@ model Team {
   creator   User   @relation("TeamCreator", fields: [creatorId], references: [id])
 
   members            TeamMember[]
+  applications       TeamApplication[]
   links              TeamLink[]
   publishingVersions PublishingVersion[]
 
@@ -129,6 +131,24 @@ model Team {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("teams")
+}
+
+model TeamApplication {
+  id     String                @id @default(cuid(2))
+  status TeamApplicationStatus
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  teamId String @map("team_id")
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  preferredRoles TeamRole[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("team_applications")
 }
 
 model TeamLink {
@@ -146,15 +166,13 @@ model TeamLink {
 }
 
 model TeamMember {
-  id                 String     @id @default(cuid(2))
-  userId             String     @map("user_id")
-  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  teamId             String     @map("team_id")
-  team               Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  roles              TeamRole[] @default([TRANSLATOR])
-  canPublishChapters Boolean    @default(false) @map("can_publish_chapters")
-  canEditTeamInfo    Boolean    @default(false) @map("can_edit_team_info")
-  canDeleteChapters  Boolean    @default(false) @map("can_delete_chapters")
+  id          String           @id @default(cuid(2))
+  userId      String           @map("user_id")
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamId      String           @map("team_id")
+  team        Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  roles       TeamRole[]       @default([])
+  permissions TeamPermission[] @default([])
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -767,11 +785,38 @@ enum LinkType {
 
 enum TeamRole {
   ADMIN
+  MODERATOR
   TRANSLATOR
-  CLEANER
   TYPER
+  CLEANER
+  EDITOR
+  PUBLISHER
+  BETA
 
   @@map("team_role")
+}
+
+enum TeamPermission {
+  UPLOAD_CHAPTERS // Завантажувати розділи
+  EDIT_CHAPTERS // Змінювати розділи.
+  DELETE_CHAPTERS // Видаляти розділи
+  EDIT_TEAM_INFO // Змінювати інформацію про команду
+  EDIT_TEAM_MEMBER_ROLES // Змінювати ролі учасників
+  EDIT_TEAM_MEMBER_PERMISSIONS // Змінювати дозволи учасників
+  MANAGE_APPLICATIONS // Керувати відкриттям та закриттям набору в команду
+  HANDLE_APPLICATIONS // Керувати запитами на вступ до команди
+  MANAGE_CHAPTER_COMMENTS_SECTION // Керувати приховуванням секції коментарів до розділу
+  ATTACH_COMMENTS_TO_CHAPTERS // Прикріплювати коментарі до розділу
+
+  @@map("team_permission")
+}
+
+enum TeamApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+
+  @@map("team_application_status")
 }
 
 enum PersonRole {
