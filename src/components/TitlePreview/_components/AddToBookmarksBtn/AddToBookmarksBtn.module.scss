@@ -5,12 +5,8 @@
   margin-block-start: var(--6px);
   border-radius: var(--radius);
   box-shadow: var(--shadow-border);
-  background-color: var(--tone-14);
+  background-color: var(--sys-on-surface-variant-2);
   transition: border-color 0.15s ease;
-
-  :global(html.dark) & {
-    background-color: var(--tone-6);
-  }
 }
 
 .TriggerBar {
