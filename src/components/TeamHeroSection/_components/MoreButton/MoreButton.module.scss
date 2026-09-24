@@ -1,0 +1,93 @@
+@use '../../../../styles/utils' as *;
+
+.MoreButton {
+  position: relative; // Для <ClickTargetHelper />
+  block-size: rem(38px);
+  inline-size: rem(38px);
+  border-radius: 100vmax;
+  color: var(--tone-15);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: oklch(100% 0 0 / 0.25);
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--default-outline);
+    outline-offset: 2px;
+  }
+}
+
+.Positioner {
+  outline: 0;
+}
+
+.Popup {
+  --inner-radius: var(--4px);
+  --padding: var(--4px);
+  padding: var(--padding);
+  border-radius: calc(var(--padding) + var(--inner-radius));
+  background-color: var(--sys-on-surface-highest);
+  color: var(--sys-on-surface);
+  transform-origin: var(--transform-origin);
+  transition:
+    transform 150ms,
+    opacity 150ms;
+  outline: 1px solid var(--sys-outline-variant);
+  box-shadow: var(--shadow-border);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.Item {
+  outline: 0;
+  font-size: var(--14px);
+  user-select: none;
+  padding: var(--12px);
+  line-height: 1rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  inline-size: var(--256px);
+  gap: var(--8px);
+  position: relative;
+  cursor: pointer;
+  border-radius: var(--inner-radius);
+  transition: opacity 0.2s ease;
+
+  &[data-highlighted] {
+    z-index: 0;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &::before {
+    content: '';
+    z-index: -1;
+    position: absolute;
+    inset: 0;
+    background-color: var(--state-on-surface-opacity-variant-2);
+    opacity: 0;
+    border-radius: var(--inner-radius);
+    transition: opacity 0.2s var(--bg-animation);
+  }
+
+  &[data-highlighted]:not([data-disabled])::before {
+    opacity: 1;
+  }
+
+  &:focus-visible:not([data-disabled]) {
+    outline-offset: 2px;
+    outline: var(--default-outline);
+  }
+}

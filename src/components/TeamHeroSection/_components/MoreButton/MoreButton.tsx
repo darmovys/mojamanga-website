@@ -7,16 +7,16 @@ import {
   PencilIcon,
   UserPenIcon,
 } from 'lucide-react'
-import MotionButton from '../MotionButton'
-import VisuallyHidden from '../VisuallyHidden'
-import styles from './TeamHeroSection.module.scss'
-import ClickTargetHelper from '../ClickTargetHelper'
+import MotionButton from '@/components/MotionButton'
+import VisuallyHidden from '@/components/VisuallyHidden'
+import ClickTargetHelper from '@/components/ClickTargetHelper'
 import { TeamRole } from '@/generated/prisma/enums'
 import { useTransition } from 'react'
 import { api } from '@/lib/api-client'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
 import { useQueryClient } from '@tanstack/react-query'
 import { teamsQueries } from '@/services/queries'
+import styles from './MoreButton.module.scss'
 
 interface MoreButtonProps {
   size: number

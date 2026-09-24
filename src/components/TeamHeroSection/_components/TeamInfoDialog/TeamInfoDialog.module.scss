@@ -1,0 +1,346 @@
+@use '../../../../styles/utils' as *;
+@use '../../../../styles/breakpoints' as *;
+
+.DialogBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--default-overlay-color);
+  backdrop-filter: blur(4px);
+  transition:
+    opacity 200ms ease-out,
+    backdrop-filter 200ms ease-out;
+
+  will-change: opacity, backdrop-filter;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+  }
+}
+
+.DialogViewport {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 0;
+  overflow: hidden;
+
+  @include up('tablet') {
+    align-items: center;
+    padding: var(--16px) var(--24px);
+  }
+}
+
+.DialogPopup {
+  --padding-bottom: var(--20px);
+  position: relative;
+  inline-size: 100%;
+  max-block-size: min(85vh, #{rem(620px)});
+  display: flex;
+  flex-direction: column;
+  background-color: var(--sys-surface-high);
+  color: var(--sys-primary);
+  border-radius: var(--20px) var(--20px) 0 0;
+  padding-block-end: calc(
+    env(safe-area-inset-bottom, 0px) + var(--padding-bottom)
+  );
+  box-shadow: var(--shadow-border);
+  outline: none;
+  overflow: hidden;
+  transform: translateY(0%);
+
+  transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    transform: translateY(100%);
+  }
+
+  &[data-loading],
+  &[data-error] {
+    block-size: revert;
+  }
+
+  @include up('tablet') {
+    max-inline-size: rem(600px);
+    max-block-size: min(85vh, #{rem(620px)});
+    border-radius: var(--20px);
+    padding-block-end: var(--padding-bottom);
+    will-change: transform, opacity;
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
+
+    &[data-nested-dialog-open] {
+      transition: opacity 0.3s var(--emulate-spring);
+      opacity: 0;
+    }
+
+    &[data-starting-style],
+    &[data-ending-style] {
+      opacity: 0;
+      transform: translateY(5%);
+    }
+  }
+}
+
+.DialogHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--20px) var(--20px) var(--16px) var(--24px);
+  flex-shrink: 0;
+}
+
+.DialogTitle {
+  font-size: var(--20px);
+  font-weight: 700;
+  line-height: 1.25;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.DialogClose {
+  position: relative; // Для <ClickTargetHelper />
+  inline-size: var(--32px);
+  block-size: var(--32px);
+  border-radius: 50%;
+  transition: background-color 150ms ease;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--default-outline);
+    outline-offset: 2px;
+  }
+}
+
+.Loader {
+  align-self: center;
+  inline-size: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(farthest-side, var(--sys-primary) 94%, oklch(0% 0 0 / 0))
+      top/8px 8px no-repeat,
+    conic-gradient(oklch(0% 0 0 / 0) 30%, var(--sys-primary));
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    oklch(0% 0 0 / 0) calc(100% - 8px),
+    oklch(0% 0 0) 0
+  );
+  animation: spin 1s infinite linear;
+}
+
+.Error {
+  background-color: var(--danger-background);
+  color: var(--danger);
+  padding: var(--4px) var(--10px);
+  border-radius: var(--6px);
+}
+
+.RetryButton {
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+  align-self: flex-start;
+  border-radius: 100vmax;
+  padding: var(--4px) var(--10px);
+  font-size: var(--12px);
+  font-weight: 500;
+  outline: none;
+  position: relative; // Для <ClickTargetHelper />
+}
+
+.BodyRoot {
+  --scrollbar-width: var(--6px);
+  --right-padding: var(--24px);
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  min-block-size: 0;
+  overflow: hidden;
+
+  @media (pointer: fine) {
+    --scrollbar-width: var(--14px);
+    --right-padding: var(--12px);
+  }
+}
+
+.BodyViewport {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overscroll-behavior: contain;
+
+  &:focus-visible {
+    outline: var(--default-outline);
+    outline-offset: -2px;
+  }
+}
+
+.BodyContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--10px);
+  padding: 0 var(--right-padding) var(--16px) var(--24px);
+  font-size: var(--14px);
+  line-height: 1.6;
+  min-block-size: 100%;
+  flex: 1;
+  justify-content: center;
+
+  @media (pointer: fine) {
+    padding-inline-end: calc(
+      var(--scrollbar-width) + var(--right-padding) + var(--6px)
+    );
+  }
+}
+
+.BodyScrollbar {
+  border-radius: 100vmax;
+  inset-inline-end: var(--6px) !important;
+  display: flex;
+  justify-content: center;
+  inline-size: var(--scrollbar-width);
+  transition: opacity 150ms;
+  pointer-events: none;
+  opacity: 0;
+
+  @media (pointer: fine) {
+    opacity: 1;
+    padding-block: rem(3.5px);
+    inset-inline-end: var(--right-padding) !important;
+    box-shadow: var(--inset-shadow);
+    background-color: oklch(34.644% 0.03201 18.761 / 0.12);
+
+    :global(html.dark) & {
+      background-color: oklch(100% 0.00011 271.152 / 0.12);
+    }
+  }
+
+  &[data-scrolling] {
+    transition-duration: 0ms;
+  }
+
+  &[data-hovering],
+  &[data-scrolling] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.BodyScrollbarThumb {
+  inline-size: 60%;
+  border-radius: 100vmax;
+  background-color: oklch(66.494% 0.00233 15.434);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: oklch(54.348% 0.00246 15.852);
+    }
+  }
+
+  :global(html.dark) & {
+    background-color: oklch(67.933% 0.01301 17.153);
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: oklch(86.995% 0.0001 271.152);
+      }
+    }
+  }
+}
+
+.Statistics {
+  margin-block-start: auto;
+}
+
+.StatsList {
+  list-style-type: none;
+  padding-inline-start: var(--4px);
+  margin-block-end: var(--2px);
+  display: flex;
+  flex-direction: column;
+}
+
+.Stat {
+  display: flex;
+  align-items: center;
+  gap: var(--6px);
+}
+
+.StatCount {
+  font-weight: 450;
+  font-size: var(--18px);
+}
+
+.StatTooltip {
+  display: flex;
+
+  &:focus-visible {
+    outline: var(--default-outline);
+    outline-offset: 2px;
+    border-radius: var(--4px);
+  }
+}
+
+.Links {
+  margin-block: var(--2px) var(--6px);
+}
+
+.LinksTitle {
+  margin-block-end: var(--4px);
+}
+
+.LinksList {
+  list-style-type: none;
+  padding-inline-start: 0;
+  display: flex;
+  gap: var(--6px);
+  flex-wrap: wrap;
+}
+
+.LinkItem {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: var(--4px);
+  background-color: var(--sys-surface-highest);
+  box-shadow: var(--shadow-border);
+  border-radius: var(--6px);
+  padding: var(--4px) var(--8px);
+  transition: background-color 0.2s var(--bg-animation);
+
+  &:focus-visible {
+    outline: var(--default-outline);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--sys-on-button);
+    }
+  }
+}
+
+.LinkLogo {
+  --size: var(--18px);
+  block-size: var(--size);
+  inline-size: var(--size);
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(1turn);
+  }
+}

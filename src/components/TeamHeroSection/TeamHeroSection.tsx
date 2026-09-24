@@ -1,7 +1,6 @@
 import MotionButton from '../MotionButton'
 import { pluralize } from '@/lib/utils'
-import { MoreButton } from './MoreButton'
-import { TeamInfoDialog } from './TeamInfoDialog'
+import { MoreButton, TeamInfoDialog } from './_components'
 import { Button } from '@base-ui/react'
 import { Image } from '@unpic/react'
 import { getRouteApi } from '@tanstack/react-router'
