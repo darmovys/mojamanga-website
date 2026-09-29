@@ -90,7 +90,7 @@
 .DialogHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--2px);
   padding: var(--20px) var(--20px) var(--16px) var(--24px);
   flex-shrink: 0;
 }
@@ -99,7 +99,7 @@
   font-size: var(--20px);
 }
 
-.DialogClose {
+.ButtonBase {
   position: relative; // Для <ClickTargetHelper />
   inline-size: var(--32px);
   block-size: var(--32px);
@@ -116,6 +116,15 @@
     outline: var(--default-outline);
     outline-offset: 2px;
   }
+}
+
+.InfoButton {
+  composes: ButtonBase;
+}
+
+.DialogClose {
+  composes: ButtonBase;
+  margin-inline-start: auto;
 }
 
 .Loader {

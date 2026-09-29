@@ -1,5 +1,5 @@
-import { Dialog, ScrollArea } from '@base-ui/react'
-import { XIcon } from 'lucide-react'
+import { Button, Dialog, ScrollArea } from '@base-ui/react'
+import { InfoIcon, XIcon } from 'lucide-react'
 import VisuallyHidden from '@/components/VisuallyHidden'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import ClickTargetHelper from '@/components/ClickTargetHelper'
@@ -10,6 +10,8 @@ import { useQuery } from '@tanstack/react-query'
 import { teamsQueries } from '@/services/queries'
 import { getRouteApi } from '@tanstack/react-router'
 import clsx from 'clsx'
+import { useHelperDialog } from '@/hooks/use-helper-dialog'
+import HelperDialog from '@/components/HelperDialog'
 import styles from './TeamMembersDialog.module.scss'
 
 interface TeamInfoDialogProps {
@@ -24,10 +26,13 @@ export function TeamMembersDialog({
   onIsOpenChange,
 }: TeamInfoDialogProps) {
   const { id } = routeApi.useParams()
+  const loaderData = routeApi.useLoaderData()
   const { data, isPending, isError, refetch } = useQuery(
     teamsQueries.getTeamMembers(id),
   )
   const matches = useMediaQuery('(pointer: fine)')
+
+  const helper = useHelperDialog(undefined, loaderData)
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={onIsOpenChange}>
@@ -44,6 +49,22 @@ export function TeamMembersDialog({
               <Dialog.Title className={styles.DialogTitle}>
                 Учасники команди
               </Dialog.Title>
+              {helper && (
+                <HelperDialog
+                  title={helper.title}
+                  content={helper.content}
+                  mdast={helper.mdast}
+                  open={helper.isHelperOpen}
+                  onOpenChange={helper.handleHelperOpenChange}
+                  trigger={(openDialog) => (
+                    <Button onClick={openDialog} className={styles.InfoButton}>
+                      <InfoIcon size={18} />
+                      <ClickTargetHelper />
+                      <VisuallyHidden>Пояснення ролей</VisuallyHidden>
+                    </Button>
+                  )}
+                />
+              )}
               <Dialog.Description>
                 <VisuallyHidden>
                   Детальний перелік усіх учасників команд та їх ролі
@@ -52,6 +73,7 @@ export function TeamMembersDialog({
               <Dialog.Close className={styles.DialogClose}>
                 <XIcon size={18} />
                 <ClickTargetHelper />
+                <VisuallyHidden>Закрити вікно</VisuallyHidden>
               </Dialog.Close>
             </div>
             <ScrollArea.Root className={styles.BodyRoot}>
