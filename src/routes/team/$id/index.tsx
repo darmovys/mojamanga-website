@@ -5,9 +5,12 @@ import { allHelperInfos } from 'content-collections'
 
 export const Route = createFileRoute('/team/$id/')({
   loader: async ({ params, context }) => {
-    await context.queryClient.ensureQueryData(
-      teamsQueries.teamProfile(params.id),
-    )
+    await Promise.all([
+      context.queryClient.ensureQueryData(teamsQueries.teamProfile(params.id)),
+      context.queryClient.ensureQueryData(
+        teamsQueries.getTeamTitles(params.id),
+      ),
+    ])
     const helperInfo = allHelperInfos.find(
       (entry) => entry._meta.path === 'team-roles-info',
     )
