@@ -1,16 +1,16 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
-import styles from './TitlesRequestsList.module.scss'
 import { produce } from 'immer'
 import { ModerationMenuSearch } from '@/schemas/moderation'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { PendingTitle, titlesQueries } from '@/services/queries'
-import Skeleton from '../Skeleton'
+import { PendingTeam, teamsQueries } from '@/services/queries'
+import Skeleton from '@/components/Skeleton'
 import { range } from '@/lib/utils'
 import { formatDistanceToNow } from 'date-fns'
 import { uk } from 'date-fns/locale'
-import Pagination from '../Pagination'
+import Pagination from '@/components/Pagination'
+import styles from './TeamsRequestsList.module.scss'
 
-export default function WorksRequestsList() {
+export function TeamsRequestsList() {
   const navigate = useNavigate()
   const searchParams = useSearch({ strict: false }) as {
     page?: number
@@ -19,9 +19,9 @@ export default function WorksRequestsList() {
 
   const currentPage = Number(searchParams?.page) || 1
 
-  const { data } = useSuspenseQuery(titlesQueries.pendingTitles(currentPage))
+  const { data } = useSuspenseQuery(teamsQueries.pendingTeams(currentPage))
 
-  const { titles: currentItems, total: totalItems, totalPages } = data
+  const { teams: currentItems, total: totalItems, totalPages } = data
 
   const handlePageChange = (page: number) => {
     navigate({
@@ -41,12 +41,12 @@ export default function WorksRequestsList() {
   return (
     <div className={styles.ListContainer}>
       <h2 className={styles.ListHeading}>
-        Запити на додавання творів ({totalItems})
+        Запити на створення команди ({totalItems})
       </h2>
       <div className={styles.List}>
         {currentItems.length > 0 ? (
-          currentItems.map((title) => (
-            <PersonRequestCard key={title.id} title={title} />
+          currentItems.map((team) => (
+            <TeamRequestCard key={team.id} team={team} />
           ))
         ) : (
           <p className={styles.EmptyList}>Усі запити розглянуті 👍</p>
@@ -57,47 +57,39 @@ export default function WorksRequestsList() {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-        className={styles.WorksListPagination}
+        className={styles.TeamsListPagination}
       />
     </div>
   )
 }
 
-function PersonRequestCard({ title }: { title: PendingTitle }) {
-  const formattedDate = formatDistanceToNow(new Date(title.updatedAt), {
+function TeamRequestCard({ team }: { team: PendingTeam }) {
+  const formattedDate = formatDistanceToNow(new Date(team.createdAt), {
     locale: uk,
     addSuffix: true,
   })
 
-  /*
-    currentVersion теоретично може бути null згідно з типами Prisma,
-    оскільки вона не вміє звужувати типи на основі параметрів запиту.
-    На практиці це поле завжди присутнє — ми створюємо його одразу після створення твору.
-    В ідеалі цей рядок ніколи не виконається.
-  */
-  if (!title.currentVersion) return null
-
   return (
     <Link
-      aria-labelledby={title.id}
+      aria-labelledby={team.id}
       className={styles.Link}
-      to="/moderation/title-review/$titleId"
-      params={{ titleId: title.id }}
+      to="/moderation/team-review/$teamId"
+      params={{ teamId: team.id }}
     >
       <article className={styles.Card}>
         <div className={styles.Content}>
           <header className={styles.Header}>
-            <h3 id={title.id} className={styles.PersonName}>
-              {title.currentVersion.nameUkr}
+            <h3 id={team.id} className={styles.TeamName}>
+              {team.name}
             </h3>
             <div className={styles.MetaInfo}>
-              <span>Запит від: {title.proposedByUser.displayUsername}</span>
+              <span>Запит від: {team.creator.displayUsername}</span>
               <span className={styles.Dot}>•</span>
               <span>{formattedDate}</span>
             </div>
           </header>
           <p className={styles.Description}>
-            {title.currentVersion?.description || 'Опис відсутній'}
+            {team.description || 'Опис відсутній'}
           </p>
         </div>
       </article>
@@ -105,10 +97,10 @@ function PersonRequestCard({ title }: { title: PendingTitle }) {
   )
 }
 
-export function TitlesRequestsSkeleton() {
+export function TeamsRequestsSkeleton() {
   return (
     <div className={styles.ListContainer}>
-      <h2 className={styles.ListHeading}>Запити на додавання творів (?)</h2>
+      <h2 className={styles.ListHeading}>Запити на створення команди (?)</h2>
       <div className={styles.List} style={{ alignSelf: 'stretch' }}>
         {range(10).map((el) => (
           <Skeleton key={el} height="135px" width="100%" borderRadius="12px" />

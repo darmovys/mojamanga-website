@@ -1,16 +1,16 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
-import styles from './TeamsRequestsList.module.scss'
 import { produce } from 'immer'
 import { ModerationMenuSearch } from '@/schemas/moderation'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { PendingTeam, teamsQueries } from '@/services/queries'
-import Skeleton from '../Skeleton'
+import { PendingPerson, peopleQueries } from '@/services/queries'
+import Skeleton from '@/components/Skeleton'
 import { range } from '@/lib/utils'
 import { formatDistanceToNow } from 'date-fns'
 import { uk } from 'date-fns/locale'
-import Pagination from '../Pagination'
+import Pagination from '@/components/Pagination'
+import styles from './PeopleRequestsList.module.scss'
 
-export default function TeamsRequestsList() {
+export function PeopleRequestsList() {
   const navigate = useNavigate()
   const searchParams = useSearch({ strict: false }) as {
     page?: number
@@ -19,9 +19,9 @@ export default function TeamsRequestsList() {
 
   const currentPage = Number(searchParams?.page) || 1
 
-  const { data } = useSuspenseQuery(teamsQueries.pendingTeams(currentPage))
+  const { data } = useSuspenseQuery(peopleQueries.pendingPeople(currentPage))
 
-  const { teams: currentItems, total: totalItems, totalPages } = data
+  const { people: currentItems, total: totalItems, totalPages } = data
 
   const handlePageChange = (page: number) => {
     navigate({
@@ -41,12 +41,12 @@ export default function TeamsRequestsList() {
   return (
     <div className={styles.ListContainer}>
       <h2 className={styles.ListHeading}>
-        Запити на створення команди ({totalItems})
+        Запити на додавання персон ({totalItems})
       </h2>
       <div className={styles.List}>
         {currentItems.length > 0 ? (
-          currentItems.map((team) => (
-            <TeamRequestCard key={team.id} team={team} />
+          currentItems.map((person) => (
+            <PersonRequestCard key={person.id} person={person} />
           ))
         ) : (
           <p className={styles.EmptyList}>Усі запити розглянуті 👍</p>
@@ -57,39 +57,39 @@ export default function TeamsRequestsList() {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-        className={styles.TeamsListPagination}
+        className={styles.PeopleListPagination}
       />
     </div>
   )
 }
 
-function TeamRequestCard({ team }: { team: PendingTeam }) {
-  const formattedDate = formatDistanceToNow(new Date(team.createdAt), {
+function PersonRequestCard({ person }: { person: PendingPerson }) {
+  const formattedDate = formatDistanceToNow(new Date(person.createdAt), {
     locale: uk,
     addSuffix: true,
   })
 
   return (
     <Link
-      aria-labelledby={team.id}
+      aria-labelledby={person.id}
       className={styles.Link}
-      to="/moderation/team-review/$teamId"
-      params={{ teamId: team.id }}
+      to="/moderation/person-review/$personId"
+      params={{ personId: person.id }}
     >
       <article className={styles.Card}>
         <div className={styles.Content}>
           <header className={styles.Header}>
-            <h3 id={team.id} className={styles.TeamName}>
-              {team.name}
+            <h3 id={person.id} className={styles.PersonName}>
+              {person.nameUkr}
             </h3>
             <div className={styles.MetaInfo}>
-              <span>Запит від: {team.creator.displayUsername}</span>
+              <span>Запит від: {person.proposedByUser?.displayUsername}</span>
               <span className={styles.Dot}>•</span>
               <span>{formattedDate}</span>
             </div>
           </header>
           <p className={styles.Description}>
-            {team.description || 'Опис відсутній'}
+            {person.description || 'Опис відсутній'}
           </p>
         </div>
       </article>
@@ -97,10 +97,10 @@ function TeamRequestCard({ team }: { team: PendingTeam }) {
   )
 }
 
-export function TeamsRequestsSkeleton() {
+export function PeopleRequestsSkeleton() {
   return (
     <div className={styles.ListContainer}>
-      <h2 className={styles.ListHeading}>Запити на створення команди (?)</h2>
+      <h2 className={styles.ListHeading}>Запити на додавання персон (?)</h2>
       <div className={styles.List} style={{ alignSelf: 'stretch' }}>
         {range(10).map((el) => (
           <Skeleton key={el} height="135px" width="100%" borderRadius="12px" />

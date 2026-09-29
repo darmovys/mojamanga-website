@@ -1,8 +1,8 @@
 import { Link } from '@tanstack/react-router'
-import styles from './ModerationMenu.module.scss'
 import { Separator } from '@base-ui/react'
 import { NAVIGATION_SECTIONS, NavItem } from './navigation.data'
 import React from 'react'
+import styles from './NavItems.module.scss'
 
 type NavItemsProps = {
   separator: 'light' | 'dark'

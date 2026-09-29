@@ -1,11 +1,11 @@
 import { Button, Dialog, Separator } from '@base-ui/react'
-import styles from './ModerationMenuMobileDialog.module.scss'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import clsx from 'clsx'
-import VisuallyHidden from '../VisuallyHidden'
+import VisuallyHidden from '@/components/VisuallyHidden'
 import { X } from 'lucide-react'
-import { NavItems } from './NavItems'
+import { NavItems } from '..'
+import styles from './ModerationMenuMobileDialog.module.scss'
 
 const MotionBackdrop = motion.create(Dialog.Backdrop)
 const MotionPopup = motion.create(Dialog.Popup)
@@ -14,7 +14,7 @@ type ModerationMenuMobileDialogProps = {
   trigger: (open: () => void) => React.ReactNode
 }
 
-function ModerationMenuMobileDialog({
+export function ModerationMenuMobileDialog({
   trigger,
 }: ModerationMenuMobileDialogProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -68,5 +68,3 @@ function ModerationMenuMobileDialog({
     </Dialog.Root>
   )
 }
-
-export default ModerationMenuMobileDialog

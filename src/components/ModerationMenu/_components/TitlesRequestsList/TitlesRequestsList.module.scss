@@ -1,4 +1,4 @@
-@use '../../styles/breakpoints' as *;
+@use '../../../../styles/breakpoints' as *;
 
 .ListContainer {
   display: flex;
@@ -102,7 +102,7 @@
   overflow: hidden;
 }
 
-.PeopleListPagination {
+.WorksListPagination {
   margin-inline: calc(var(--padding-inline) * -1);
   margin-block: var(--12px) calc(var(--padding-block) * -1);
 }

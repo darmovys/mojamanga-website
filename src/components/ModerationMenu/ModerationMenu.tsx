@@ -1,24 +1,24 @@
-import styles from './ModerationMenu.module.scss'
 import ClickTargetHelper from '@/components/ClickTargetHelper'
 import { ArrowLeft, Menu } from 'lucide-react'
 import { Button } from '@base-ui/react'
-
 import { useGoBack } from '@/hooks/use-go-back'
 import VisuallyHidden from '../VisuallyHidden'
 import MotionButton from '../MotionButton'
-import { NavItems } from './NavItems'
-import ModerationMenuMobileDialog from './ModerationMenuMobileDialog'
+import {
+  ModerationMenuMobileDialog,
+  NavItems,
+  PeopleRequestsList,
+  TeamsRequestsList,
+  TitlesRequestsList,
+  PeopleRequestsSkeleton,
+  TeamsRequestsSkeleton,
+  TitlesRequestsSkeleton,
+} from './_components'
 import { getRouteApi } from '@tanstack/react-router'
-import TeamsRequestsList, { TeamsRequestsSkeleton } from './TeamsRequestsList'
 import { useSearchFieldScrollStore } from '@/stores/search-field-scroll-store'
 import { motion } from 'motion/react'
 import MobileNavigation from '../MobileNavigation'
-import PeopleRequestsList, {
-  PeopleRequestsSkeleton,
-} from './PeopleRequestsList'
-import TitlesRequestsList, {
-  TitlesRequestsSkeleton,
-} from './TitlesRequestsList'
+import styles from './ModerationMenu.module.scss'
 
 const routeApi = getRouteApi('/moderation/')
 
