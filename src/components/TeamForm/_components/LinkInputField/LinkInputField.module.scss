@@ -1,0 +1,67 @@
+.FieldInputWrapper {
+  position: relative;
+}
+
+.FieldInput {
+  background-color: var(--sys-surface-low);
+  border: none;
+  outline: none;
+  min-inline-size: 0;
+  inline-size: 100%;
+  border-radius: var(--4px);
+  padding-block: var(--8px);
+  padding-inline: calc(var(--64px) + var(--8px)) calc(var(--32px) + var(--8px));
+  color: var(--sys-on-surface-highest-variant);
+  box-shadow: var(--inset-shadow);
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    color: var(--sys-on-surface);
+  }
+}
+
+.TrashButtonWrapper {
+  --size: calc(var(--28px) + var(--2px));
+  --border-radius: var(--8px);
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: var(--6px);
+  inline-size: var(--size);
+  block-size: var(--size);
+
+  transform: translateY(-50%);
+}
+
+.TrashButton {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--danger);
+  opacity: 0.8;
+  border-radius: var(--border-radius);
+  color: #fff;
+  transition: opacity 300ms ease;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-border);
+
+  &:hover,
+  &:focus-visible {
+    transition-duration: 250ms;
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}

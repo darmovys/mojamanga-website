@@ -2,12 +2,12 @@ import { LinkType } from '@/generated/prisma/enums'
 import { useState } from 'react'
 import { Select } from '@base-ui/react'
 import { motion } from 'motion/react'
-import { tapAnimation } from '../MotionButton'
-import VisuallyHidden from '../VisuallyHidden'
+import { tapAnimation } from '@/components/MotionButton'
+import VisuallyHidden from '@/components/VisuallyHidden'
 import { ChevronDown, CircleQuestionMark } from 'lucide-react'
-import ClickTargetHelper from '../ClickTargetHelper'
+import ClickTargetHelper from '@/components/ClickTargetHelper'
 import { LINK_META } from '@/lib/constants'
-import styles from './TeamForm.module.scss'
+import styles from './LinkSelector.module.scss'
 
 interface LinkSelectorProps {
   value: LinkType | null
@@ -52,17 +52,13 @@ export function LinkSelector({
               animate={{ rotate: isOpen ? '180deg' : '0deg' }}
               transition={{ type: 'spring', duration: 0.4, bounce: 0 }}
             >
-              <ChevronDown className={styles.ChevronDown} size={16} />
+              <ChevronDown size={16} />
             </motion.div>
             <ClickTargetHelper />
           </Select.Trigger>
         </div>
         <Select.Portal>
-          <Select.Positioner
-            className={styles.Positioner}
-            sideOffset={8}
-            alignItemWithTrigger={false}
-          >
+          <Select.Positioner sideOffset={8} alignItemWithTrigger={false}>
             <Select.Popup className={styles.Popup}>
               {availableTypes.map((type) => {
                 const ItemIcon = LINK_META[type].icon
@@ -72,7 +68,7 @@ export function LinkSelector({
                     <Select.ItemText>
                       <ItemIcon style={{ width: 24, height: 24 }} />
                     </Select.ItemText>
-                    <div className={styles.ItemText}>{label}</div>
+                    <div>{label}</div>
                   </Select.Item>
                 )
               })}

@@ -1,14 +1,14 @@
 import { LinkType } from '@/generated/prisma/enums'
 import { motion } from 'motion/react'
-import { LinkSelector } from './LinkSelector'
-import MotionButton from '../MotionButton'
+import { LinkSelector } from '..'
+import MotionButton from '@/components/MotionButton'
 import { Trash2 } from 'lucide-react'
-import VisuallyHidden from '../VisuallyHidden'
-import { ActiveLink } from '@/schemas/teams'
-import styles from './TeamForm.module.scss'
+import VisuallyHidden from '@/components/VisuallyHidden'
+import { ActiveLinkInput } from '@/schemas/teams'
+import styles from './LinkInputField.module.scss'
 
 interface LinkInputField {
-  link: ActiveLink
+  link: ActiveLinkInput
   availableTypes: LinkType[]
   onChangeLinkType: (id: string, newType: LinkType) => void
   onChangeLinkUrl: (id: string, value: string) => void
@@ -61,7 +61,7 @@ export function LinkInputField({
           marginBottom: { delay: 0.25, duration: 0.25 },
         },
       }}
-      className={styles.LinkFieldInputWrapper}
+      className={styles.FieldInputWrapper}
     >
       <LinkSelector
         value={link.type}
@@ -74,10 +74,10 @@ export function LinkInputField({
         value={link.url}
         onChange={(e) => onChangeLinkUrl(link.id, String(e.target.value))}
         autoComplete="off"
-        className={styles.LinkFieldInput}
+        className={styles.FieldInput}
       />
 
-      <div className={styles.TrashLinkButtonWrapper}>
+      <div className={styles.TrashButtonWrapper}>
         <MotionButton
           className={styles.TrashButton}
           onClick={() => onRemoveLink(link.id)}
