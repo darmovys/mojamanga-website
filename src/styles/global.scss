@@ -276,6 +276,7 @@ html {
   --sys-on-light-overlay: var(--tone-8);
   --sys-on-light-overlay-secondary: oklch(62.878% 0.00281 343.856);
   --sys-menu-item-selected: oklch(0% 0 0 / 0.04);
+  --responsive-blue: var(--blue-600);
 
   --state-primary-opacity-8: oklch(71.462% 0.213 265.48 / 0.078);
   --state-primary-opacity-12: oklch(71.462% 0.213 265.48 / 0.122);
@@ -322,6 +323,7 @@ html {
     --state-on-surface-opacity-variant-2: oklch(30% 0 0);
     --state-on-surface-opacity-variant-3: oklch(20.019% 0.00002 271.152);
     --sys-menu-item-selected: oklch(100% 0.00011 271.152 / 0.04);
+    --responsive-blue: var(--blue-400);
 
     --input-hover-border: oklch(32.492% 0.00994 61.039);
 
