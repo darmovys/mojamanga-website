@@ -446,6 +446,7 @@ export const teamsRouter = new Elysia({
                         publishingVersions: {
                           where: { title: { approvalStatus: 'APPROVED' } },
                         },
+                        members: true,
                       },
                     },
                   },
@@ -671,6 +672,32 @@ export const teamsRouter = new Elysia({
             },
             { optionalAuth: true },
           )
+          .get('/members', async ({ params: { id }, status }) => {
+            try {
+              const rawTeamMembers = await prisma.teamMember.findMany({
+                where: { teamId: id },
+                select: {
+                  roles: true,
+                  id: true,
+                  user: { select: { displayUsername: true, image: true } },
+                },
+              })
+
+              const teamMembers = rawTeamMembers.map((m) => {
+                return {
+                  id: m.id,
+                  avatarUrl: m.user.image,
+                  displayUsername: m.user.displayUsername,
+                  roles: m.roles,
+                }
+              })
+
+              return teamMembers
+            } catch (dbError) {
+              console.error('Помилка БД: ', dbError)
+              return status(500, 'Помилка при отриманні даних')
+            }
+          })
           .patch(
             '/applications-state',
             async ({ params: { id }, status, user }) => {

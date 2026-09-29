@@ -18,6 +18,7 @@ import {
   TitleFieldName,
   UserRole,
   SystemFolderType,
+  TeamRole,
 } from '@/generated/prisma/enums'
 
 import { Globe } from 'lucide-react'
@@ -103,6 +104,17 @@ export const USER_ROLES: Record<UserRole, RoleMeta> = {
     label: 'Адмін',
     tone: '#ffae52',
   },
+}
+
+export const TEAM_ROLES: Record<TeamRole, string> = {
+  [TeamRole.ADMIN]: 'Адмін',
+  [TeamRole.MODERATOR]: 'Модератор',
+  [TeamRole.TRANSLATOR]: 'Перекладач',
+  [TeamRole.TYPER]: 'Верстальник',
+  [TeamRole.CLEANER]: ' Ретушер',
+  [TeamRole.EDITOR]: 'Редактор',
+  [TeamRole.PUBLISHER]: 'Опубліковувач',
+  [TeamRole.BETA]: 'Бета-читач',
 }
 
 export const LINK_META: Record<LinkType, LinkMeta> = {

@@ -50,6 +50,10 @@ export type TeamTitlesData = Treaty.Data<
   ReturnType<Api['teams']>['titles']['get']
 >
 
+export type TeamMembersData = Treaty.Data<
+  ReturnType<Api['teams']>['members']['get']
+>
+
 const fetchPendingTitles = async (page: number) => {
   const response = await api().titles['get-pending-titles'].get({
     query: { page },
@@ -198,6 +202,20 @@ export const teamsQueries = {
       queryKey: [...teamsQueries.lists(), id, 'titles'] as const,
       queryFn: async () => {
         const response = await api().teams({ id }).titles.get()
+        const { error } = response
+
+        if (error) {
+          throw error
+        }
+
+        return response.data
+      },
+    }),
+  getTeamMembers: (id: string) =>
+    queryOptions({
+      queryKey: [...teamsQueries.lists(), id, 'members'] as const,
+      queryFn: async () => {
+        const response = await api().teams({ id }).members.get()
         const { error } = response
 
         if (error) {
