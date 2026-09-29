@@ -1,17 +1,16 @@
-import {
-  PasswordConditionsContent,
-  type PasswordConditions,
-} from './PasswordConditions'
 import { useFloating, offset, shift, flip, Placement } from '@floating-ui/react'
-import styles from './PasswordConditionsPopover.module.scss'
 import clsx from 'clsx'
+import PasswordConditions, {
+  type PasswordConditionsProps,
+} from '../PasswordConditions'
+import styles from './PasswordConditionsPopover.module.scss'
 
 type StrengthScore = 1 | 2 | 3 | 4 | 5
 
 interface Props {
   open: boolean
   anchorRef: React.RefObject<HTMLElement | null>
-  conditions: PasswordConditions
+  conditions: PasswordConditionsProps
   strengthScore: StrengthScore
   placement?: Placement
   fallbackPlacements?: Placement[]
@@ -50,7 +49,7 @@ function PasswordConditionsPopover({
       role="tooltip"
       aria-live="polite"
     >
-      <PasswordConditionsContent
+      <PasswordConditions
         conditions={conditions}
         strengthScore={strengthScore}
       />

@@ -11,7 +11,7 @@ export const PASSWORD_CONDITIONS = [
 ] as const
 
 export type PasswordConditionKey = (typeof PASSWORD_CONDITIONS)[number]['key']
-export type PasswordConditions = Record<PasswordConditionKey, boolean>
+export type PasswordConditionsProps = Record<PasswordConditionKey, boolean>
 
 type StrengthScore = 1 | 2 | 3 | 4 | 5
 
@@ -24,14 +24,11 @@ export const STRENGTH_COLORS: Record<StrengthScore, string> = {
 }
 
 interface Props {
-  conditions: PasswordConditions
+  conditions: PasswordConditionsProps
   strengthScore: StrengthScore
 }
 
-export function PasswordConditionsContent({
-  conditions,
-  strengthScore,
-}: Props) {
+function PasswordConditions({ conditions, strengthScore }: Props) {
   return (
     <div className={styles.Wrapper}>
       <div className={styles.ScoreWrapper}>
@@ -67,3 +64,5 @@ export function PasswordConditionsContent({
     </div>
   )
 }
+
+export default PasswordConditions

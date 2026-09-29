@@ -13,7 +13,7 @@ import ClickTargetHelper from '@/components/ClickTargetHelper'
 import { Turnstile } from '@marsidev/react-turnstile'
 import clsx from 'clsx'
 import PasswordConditionsPopover from '../PasswordConditionsPopover'
-import { PasswordConditionsContent } from '../PasswordConditionsPopover/PasswordConditions'
+import PasswordConditions from '../PasswordConditions'
 import { authClient } from '@/lib/auth-client'
 import { useTheme } from '@/lib/theme-provider'
 import { useSignup } from './use-signup'
@@ -214,7 +214,7 @@ function SignupComponent() {
                 </div>
 
                 <div className={styles.ConditionsMobile}>
-                  <PasswordConditionsContent
+                  <PasswordConditions
                     conditions={passwordConditions}
                     strengthScore={strengthScore}
                   />

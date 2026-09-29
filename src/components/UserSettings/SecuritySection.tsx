@@ -9,7 +9,7 @@ import VisuallyHidden from '../VisuallyHidden'
 import ShiftBy from '../ShiftBy'
 import { Link } from '@tanstack/react-router'
 import PasswordConditionsPopover from '../PasswordConditionsPopover'
-import { PasswordConditionsContent } from '../PasswordConditionsPopover/PasswordConditions'
+import PasswordConditions from '../PasswordConditions'
 import Skeleton from '../Skeleton'
 import styles from './Section.module.scss'
 
@@ -166,7 +166,7 @@ function SecuritySection() {
                 />
 
                 <div className={styles.MobileConditions}>
-                  <PasswordConditionsContent
+                  <PasswordConditions
                     conditions={passwordConditions}
                     strengthScore={strengthScore}
                   />
