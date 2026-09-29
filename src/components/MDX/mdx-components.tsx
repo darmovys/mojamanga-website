@@ -13,6 +13,18 @@ type LinkProps = Children & {
 type WarningProps = Children & {
   title: string
 }
+
+type Definition = {
+  term: string
+  description: React.ReactNode
+}
+
+type DefinitionTableProps = {
+  termHeading: string
+  descriptionHeading: string
+  definitions: Definition[]
+}
+
 export const mdxComponents = {
   Body({ children }: Children) {
     return <div className={styles.Body}>{children}</div>
@@ -37,6 +49,31 @@ export const mdxComponents = {
         <h2 className={styles.WarningTitle}>{title}</h2>
         {children}
       </aside>
+    )
+  },
+  DefinitionTable({
+    definitions,
+    descriptionHeading,
+    termHeading,
+  }: DefinitionTableProps) {
+    return (
+      <div className={styles.DefinitionTableWrapper}>
+        <dl className={styles.DefinitionTable}>
+          <div className={styles.DefinitionHeader}>
+            <div className={styles.DefinitionTermHeading}>{termHeading}</div>
+            <div className={styles.DefinitionDescriptionHeading}>
+              {descriptionHeading}
+            </div>
+          </div>
+
+          {definitions.map(({ term, description }) => (
+            <div className={styles.DefinitionRow} key={term}>
+              <dt className={styles.DefinitionTerm}>{term}</dt>
+              <dd className={styles.DefinitionDescription}>{description}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
     )
   },
 }

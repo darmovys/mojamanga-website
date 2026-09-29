@@ -1,3 +1,5 @@
+@use '../../styles/utils' as *;
+
 .Body {
   color: var(--sys-on-surface);
 }
@@ -51,4 +53,47 @@
 
 .WarningTitle {
   font-size: var(--18px);
+}
+.DefinitionTableWrapper {
+  inline-size: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.DefinitionTable {
+  min-width: rem(560px);
+  inline-size: 100%;
+}
+
+.DefinitionHeader,
+.DefinitionRow {
+  display: grid;
+  grid-template-columns: rem(180px) minmax(0, 1fr);
+}
+
+.DefinitionHeader {
+  border-block-end: 2px solid var(--sys-outline);
+  font-weight: 600;
+  background-color: var(--tone-10);
+
+  :global(html.dark) & {
+    background-color: var(--tone-6);
+  }
+}
+
+.DefinitionRow {
+  &:not(:last-child) {
+    border-block-end: 1px solid var(--sys-outline);
+  }
+}
+
+.DefinitionTermHeading,
+.DefinitionDescriptionHeading,
+.DefinitionTerm,
+.DefinitionDescription {
+  padding: var(--12px) var(--16px);
+}
+
+.DefinitionTerm {
+  font-weight: 600;
 }
