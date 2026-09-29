@@ -1,5 +1,4 @@
 import { Button, Menu } from '@base-ui/react'
-import styles from './Header.module.scss'
 import { Bell, Ellipsis, Layers, LogIn, Moon, Plus, Sun } from 'lucide-react'
 import clsx from 'clsx'
 import Logo from '../Logo'
@@ -8,12 +7,19 @@ import VisuallyHidden from '../VisuallyHidden'
 import { Link } from '@tanstack/react-router'
 import SearchContentField from '../SearchContentField'
 import { Image } from '@unpic/react'
-import { Catalog, catalogHandle } from './Catalog'
-import { OtherLinks, otherLinksHandle } from './OtherLinks'
-import { addContentHandle, AddContentMenu } from './AddContentMenu'
-import { UserMenu, userMenuHandle } from './UserMenu'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { authQueries } from '@/services/queries'
+import {
+  Catalog,
+  OtherLinks,
+  catalogHandle,
+  otherLinksHandle,
+  AddContentMenu,
+  addContentHandle,
+  UserMenu,
+  userMenuHandle,
+} from './_components'
+import styles from './Header.module.scss'
 
 function Header() {
   const { theme, toggleTheme } = useTheme()

@@ -7,11 +7,11 @@ import { User } from '@/lib/auth'
 import { LogOut } from 'lucide-react'
 import { authClient } from '@/lib/auth-client'
 import { showTimedToast } from '@/lib/toast'
-import { ArrowSvg } from './ArrowSvg'
-import styles from './DropdownMenu.module.scss'
+import { ArrowSvg } from '..'
 import { useQueryClient } from '@tanstack/react-query'
 import { authQueries } from '@/services/queries'
 import { useMediaQuery } from '@/hooks/use-media-query'
+import styles from './UserMenu.module.scss'
 
 export const userMenuHandle = Menu.createHandle()
 
@@ -84,7 +84,7 @@ export function UserMenu({ user }: UserMenuProps) {
                 width={45}
                 height={45}
               />
-              <div className={styles.UserInfo}>
+              <div className={styles.Info}>
                 <span>{user.displayUsername}</span>
                 <span>Користувач</span>
               </div>
@@ -96,7 +96,7 @@ export function UserMenu({ user }: UserMenuProps) {
                     <Menu.Item
                       render={<Link to={link.to} search={link.search} />}
                       key={link.title}
-                      className={styles.UserMenuItem}
+                      className={styles.Item}
                     >
                       <link.icon size={18} />
                       <span>{link.title}</span>
@@ -110,7 +110,7 @@ export function UserMenu({ user }: UserMenuProps) {
                   <Menu.Item
                     render={<Link to={link.to} params={{ id: user.id }} />}
                     key={link.title}
-                    className={styles.UserMenuItem}
+                    className={styles.Item}
                   >
                     <link.icon size={18} />
                     <span>{link.title}</span>

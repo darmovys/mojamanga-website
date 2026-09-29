@@ -45,14 +45,6 @@
   }
 }
 
-.ArrowFill {
-  fill: var(--sys-on-surface-highest);
-}
-
-.ArrowInnerStroke {
-  fill: var(--sys-outline-variant);
-}
-
 .Item,
 .SubmenuTrigger {
   outline: 0;
@@ -81,71 +73,6 @@
   }
 }
 
-.SubmenuTrigger {
-  .ChevronRight {
-    margin-inline-start: auto;
-  }
-}
-
-.AddContentItem {
-  composes: Item;
-  inline-size: auto;
-}
-
-.UserMenuItem {
-  composes: Item;
-  inline-size: var(--256px);
-}
-
-.UserItem {
-  composes: UserMenuItem;
-  outline: 1px solid var(--sys-outline-variant);
-  border-radius: var(--8px);
-
-  img {
-    object-fit: cover;
-    border-radius: 50%;
-    block-size: var(--48px);
-    inline-size: var(--48px);
-  }
-
-  margin-block-end: var(--8px);
-}
-
-.UserInfo {
-  display: flex;
-  flex-direction: column;
-  gap: var(--4px);
-
-  span:first-of-type {
-    font-weight: 600;
-  }
-
-  span:last-of-type {
-    font-size: var(--14px);
-    color: var(--sys-on-surface-variant);
-  }
-}
-
-.Separator {
-  background-color: var(--sys-outline-variant);
-  block-size: 1px;
-  margin-block: var(--8px);
-  margin-inline-start: var(--10px);
-  margin-inline-end: var(--14px);
-}
-
-.ExitButton {
-  composes: UserMenuItem;
-  color: var(--danger);
-  cursor: pointer;
-  border: none;
-  background-color: transparent;
-
-  border-radius: var(--8px);
-  will-change: transform;
-
-  &[data-highlighted]::before {
-    background-color: var(--danger-background-active);
-  }
+.ChevronRight {
+  margin-inline-start: auto;
 }

@@ -1,25 +1,25 @@
 import { Menu } from '@base-ui/react'
 import { Link } from '@tanstack/react-router'
-import { addContentLinks } from '@/lib/navigation-links'
-import { ArrowSvg } from './ArrowSvg'
-import styles from './DropdownMenu.module.scss'
+import { otherLinks } from '@/lib/navigation-links'
+import { ArrowSvg } from '..'
+import styles from './OtherLinks.module.scss'
 
-export const addContentHandle = Menu.createHandle()
+export const otherLinksHandle = Menu.createHandle()
 
-export function AddContentMenu() {
+export function OtherLinks() {
   return (
-    <Menu.Root handle={addContentHandle}>
+    <Menu.Root handle={otherLinksHandle}>
       <Menu.Portal>
         <Menu.Positioner className={styles.Positioner} sideOffset={10}>
           <Menu.Popup className={styles.Popup}>
             <Menu.Arrow className={styles.Arrow}>
               <ArrowSvg />
             </Menu.Arrow>
-            {addContentLinks.map((link) => (
+            {otherLinks.map((link) => (
               <Menu.Item
                 render={<Link to={link.to} />}
                 key={link.title}
-                className={styles.AddContentItem}
+                className={styles.Item}
               >
                 <link.icon size={18} />
                 <span>{link.title}</span>

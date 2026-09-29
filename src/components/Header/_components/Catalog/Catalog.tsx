@@ -2,8 +2,8 @@ import { Menu } from '@base-ui/react'
 import { ChevronRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { catalogLinks, titleTypeLinks } from '@/lib/navigation-links'
-import { ArrowSvg } from './ArrowSvg'
-import styles from './DropdownMenu.module.scss'
+import { ArrowSvg } from '..'
+import styles from './Catalog.module.scss'
 
 export const catalogHandle = Menu.createHandle()
 

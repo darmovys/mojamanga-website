@@ -1,0 +1,126 @@
+.Positioner {
+  outline: 0;
+}
+
+.Popup {
+  padding: var(--12px);
+  border-radius: var(--8px);
+  background-color: var(--sys-on-surface-highest);
+  color: var(--sys-on-surface);
+  transform-origin: var(--transform-origin);
+  transition:
+    transform 150ms,
+    opacity 150ms;
+  outline: 1px solid var(--sys-outline-variant);
+  box-shadow: var(--shadow-border);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.Arrow {
+  display: flex;
+
+  &[data-side='top'] {
+    inset-block-end: -8px;
+    rotate: 180deg;
+  }
+
+  &[data-side='bottom'] {
+    inset-block-start: -9px;
+    rotate: 0deg;
+  }
+
+  &[data-side='left'] {
+    inset-inline-end: -13px;
+    rotate: 90deg;
+  }
+
+  &[data-side='right'] {
+    inset-inline-start: -13px;
+    rotate: -90deg;
+  }
+}
+
+.Item {
+  outline: 0;
+  user-select: none;
+  padding: var(--14px) var(--12px);
+  line-height: 1rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  inline-size: var(--256px);
+  gap: var(--10px);
+
+  &[data-highlighted] {
+    z-index: 0;
+    position: relative;
+  }
+
+  &[data-highlighted]::before {
+    content: '';
+    z-index: -1;
+    position: absolute;
+    inset: 0;
+    border-radius: var(--8px);
+    background-color: var(--state-on-surface-opacity-variant-2);
+  }
+}
+
+.UserItem {
+  composes: Item;
+  outline: 1px solid var(--sys-outline-variant);
+  border-radius: var(--8px);
+
+  img {
+    object-fit: cover;
+    border-radius: 50%;
+    block-size: var(--48px);
+    inline-size: var(--48px);
+  }
+
+  margin-block-end: var(--8px);
+}
+
+.Info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--4px);
+
+  span:first-of-type {
+    font-weight: 600;
+  }
+
+  span:last-of-type {
+    font-size: var(--14px);
+    color: var(--sys-on-surface-variant);
+  }
+}
+
+.Separator {
+  background-color: var(--sys-outline-variant);
+  block-size: 1px;
+  margin-block: var(--8px);
+  margin-inline-start: var(--10px);
+  margin-inline-end: var(--14px);
+}
+
+.ExitButton {
+  composes: Item;
+  color: var(--danger);
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+
+  border-radius: var(--8px);
+  will-change: transform;
+
+  &[data-highlighted]::before {
+    background-color: var(--danger-background-active);
+  }
+}
