@@ -1,0 +1,69 @@
+@use '../../../../styles/utils' as *;
+
+.MemberLink {
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+}
+
+.MemberItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--8px);
+  border-radius: var(--6px);
+  padding: var(--8px) var(--8px) 0 var(--8px);
+  background-color: var(--sys-on-surface-variant-2);
+  box-shadow: var(--shadow-border);
+  transition: background-color 0.2s var(--bg-animation);
+
+  padding-block-end: calc(var(--bottom-space) / 16px * 1rem);
+
+  .MemberLink:focus-visible & {
+    outline: var(--default-outline);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant);
+    }
+  }
+}
+
+.MemberInfo {
+  --shift-by: var(--8px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  position: relative;
+  inline-size: 100%;
+  padding-block-start: rem(7px);
+
+  // 540px (має збігатися з брейкпоїнтом masonry
+  @media (min-width: 33.75rem) {
+    padding-block-start: rem(6px);
+  }
+}
+
+.MemberAvatar {
+  border-radius: 100vmax;
+}
+
+.MemberUsername {
+  font-size: var(--18px);
+  line-height: 1.2;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: clip;
+  text-overflow: ellipsis;
+}
+
+.MemberRoles {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline: 0;
+  font-size: var(--12px);
+  line-height: 1.4;
+  color: var(--responsive-blue);
+}

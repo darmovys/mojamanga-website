@@ -206,20 +206,40 @@
   font-weight: 300;
   letter-spacing: rem(0.2px);
   margin-block-end: var(--4px);
+  flex-wrap: wrap;
+  justify-content: center;
 
   &[data-no-description] {
     margin-block-end: var(--12px);
   }
+}
 
-  .AvgChapters:first-of-type {
+.AvgChapters {
+  &:first-of-type {
     color: var(--tone-15);
     font-weight: 500;
+  }
+}
 
-    &::after {
-      content: '•';
-      font-weight: 500;
-      margin-inline: var(--8px);
-      color: var(--tone-8);
+.StatItem {
+  &::after {
+    content: '•';
+    font-weight: 500;
+    margin-inline: var(--8px);
+    color: var(--tone-8);
+  }
+
+  &:last-child::after {
+    content: none;
+  }
+}
+
+.TeamMembersBtn {
+  transition: color 0.2s var(--emulate-spring);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--tone-14);
     }
   }
 }

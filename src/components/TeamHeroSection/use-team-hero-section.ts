@@ -10,6 +10,7 @@ import { useState } from 'react'
 
 export function useTeamHeroSection(id: string) {
   const [isInfoOpen, setIsInfoOpen] = useState(false)
+  const [isTeamMembersOpen, setIsTeamMembersOpen] = useState(false)
   const queryClient = useQueryClient()
   const { data } = useSuspenseQuery(teamsQueries.teamProfile(id))
   const {
@@ -39,11 +40,15 @@ export function useTeamHeroSection(id: string) {
   )
 
   const handleOpenInfo = () => setIsInfoOpen(true)
+  const handleOpenTeamMembers = () => setIsTeamMembersOpen(true)
 
   return {
     isInfoOpen,
     setIsInfoOpen,
     handleOpenInfo,
+    isTeamMembersOpen,
+    setIsTeamMembersOpen,
+    handleOpenTeamMembers,
     profileData: data,
     avgChaptersPerMonth,
     isPending,

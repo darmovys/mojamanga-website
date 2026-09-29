@@ -1,11 +1,13 @@
 import MotionButton from '../MotionButton'
 import { pluralize } from '@/lib/utils'
-import { MoreButton, TeamInfoDialog } from './_components'
+import ShiftBy from '../ShiftBy'
+import { MoreButton, TeamInfoDialog, TeamMembersDialog } from './_components'
 import { Button } from '@base-ui/react'
 import { Image } from '@unpic/react'
 import { getRouteApi } from '@tanstack/react-router'
 import Skeleton from '../Skeleton'
 import { useTeamHeroSection } from './use-team-hero-section'
+import { ChevronRightIcon } from 'lucide-react'
 import clsx from 'clsx'
 import styles from './TeamHeroSection.module.scss'
 
@@ -19,7 +21,10 @@ function TeamHeroSection() {
     accentColor,
     isInfoOpen,
     setIsInfoOpen,
+    isTeamMembersOpen,
+    setIsTeamMembersOpen,
     handleOpenInfo,
+    handleOpenTeamMembers,
     isPending,
     isError,
     avgChaptersPerMonth,
@@ -68,7 +73,7 @@ function TeamHeroSection() {
                 borderRadius="var(--6px)"
               />
             ) : !isError && avgChaptersPerMonth != null ? (
-              <span className={styles.AvgChapters}>
+              <span className={clsx(styles.AvgChapters, styles.StatItem)}>
                 {avgChaptersPerMonth}{' '}
                 {pluralize(avgChaptersPerMonth, [
                   'розділ/міс.',
@@ -78,7 +83,7 @@ function TeamHeroSection() {
               </span>
             ) : null}
 
-            <span>
+            <span className={styles.StatItem}>
               {profileData._count.publishingVersions}{' '}
               {pluralize(profileData._count.publishingVersions, [
                 'твір',
@@ -86,6 +91,21 @@ function TeamHeroSection() {
                 'творів',
               ])}
             </span>
+
+            <Button
+              className={clsx(styles.TeamMembersBtn, styles.StatItem)}
+              onClick={handleOpenTeamMembers}
+            >
+              {profileData._count.members}{' '}
+              {pluralize(profileData._count.members, [
+                'учасник',
+                'учасники',
+                'учасників',
+              ])}
+              <ShiftBy y={1}>
+                <ChevronRightIcon size={16} />
+              </ShiftBy>
+            </Button>
           </div>
 
           {profileData.descriptionPreview && (
@@ -146,6 +166,11 @@ function TeamHeroSection() {
         name={profileData.name}
         isOpen={isInfoOpen}
         onIsOpenChange={setIsInfoOpen}
+      />
+
+      <TeamMembersDialog
+        isOpen={isTeamMembersOpen}
+        onIsOpenChange={setIsTeamMembersOpen}
       />
     </header>
   )
