@@ -1,8 +1,8 @@
 import { getRouteApi, Link } from '@tanstack/react-router'
-import styles from './Tabs.module.scss'
 import { motion } from 'motion/react'
 import { useId, type MouseEvent } from 'react'
 import { Separator } from '@base-ui/react'
+import styles from './Tabs.module.scss'
 
 const links = {
   teams: [
@@ -81,5 +81,3 @@ export function Tabs({ name, route }: TabsProps) {
     </>
   )
 }
-
-export default Tabs

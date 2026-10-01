@@ -1,7 +1,7 @@
 import {
   TitlesRequests,
   TitlesRequestsSkeleton,
-} from '@/components/UserRequests/TitlesRequests'
+} from '@/components/UserRequests/_components'
 import { userTitlesRequestsSchema } from '@/schemas/users'
 import { usersQueries } from '@/services/queries'
 import { createFileRoute } from '@tanstack/react-router'

@@ -1,4 +1,4 @@
-import NavigationLayout from '@/components/UserRequests'
+import UserRequests from '@/components/UserRequests'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/user/$id_/requests')({
@@ -11,5 +11,5 @@ export const Route = createFileRoute('/user/$id_/requests')({
       })
     }
   },
-  component: NavigationLayout,
+  component: UserRequests,
 })

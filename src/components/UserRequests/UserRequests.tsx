@@ -1,5 +1,4 @@
 import { Button } from '@base-ui/react'
-import styles from './NavigationLayout.module.scss'
 import ClickTargetHelper from '../ClickTargetHelper'
 import { ArrowLeft, Menu } from 'lucide-react'
 import VisuallyHidden from '../VisuallyHidden'
@@ -7,13 +6,14 @@ import { useGoBack } from '@/hooks/use-go-back'
 import { motion } from 'motion/react'
 import { useSearchFieldScrollStore } from '@/stores/search-field-scroll-store'
 import { Outlet } from '@tanstack/react-router'
-import { Navigation } from './Navigation'
+import { Navigation } from './_components'
 import MotionButton from '../MotionButton'
 import { useState } from 'react'
-import { DialogNavigation } from './DialogNavigation'
+import { DialogNavigation } from './_components'
 import MobileNavigation from '../MobileNavigation'
+import styles from './UserRequests.module.scss'
 
-function NavigationLayout() {
+function UserRequests() {
   const [isOpen, setIsOpen] = useState(false)
   const { handleGoBack } = useGoBack()
   const isSearchFieldVisible = useSearchFieldScrollStore(
@@ -58,4 +58,4 @@ function NavigationLayout() {
   )
 }
 
-export default NavigationLayout
+export default UserRequests

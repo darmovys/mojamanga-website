@@ -1,0 +1,30 @@
+.Navigation {
+  list-style-type: none;
+  padding-inline-start: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--4px);
+}
+
+.NavigationLink {
+  display: block;
+  padding: var(--4px) var(--10px);
+  border-radius: var(--6px);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s var(--bg-animation);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--default-outline);
+  }
+}
+
+.ActiveLink {
+  background-color: var(--state-on-surface-opacity-variant-2);
+}

@@ -1,10 +1,10 @@
 import { Button, Dialog, Separator } from '@base-ui/react'
 import { AnimatePresence, motion } from 'motion/react'
-import styles from './NavigationLayout.module.scss'
 import clsx from 'clsx'
 import { X } from 'lucide-react'
-import { Navigation } from './Navigation'
-import VisuallyHidden from '../VisuallyHidden'
+import { Navigation } from '..'
+import VisuallyHidden from '@/components/VisuallyHidden'
+import styles from './DialogNavigation.module.scss'
 
 interface DialogNavigationProps {
   isOpen: boolean

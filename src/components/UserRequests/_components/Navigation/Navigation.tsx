@@ -1,5 +1,5 @@
 import { getRouteApi, Link } from '@tanstack/react-router'
-import styles from './NavigationLayout.module.scss'
+import styles from './Navigation.module.scss'
 
 const links = [
   { label: 'Команди', url: '/user/$id/requests/teams' },
@@ -19,7 +19,7 @@ export function Navigation({ onLinkClick }: NavigationProps) {
   return (
     <ul className={styles.Navigation}>
       {links.map((item) => (
-        <li key={item.label} className={styles.NavItem}>
+        <li key={item.label}>
           <Link
             to={item.url}
             params={{ id }}

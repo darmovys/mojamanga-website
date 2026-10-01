@@ -1,43 +1,41 @@
-import Tabs from './Tabs'
-import styles from './RequestsSection.module.scss'
 import { getRouteApi, Link } from '@tanstack/react-router'
+import { useState, useTransition } from 'react'
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { usersQueries } from '@/services/queries'
-import { TitleApprovalStatus } from '@/generated/prisma/enums'
-import { useState, useTransition } from 'react'
 import { Image } from '@unpic/react'
-
+import { range } from '@/lib/utils'
+import { ImageOffIcon, SquarePenIcon, XIcon } from 'lucide-react'
+import ClickTargetHelper from '@/components/ClickTargetHelper'
+import clsx from 'clsx'
+import MotionButton from '@/components/MotionButton'
+import Skeleton from '@/components/Skeleton'
+import { TeamStatus } from '@/generated/prisma/enums'
 import { api } from '@/lib/api-client'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
-import { ImageOffIcon, SquarePenIcon, XIcon } from 'lucide-react'
-import MotionButton from '../MotionButton'
-import clsx from 'clsx'
-import ClickTargetHelper from '../ClickTargetHelper'
-import ConfirmDialog from '../ConfirmDialog'
-import Skeleton from '../Skeleton'
-import { range } from '@/lib/utils'
+import ConfirmDialog from '@/components/ConfirmDialog'
+import { Tabs } from '..'
+import styles from './TeamsRequests.module.scss'
 
-const routeApi = getRouteApi('/user/$id_/requests/titles')
+const routeApi = getRouteApi('/user/$id_/requests/teams')
 
-export function TitlesRequests() {
+export function TeamsRequests() {
   const { id } = routeApi.useParams()
   const { status } = routeApi.useSearch()
   const { data } = useSuspenseQuery(
-    usersQueries.getUserTitlesRequests(id, status),
+    usersQueries.getUserTeamsRequests(id, status),
   )
-
   return (
     <>
-      <Tabs name="Твори" route="titles" />
+      <Tabs name="Команди" route="teams" />
       <main
         className={styles.MainSection}
         data-empty={data.length > 0 ? undefined : ''}
       >
         {data.length > 0 ? (
           data.map(({ id, coverUrl, name, status }) => (
-            <TitleCard
+            <TeamCard
               key={id}
-              titleId={id}
+              teamId={id}
               coverUrl={coverUrl}
               name={name}
               status={status}
@@ -51,22 +49,22 @@ export function TitlesRequests() {
   )
 }
 
-interface TitleCardProps {
-  titleId: string
+interface TeamCardProps {
+  teamId: string
   coverUrl: string | null
-  status: TitleApprovalStatus
+  status: TeamStatus
   name: string
 }
 
-function TitleCard({ coverUrl, name, status, titleId }: TitleCardProps) {
+function TeamCard({ coverUrl, name, status, teamId }: TeamCardProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isDeleting, startTransition] = useTransition()
   const queryClient = useQueryClient()
 
-  function deleteTitle() {
+  function deleteTeam() {
     if (isDeleting) return
     startTransition(async () => {
-      const { error, data } = await api().titles({ id: titleId }).delete()
+      const { error, data } = await api().teams({ id: teamId }).delete()
       if (error) {
         if (error.status === 422) {
           showTimedToast(
@@ -83,7 +81,7 @@ function TitleCard({ coverUrl, name, status, titleId }: TitleCardProps) {
           showTimedToast(
             {
               type: 'warning',
-              title: 'Помилка',
+              title: 'Попередження',
               description: error.value,
             },
             4000,
@@ -101,10 +99,15 @@ function TitleCard({ coverUrl, name, status, titleId }: TitleCardProps) {
         return
       }
 
-      await queryClient.invalidateQueries({
-        queryKey: usersQueries.getUserTitlesRequests(data.userId, 'rejected')
-          .queryKey,
-      })
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: usersQueries.getUserTeams(data.userId).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: usersQueries.getUserTeamsRequests(data.userId, 'rejected')
+            .queryKey,
+        }),
+      ])
     })
   }
 
@@ -114,7 +117,7 @@ function TitleCard({ coverUrl, name, status, titleId }: TitleCardProps) {
       data-is-deleting={isDeleting ? '' : undefined}
     >
       <div
-        className={styles.ImageWrapper}
+        className={styles.TeamImageWrapper}
         data-rejected={status === 'REJECTED' ? '' : undefined}
       >
         {coverUrl ? (
@@ -136,7 +139,7 @@ function TitleCard({ coverUrl, name, status, titleId }: TitleCardProps) {
             className={clsx(styles.ReviseButton, 'Gradient')}
             nativeButton={false}
             disabled={isDeleting}
-            render={<Link to="/title/$id/revise" params={{ id: titleId }} />}
+            render={<Link to="/team/$id/edit" params={{ id: teamId }} />}
           >
             <SquarePenIcon size={14} />
             <ClickTargetHelper />
@@ -158,7 +161,7 @@ function TitleCard({ coverUrl, name, status, titleId }: TitleCardProps) {
             onConfirm={() => {
               setIsDialogOpen(false)
               if (isDeleting) return
-              deleteTitle()
+              deleteTeam()
             }}
           />
         </div>
@@ -167,8 +170,8 @@ function TitleCard({ coverUrl, name, status, titleId }: TitleCardProps) {
         {status !== 'PENDING' && status !== 'REJECTED' ? (
           <Link
             className={styles.ItemLink}
-            to="/title/$id"
-            params={{ id: titleId }}
+            to="/team/$id"
+            params={{ id: teamId }}
           >
             {name}
             <ClickTargetHelper />
@@ -181,7 +184,7 @@ function TitleCard({ coverUrl, name, status, titleId }: TitleCardProps) {
   )
 }
 
-export function TitlesRequestsSkeleton() {
+export function TeamsRequestsSkeleton() {
   const { status } = routeApi.useSearch()
 
   return (
@@ -205,14 +208,14 @@ export function TitlesRequestsSkeleton() {
         ))}
       </nav>
       <main
-        className={styles.MainSkeletonSection}
+        className={styles.MainTeamSkeletonSection}
         data-rejected={status === 'rejected' ? '' : undefined}
       >
         {range(5).map((index) => (
           <div key={index}>
             <div className={styles.CardSkeletonItem}>
               <Skeleton
-                className={styles.CardSkeletonItemImage}
+                className={styles.TeamCardSkeletonItemImage}
                 width="100%"
                 height="100%"
                 borderRadius="var(--4px)"

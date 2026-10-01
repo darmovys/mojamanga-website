@@ -1,7 +1,7 @@
 import {
   TeamsRequests,
   TeamsRequestsSkeleton,
-} from '@/components/UserRequests/TeamsRequests'
+} from '@/components/UserRequests/_components'
 import { userTeamsRequestsSchema } from '@/schemas/users'
 import { usersQueries } from '@/services/queries'
 import { createFileRoute } from '@tanstack/react-router'
