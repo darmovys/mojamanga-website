@@ -3,20 +3,20 @@ import { usersQueries } from '@/services/queries'
 import { getRouteApi, Link } from '@tanstack/react-router'
 import { Image } from '@unpic/react'
 import { ImageOffIcon, SquarePenIcon, XIcon } from 'lucide-react'
-import ClickTargetHelper from '../ClickTargetHelper'
+import ClickTargetHelper from '@/components/ClickTargetHelper'
 import { range } from '@/lib/utils'
-import Skeleton from '../Skeleton'
-import MotionButton from '../MotionButton'
-import ConfirmDialog from '../ConfirmDialog'
+import Skeleton from '@/components/Skeleton'
+import MotionButton from '@/components/MotionButton'
+import ConfirmDialog from '@/components/ConfirmDialog'
 import { TeamStatus } from '@/generated/prisma/enums'
 import { useState, useTransition } from 'react'
 import { api } from '@/lib/api-client'
 import { showAuthToast, showTimedToast } from '@/lib/toast'
-import styles from './TeamsSection.module.scss'
+import styles from './UserTeamsSection.module.scss'
 
 const routeApi = getRouteApi('/user/$id/teams')
 
-function TeamsSection() {
+function UserTeamsSection() {
   const { id: userId } = routeApi.useParams()
   const { data: teams } = useSuspenseQuery(usersQueries.getUserTeams(userId))
   return (
@@ -179,7 +179,7 @@ function TeamCard({ teamId, coverUrl, status, name }: TeamCardProps) {
   )
 }
 
-export function TeamsSectionSkeleton() {
+export function UserTeamsSectionSkeleton() {
   return (
     <main className={styles.Main}>
       <h2 className={styles.SectionHeading}>Членства в командах</h2>
@@ -195,4 +195,4 @@ export function TeamsSectionSkeleton() {
   )
 }
 
-export default TeamsSection
+export default UserTeamsSection
