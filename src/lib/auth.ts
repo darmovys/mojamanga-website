@@ -13,11 +13,7 @@ import {
 import { createAuthMiddleware } from 'better-auth/api'
 import { UserRole, UserStatus } from '@/generated/prisma/enums'
 import { sendEmail } from './email'
-import {
-  ConfirmEmail,
-  ConfirmEmailChange,
-  ResetPassword,
-} from '@/components/emails'
+import { ConfirmEmail, ConfirmEmailChange, ResetPassword } from '@/emails'
 import { directChangePasswordSchema } from '@/schemas/users'
 
 export const auth = betterAuth({
