@@ -1,0 +1,119 @@
+.ErrorMessage {
+  background-color: var(--danger-background);
+  color: var(--danger);
+  padding: var(--4px) var(--8px);
+  border-radius: var(--6px);
+}
+
+.CheckboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--4px);
+  border: 1px solid var(--sys-outline);
+  padding: var(--8px);
+  border-radius: var(--4px);
+  margin-block-start: var(--2px);
+}
+
+.CheckboxWrapper {
+  display: flex;
+  gap: var(--8px);
+  font-size: var(--14px);
+  font-weight: 500;
+  color: var(--sys-primary);
+  align-items: center;
+  position: relative;
+}
+
+.Checkbox {
+  --size: var(--24px);
+  display: flex;
+  flex-shrink: 0;
+  inline-size: var(--size);
+  block-size: var(--size);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--4px);
+  outline: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  box-shadow: var(--inset-shadow);
+  z-index: 1; /* For checkbox to be above tree lines */
+  cursor: pointer;
+
+  &[data-unchecked] {
+    background-color: var(--sys-surface-low);
+  }
+
+  &[data-checked],
+  &[data-indeterminate] {
+    background-color: var(--blue-400);
+    color: oklch(97.614% 0.00011 271.152);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 0.1875rem var(--state-primary-opacity-12);
+    border: 1px solid var(--blue-400);
+  }
+}
+
+.Indicator {
+  transform: scale(0);
+  transition: 0.15s transform cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &[data-checked],
+  &[data-indeterminate] {
+    transform: scale(0.8);
+  }
+}
+
+.ChildrenContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--8px);
+
+  &[data-multiple-teams] {
+    margin-inline-start: var(--12px);
+    margin-block-start: var(--8px);
+  }
+}
+
+.Inner {
+  .ChildrenContainer[data-multiple-teams] & {
+    padding-inline-start: var(--16px);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline-start: 0;
+      inset-block-start: 0;
+      inset-block-end: 50%;
+      inline-size: var(--16px);
+      border-inline-start: 1.5px solid var(--sys-outline);
+      border-block-end: 1.5px solid var(--sys-outline);
+    }
+
+    &:first-child::before {
+      inset-block-start: calc(var(--12px) * -1);
+    }
+
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      inset-inline-start: 0;
+      inset-block-start: 50%;
+      inset-block-end: calc(var(--10px) * -1);
+      border-inline-start: 1.5px solid var(--sys-outline);
+    }
+  }
+}
+
+.TeamName {
+  display: block;
+  white-space: nowrap; /* Забороняє перенос рядка */
+  overflow: hidden; /* Ховає текст, що виходить за межі */
+  text-overflow: ellipsis; /* Додає трикрапку (...) */
+  flex: 1; /* Займає весь доступний простір */
+  min-width: 0; /* Важливо для коректної роботи ellipsis у flex-контейнері */
+}

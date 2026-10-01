@@ -2,13 +2,13 @@ import { teamsQueries } from '@/services/queries'
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useId } from 'react'
-import Skeleton from '../Skeleton'
+import Skeleton from '@/components/Skeleton'
 import { Checkbox, CheckboxGroup } from '@base-ui/react'
 import { CheckIcon, MinusIcon } from 'lucide-react'
 import clsx from 'clsx'
 import { range } from '@/lib/utils'
 import { Team } from '@/lib/treaty-types'
-import styles from './TitleForm.module.scss'
+import styles from './UserTeamsCheckboxList.module.scss'
 
 type UserTeamsCheckboxListProps = {
   selectedTeams: Team[]
@@ -107,7 +107,7 @@ export function UserTeamsCheckboxList({
 
       <div
         className={styles.ChildrenContainer}
-        data-multiple-teams={isMultipleTeams}
+        data-multiple-teams={isMultipleTeams ? '' : undefined}
       >
         {userTeams.map((team) => (
           <label

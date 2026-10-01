@@ -8,16 +8,14 @@ import {
   LockIcon,
 } from 'lucide-react'
 import { Combobox, ScrollArea, Separator } from '@base-ui/react'
-import MotionButton from '../MotionButton'
+import MotionButton from '@/components/MotionButton'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-import VisuallyHidden from '../VisuallyHidden'
-import ClickTargetHelper from '../ClickTargetHelper'
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { genresQueries } from '@/services/queries'
+import VisuallyHidden from '@/components/VisuallyHidden'
+import ClickTargetHelper from '@/components/ClickTargetHelper'
 import { Genre } from '@/lib/treaty-types'
 import { showTimedToast } from '@/lib/toast'
-import styles from './ComboboxField.module.scss'
+import { useGenreCombobox } from './use-genre-combobox'
+import styles from './GenreComboboxField.module.scss'
 
 interface GenresComboboxFieldProps {
   value: Genre[]
@@ -30,17 +28,9 @@ export function GenreComboboxField({
   onChange,
   isLocked,
 }: GenresComboboxFieldProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const { allGenres, isOpen, setIsOpen, isLoading, isError } =
+    useGenreCombobox()
   const shouldReduceMotion = useReducedMotion()
-
-  const {
-    data: response,
-    isLoading,
-    isError,
-  } = useQuery(genresQueries.getAllGenres())
-
-  const allGenres = response?.data ?? []
-
   const triggerAnimation = shouldReduceMotion
     ? {}
     : {

@@ -8,16 +8,15 @@ import {
   LockIcon,
 } from 'lucide-react'
 import { Combobox, ScrollArea, Separator } from '@base-ui/react'
-import MotionButton from '../MotionButton'
+import MotionButton from '@/components/MotionButton'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-import VisuallyHidden from '../VisuallyHidden'
-import ClickTargetHelper from '../ClickTargetHelper'
-import { useEffect, useRef, useState } from 'react'
-import { api } from '@/lib/api-client'
+import VisuallyHidden from '@/components/VisuallyHidden'
+import ClickTargetHelper from '@/components/ClickTargetHelper'
 import clsx from 'clsx'
 import { Person } from '@/lib/treaty-types'
 import { showTimedToast } from '@/lib/toast'
-import styles from './ComboboxField.module.scss'
+import { usePersonCombobox } from './use-person-combobox'
+import styles from './PersonComboboxField.module.scss'
 
 interface PersonComboboxFieldProps {
   selectedPeople: Person[]
@@ -32,13 +31,16 @@ export function PersonComboboxField({
   debounceMs = 300,
   isLocked,
 }: PersonComboboxFieldProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [searchResults, setSearchResults] = useState<Person[]>([])
-  const [searchValue, setSearchValue] = useState('')
-  const [debouncedSearchValue, setDebouncedSearchValue] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isSearching, setIsSearching] = useState(false)
-  const abortControllerRef = useRef<AbortController | null>(null)
+  const {
+    isOpen,
+    setIsOpen,
+    searchResults,
+    isSearching,
+    error,
+    searchValue,
+    handleInputValueChange,
+    handleClear,
+  } = usePersonCombobox(debounceMs)
   const shouldReduceMotion = useReducedMotion()
   const triggerAnimation = shouldReduceMotion
     ? {}
@@ -52,55 +54,6 @@ export function PersonComboboxField({
           bounce: 0,
         } as const,
       }
-
-  useEffect(() => {
-    if (searchValue.length >= 2) {
-      setIsSearching(true)
-    } else {
-      setIsSearching(false)
-    }
-
-    const timer = setTimeout(() => {
-      setDebouncedSearchValue(searchValue)
-    }, debounceMs)
-
-    return () => clearTimeout(timer)
-  }, [searchValue])
-
-  useEffect(() => {
-    if (debouncedSearchValue.length < 2) {
-      setIsSearching(false)
-      setError(null)
-      return
-    }
-    const controller = new AbortController()
-    abortControllerRef.current?.abort()
-    abortControllerRef.current = controller
-
-    setError(null)
-
-    api()
-      .people['people-to-attach'].get({
-        query: {
-          search: debouncedSearchValue,
-        },
-      })
-      .then(({ data, error }) => {
-        if (controller.signal.aborted) return
-
-        setIsSearching(false)
-
-        if (error) {
-          setError('Не вдалося отримати персон')
-          setSearchResults([])
-        } else {
-          setSearchResults(data)
-          setError(null)
-        }
-      })
-
-    return () => controller.abort()
-  }, [debouncedSearchValue])
 
   function getStatus() {
     if (isSearching && searchResults.length === 0) {
@@ -135,16 +88,14 @@ export function PersonComboboxField({
       isItemEqualToValue={(item: Person, value: Person) => item.id === value.id}
       onValueChange={(nextSelectedValues: Person[]) => {
         onChange(nextSelectedValues)
-        setSearchValue('')
-        setDebouncedSearchValue('')
-        setError(null)
+        handleClear()
       }}
       onInputValueChange={(
         nextSearchValue: string,
         { reason }: Combobox.Root.ChangeEventDetails,
       ) => {
         if (reason !== 'item-press') {
-          setSearchValue(nextSearchValue)
+          handleInputValueChange(nextSearchValue)
         }
       }}
       onOpenChange={setIsOpen}

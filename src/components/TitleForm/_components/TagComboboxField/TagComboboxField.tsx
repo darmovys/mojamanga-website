@@ -8,16 +8,14 @@ import {
   LockIcon,
 } from 'lucide-react'
 import { Combobox, ScrollArea, Separator } from '@base-ui/react'
-import MotionButton from '../MotionButton'
+import MotionButton from '@/components/MotionButton'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-import VisuallyHidden from '../VisuallyHidden'
-import ClickTargetHelper from '../ClickTargetHelper'
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { tagsQueries } from '@/services/queries'
+import VisuallyHidden from '@/components/VisuallyHidden'
+import ClickTargetHelper from '@/components/ClickTargetHelper'
 import { Tag } from '@/lib/treaty-types'
 import { showTimedToast } from '@/lib/toast'
-import styles from './ComboboxField.module.scss'
+import { useTagCombobox } from './use-tag-combobox'
+import styles from './TagComboboxField.module.scss'
 
 interface TagsComboboxFieldProps {
   value: Tag[]
@@ -30,17 +28,8 @@ export function TagComboboxField({
   onChange,
   isLocked,
 }: TagsComboboxFieldProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const { allTags, isOpen, setIsOpen, isLoading, isError } = useTagCombobox()
   const shouldReduceMotion = useReducedMotion()
-
-  const {
-    data: response,
-    isLoading,
-    isError,
-  } = useQuery(tagsQueries.getAllTags())
-
-  const allTags = response?.data ?? []
-
   const triggerAnimation = shouldReduceMotion
     ? {}
     : {

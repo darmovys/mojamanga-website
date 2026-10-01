@@ -1,9 +1,9 @@
 import { Select } from '@base-ui/react'
 import { ChevronDown, LockIcon } from 'lucide-react'
-import styles from './SelectField.module.scss'
 import { showTimedToast } from '@/lib/toast'
+import styles from './SelectField.module.scss'
 
-export interface SelectFieldProps<T extends string> {
+interface SelectFieldProps<T extends string> {
   options: T[]
   labels: Record<T, string>
   value: T | null

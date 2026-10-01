@@ -10,13 +10,8 @@ import clsx from 'clsx'
 import { Image } from '@unpic/react'
 import { TitleFormMode, useTitleForm } from './use-title-form'
 import CropImageDialog from '../CropImageDialog'
-import { SelectField } from './SelectField'
 import ShiftBy from '../ShiftBy'
-import { PersonComboboxField } from './PersonComboboxField'
 import { Link } from '@tanstack/react-router'
-import { UserTeamsCheckboxList } from './UserTeamsCheckboxList'
-import { TagComboboxField } from './TagComboboxField'
-import { GenreComboboxField } from './GenreComboboxField'
 import { HelperData, useHelperDialog } from '@/hooks/use-helper-dialog'
 import HelperDialog from '../HelperDialog'
 import { produce } from 'immer'
@@ -50,9 +45,16 @@ import {
   TITLE_STATUS_LABELS,
   TITLE_TYPE_LABELS,
 } from '@/lib/constants'
+import {
+  GenreComboboxField,
+  TagComboboxField,
+  PersonComboboxField,
+  UserTeamsCheckboxList,
+  SelectField,
+} from './_components'
 import { TitleEditableData } from '@/services/queries'
-import styles from './TitleForm.module.scss'
 import { showTimedToast } from '@/lib/toast'
+import styles from './TitleForm.module.scss'
 
 const MAX_DESCRIPTION_LENGTH = 1000
 
