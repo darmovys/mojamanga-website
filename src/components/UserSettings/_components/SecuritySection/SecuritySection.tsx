@@ -1,19 +1,19 @@
 import { Button, Field } from '@base-ui/react'
 import { useSecuritySection } from './use-security-section'
-import MotionButton from '../MotionButton'
+import MotionButton from '@/components/MotionButton'
 import { Eye, EyeClosed, LoaderCircle, MailIcon } from 'lucide-react'
 import clsx from 'clsx'
 import { useState } from 'react'
-import ClickTargetHelper from '../ClickTargetHelper'
-import VisuallyHidden from '../VisuallyHidden'
-import ShiftBy from '../ShiftBy'
+import ClickTargetHelper from '@/components/ClickTargetHelper'
+import VisuallyHidden from '@/components/VisuallyHidden'
+import ShiftBy from '@/components/ShiftBy'
 import { Link } from '@tanstack/react-router'
-import PasswordConditionsPopover from '../PasswordConditionsPopover'
-import PasswordConditions from '../PasswordConditions'
-import Skeleton from '../Skeleton'
-import styles from './Section.module.scss'
+import PasswordConditionsPopover from '@/components/PasswordConditionsPopover'
+import PasswordConditions from '@/components/PasswordConditions'
+import Skeleton from '@/components/Skeleton'
+import styles from './SecuritySection.module.scss'
 
-function SecuritySection() {
+export function SecuritySection() {
   const {
     form,
     data,
@@ -319,5 +319,3 @@ export function SecuritySectionSkeleton() {
     </div>
   )
 }
-
-export default SecuritySection

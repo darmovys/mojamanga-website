@@ -1,6 +1,7 @@
-import ProfileSection, {
+import {
+  ProfileSection,
   ProfileSectionSkeleton,
-} from '@/components/UserSettings/ProfileSection'
+} from '@/components/UserSettings/_components'
 import { usersQueries } from '@/services/queries'
 import { createFileRoute } from '@tanstack/react-router'
 

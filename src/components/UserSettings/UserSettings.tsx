@@ -17,7 +17,7 @@ import { authQueries } from '@/services/queries'
 import { useSearchFieldScrollStore } from '@/stores/search-field-scroll-store'
 import { motion } from 'motion/react'
 import { useMediaQuery } from '@/hooks/use-media-query'
-import styles from './SettingsLayout.module.scss'
+import styles from './UserSettings.module.scss'
 
 const routeApi = getRouteApi('/user/$id_/settings')
 

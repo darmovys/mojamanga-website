@@ -1,6 +1,7 @@
-import DevicesSection, {
+import {
+  DevicesSection,
   DevicesSectionSkeleton,
-} from '@/components/UserSettings/DevicesSection'
+} from '@/components/UserSettings/_components'
 import { usersQueries } from '@/services/queries'
 import { createFileRoute } from '@tanstack/react-router'
 

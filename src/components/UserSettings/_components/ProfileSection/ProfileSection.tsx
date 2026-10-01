@@ -4,18 +4,18 @@ import {
   useProfileSection,
 } from './use-profile-section'
 import { AnimatePresence } from 'motion/react'
-import MotionButton from '../MotionButton'
+import MotionButton from '@/components/MotionButton'
 import { CircleAlert, LoaderCircle, Trash2, UploadCloud } from 'lucide-react'
 import { Image } from '@unpic/react'
-import ClickTargetHelper from '../ClickTargetHelper'
-import VisuallyHidden from '../VisuallyHidden'
-import CropImageDialog from '../CropImageDialog'
+import ClickTargetHelper from '@/components/ClickTargetHelper'
+import VisuallyHidden from '@/components/VisuallyHidden'
+import CropImageDialog from '@/components/CropImageDialog'
 import clsx from 'clsx'
-import Skeleton from '../Skeleton'
+import Skeleton from '@/components/Skeleton'
 import { range } from '@/lib/utils'
-import styles from './Section.module.scss'
+import styles from './ProfileSection.module.scss'
 
-function ProfileSection() {
+export function ProfileSection() {
   const { form, data, isUploading, avatar, background } = useProfileSection()
 
   return (
@@ -473,5 +473,3 @@ export function ProfileSectionSkeleton() {
     </div>
   )
 }
-
-export default ProfileSection

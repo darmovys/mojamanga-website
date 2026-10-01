@@ -1,6 +1,7 @@
-import SecuritySection, {
+import {
+  SecuritySection,
   SecuritySectionSkeleton,
-} from '@/components/UserSettings/SecuritySection'
+} from '@/components/UserSettings/_components'
 import { usersQueries } from '@/services/queries'
 import { createFileRoute } from '@tanstack/react-router'
 

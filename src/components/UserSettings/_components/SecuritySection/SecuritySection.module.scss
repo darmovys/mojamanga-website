@@ -1,0 +1,518 @@
+@use '../../../../styles/breakpoints' as *;
+@use '../../../../styles/utils' as *;
+
+.GoBackHeader {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 10;
+  color: var(--sys-on-surface);
+  background-color: oklch(from var(--sys-surface) l c h / 0.8);
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  padding: var(--14px) var(--8px);
+  backdrop-filter: blur(5px);
+  box-shadow: var(--shadow-border);
+
+  @include up('tablet') {
+    display: none;
+  }
+}
+
+.GoBackHeading {
+  font-size: var(--16px);
+  font-weight: 460;
+}
+
+.GoBackHeaderButton {
+  block-size: var(--32px);
+  inline-size: var(--32px);
+  border-radius: 100vmax;
+  outline-offset: 2px;
+  position: relative; // for click target helper
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--state-on-surface-opacity-variant-2);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
+
+.Form {
+  --enter-time: 350ms;
+  --leave-time: 450ms;
+  display: flex;
+  flex-direction: column;
+  gap: var(--16px);
+}
+
+.Label {
+  display: flex;
+  font-weight: 500;
+  font-size: var(--18px);
+  margin-block-end: var(--4px);
+}
+
+.AvatarWrapper {
+  --width: var(--128px);
+  --height: var(--128px);
+  --border-radius: var(--8px);
+  display: flex;
+  gap: var(--16px);
+}
+
+.BackgroundWrapper {
+  --width: 100%;
+  --height: var(--48px);
+  --border-radius: var(--8px);
+  display: grid;
+  grid-auto-flow: row;
+  gap: var(--16px);
+
+  @include up('laptop') {
+    --width: #{rem(150px)};
+    --height: var(--200px);
+    grid-template-columns: var(--width) 1fr;
+    grid-template-rows: var(--height);
+  }
+}
+
+.UploadZone {
+  block-size: var(--height);
+  inline-size: var(--width);
+  border-radius: var(--8px);
+  background-color: var(--sys-surface-lowest);
+  box-shadow: var(--inset-shadow);
+  color: var(--sys-on-surface-variant);
+  position: relative;
+  flex-direction: column;
+  transition: color var(--leave-time) ease;
+
+  .BackgroundWrapper & {
+    flex-direction: revert;
+    gap: var(--6px);
+
+    @include up('laptop') {
+      flex-direction: column;
+      gap: revert;
+    }
+  }
+
+  &[data-drag-active='true'] {
+    color: var(--sys-on-surface);
+    transition: color var(--enter-time) ease;
+
+    .Rectangle {
+      transition: stroke var(--enter-time) ease;
+
+      stroke: var(--sys-on-surface);
+
+      animation: marching-ants 1.3s linear infinite;
+      animation-delay: 0.8ms;
+    }
+  }
+
+  @media (pointer: fine) {
+    &:hover {
+      color: var(--sys-on-surface);
+      transition: color var(--enter-time) ease;
+
+      .Rectangle {
+        transition: stroke var(--enter-time) ease;
+        stroke: var(--sys-on-surface);
+      }
+    }
+  }
+  &[data-drag-active='true'] {
+    color: var(--sys-on-surface);
+    transition: color var(--enter-time) ease;
+
+    .Rectangle {
+      transition: stroke var(--enter-time) ease;
+      stroke: var(--sys-on-surface);
+
+      animation: marching-ants 1.3s linear infinite;
+      animation-delay: 0.8ms;
+    }
+  }
+
+  &:focus-visible {
+    border-radius: var(--4px);
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+  }
+}
+
+.UploadZoneBorder {
+  position: absolute;
+  inline-size: var(--width);
+  block-size: var(--height);
+  pointer-events: none;
+}
+
+.Rectangle {
+  inline-size: var(--width);
+  block-size: var(--height);
+  rx: var(--border-radius);
+  fill: transparent;
+  stroke: var(--sys-outline);
+  stroke-width: 3;
+  stroke-dasharray: 5 2;
+  transition: stroke var(--leave-time) ease;
+}
+
+.UploadedCover {
+  position: relative;
+  img {
+    block-size: var(--height);
+    inline-size: var(--width);
+    object-fit: cover;
+    border-radius: var(--border-radius);
+
+    .BackgroundWrapper & {
+      inline-size: 100%;
+      block-size: var(--200px);
+    }
+  }
+}
+
+.Overlay {
+  border-radius: var(--border-radius);
+  position: absolute;
+  inset: 0;
+  background: oklch(0% 0 0 / 0.7);
+  display: grid;
+  place-content: center;
+  color: #fff;
+}
+
+.Error {
+  color: var(--danger);
+}
+
+.FloatingButtonWrapper {
+  --inset: var(--8px);
+  --size: var(--32px);
+  --border-radius: var(--8px);
+  position: absolute;
+  inset-block-start: var(--inset);
+  inset-inline-end: var(--inset);
+  inline-size: var(--size);
+  block-size: var(--size);
+}
+
+.TrashButton {
+  background-color: var(--danger);
+  opacity: 0.8;
+  border-radius: var(--border-radius);
+  color: #fff;
+  transition: opacity 300ms ease;
+  box-shadow: var(--shadow-border);
+
+  &:hover,
+  &:focus-visible {
+    transition-duration: 250ms;
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+
+.TrashImageButton {
+  composes: TrashButton;
+  position: absolute;
+  inset: 0;
+}
+
+.Loader {
+  animation: spin 1000ms linear infinite;
+}
+
+.FieldInput {
+  background-color: var(--sys-surface-lowest);
+  border: none;
+  min-inline-size: 0;
+  inline-size: 100%;
+  border-radius: var(--4px);
+  padding: var(--8px) var(--12px);
+  color: var(--sys-on-surface-highest-variant);
+  box-shadow: var(--inset-shadow);
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    color: var(--sys-on-surface);
+  }
+}
+
+.SaveButton {
+  padding: var(--4px) var(--10px);
+  border-radius: var(--8px);
+  background-color: var(--sys-primary);
+  color: var(--sys-on-primary);
+  gap: var(--4px);
+  align-self: flex-start;
+
+  &.Loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  svg {
+    margin-block-start: 3px;
+    animation: spin 1000ms linear infinite;
+  }
+}
+
+.PasswordGroup {
+  box-shadow: var(--shadow-border);
+  border-radius: var(--4px);
+  padding: var(--8px) var(--12px) var(--12px);
+}
+
+.PasswordInputWrapper {
+  position: relative;
+}
+
+.PasswordFieldInput {
+  composes: FieldInput;
+  padding-inline-end: rem(35px);
+}
+
+.ShowContent {
+  block-size: var(--size);
+  inline-size: var(--size);
+  border-radius: var(--4px);
+  transition-property: color, background-color;
+  transition-duration: 400ms;
+  transition-timing-function: cubic-bezier(0.3, 0.7, 0.4, 1);
+  svg {
+    color: var(--sys-on-surface-highest-variant);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-400);
+
+    svg {
+      transition: color 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+      color: var(--sys-primary);
+    }
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      transition: background-color 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+      background-color: var(--state-primary-opacity-16);
+
+      svg {
+        transition: color 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+        color: var(--sys-primary);
+      }
+    }
+  }
+}
+
+.ShowPassword {
+  composes: ShowContent;
+  --size: var(--24px);
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 10px;
+  transform: translateY(-50%);
+}
+
+.LabelSecondary {
+  display: inline-flex;
+  font-size: var(--14px);
+  font-weight: 550;
+  color: var(--sys-on-surface-variant);
+  margin-block-end: var(--4px);
+}
+
+.EmailWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--6px);
+  align-items: center;
+  block-size: var(--40px);
+}
+
+.EmailLabelWrapper {
+  position: relative;
+  inline-size: fit-content;
+}
+
+.NotVerifiedAlert {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--8px);
+  background-color: oklch(from var(--warning) l c h / 0.1);
+  color: var(--warning);
+  padding: var(--16px) var(--14px);
+  font-size: var(--14px);
+  border-radius: var(--4px);
+  border: 1px solid var(--warning);
+  margin-block-end: var(--10px);
+}
+
+.VerfiyLink {
+  text-decoration: none;
+  position: absolute;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  inset-inline-end: var(--10px);
+  background-color: var(--success);
+  color: #fff;
+  padding: var(--4px) var(--8px);
+  border-radius: var(--4px);
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
+
+.EmailBadge {
+  background-color: var(--sys-on-primary);
+  position: absolute;
+  inset-block-start: 0;
+  inset-block-end: 0;
+  inset-inline-end: calc(var(--10px) * -1);
+  padding: var(--2px) var(--10px);
+  transform: translateX(100%);
+  font-size: var(--14px);
+  border-radius: 100vmax;
+
+  &.Verified {
+    color: var(--success);
+    background-color: oklch(from var(--success) l c h / 0.15);
+  }
+
+  &.NotVerified {
+    color: var(--warning);
+    background-color: oklch(from var(--warning) l c h / 0.1);
+  }
+}
+
+.Email {
+  --radius: var(--6px);
+  position: relative;
+  padding: var(--4px) var(--8px);
+  border-radius: var(--radius);
+}
+
+.Filter {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  transition:
+    backdrop-filter 300ms ease 0s,
+    background-color 300ms ease 0s;
+
+  &[data-hidden='true'] {
+    background-color: oklch(
+      from var(--state-on-surface-opacity-variant-2) / 0.2
+    );
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
+
+.EditEmail {
+  margin-inline-start: auto;
+  padding: var(--4px) var(--8px);
+  border-radius: var(--4px);
+  font-size: var(--14px);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--sys-surface-highest);
+    }
+  }
+
+  &:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid var(--blue-400);
+    border-radius: var(--2px);
+  }
+}
+
+.PasswordPopover {
+  display: none;
+
+  @include up('tablet') {
+    display: revert;
+  }
+}
+
+.Paragraph {
+  font-size: var(--14px);
+  color: var(--sys-on-surface-variant);
+  margin-block-start: var(--2px);
+}
+
+.MobileConditions {
+  margin-block-start: var(--10px);
+  @include up('tablet') {
+    display: none;
+  }
+}
+
+.ForgotPasswordInfo {
+  background-color: var(--sys-surface-highest);
+  border-radius: var(--6px);
+  padding: var(--12px) var(--20px);
+  font-size: var(--14px);
+  margin-block-start: var(--10px);
+  color: var(--blue-400);
+  background-color: oklch(from var(--blue-500) l c h / 0.1);
+}
+
+.ForgotPasswordLink {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+  outline-offset: 1px;
+  box-shadow: 0 1.5px 0 var(--blue-400);
+  transition: box-shadow 0.2s;
+
+  @media (hover: hover) {
+    &:hover {
+      box-shadow: 0 0 0 transparent;
+    }
+  }
+
+  &:focus-visible {
+    border-radius: var(--2px);
+    outline: 2px solid var(--blue-400);
+    outline-offset: 2px;
+  }
+}
+
+@keyframes marching-ants {
+  to {
+    stroke-dashoffset: -28;
+  }
+}

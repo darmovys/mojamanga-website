@@ -1,2 +1,2 @@
-export * from './SettingsLayout.tsx'
-export { default } from './SettingsLayout.tsx'
+export * from './UserSettings.tsx'
+export { default } from './UserSettings.tsx'

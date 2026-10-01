@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { useDevicesSection } from './use-devices-section'
-import ConfirmDialog from '../ConfirmDialog'
+import ConfirmDialog from '@/components/ConfirmDialog'
 import { HandIcon } from 'lucide-react'
-import ShiftBy from '../ShiftBy'
+import ShiftBy from '@/components/ShiftBy'
 import { Button } from '@base-ui/react'
-import Skeleton from '../Skeleton'
+import Skeleton from '@/components/Skeleton'
 import { formatCustomDate, range } from '@/lib/utils'
 import styles from './DevicesSection.module.scss'
 
-function DevicesSection() {
+export function DevicesSection() {
   const {
     currentDevice,
     otherDevices,
@@ -224,5 +224,3 @@ export function DevicesSectionSkeleton() {
     </>
   )
 }
-
-export default DevicesSection

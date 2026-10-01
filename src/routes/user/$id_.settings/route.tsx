@@ -1,4 +1,4 @@
-import SettingsLayout from '@/components/UserSettings'
+import UserSettings from '@/components/UserSettings'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/user/$id_/settings')({
@@ -11,5 +11,5 @@ export const Route = createFileRoute('/user/$id_/settings')({
       })
     }
   },
-  component: SettingsLayout,
+  component: UserSettings,
 })
